@@ -1,0 +1,15 @@
+{
+    "name": "donatj/alike-color-finder",
+    "require-dev": {
+        "donatj/drop": "*",
+        "donatj/flags": "*"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jesse Donat",
+            "email": "donatj@gmail.com"
+        }
+    ],
+    "require": {}
+}
