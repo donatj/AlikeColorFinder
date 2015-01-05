@@ -65,7 +65,7 @@ class ColorEntryFactory {
 		$g = ($g + $m) * 255;
 		$b = ($b + $m) * 255;
 
-		return [ 'r' => $r, 'g' => $g, 'b' => $b, 'a' => $a ];
+		return new ColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsl( $h, $s, $l ) {

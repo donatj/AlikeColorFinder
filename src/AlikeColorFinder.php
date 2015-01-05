@@ -25,49 +25,9 @@ class AlikeColorFinder {
 	}
 
 	/**
-	 * @param int      $tolerance
-	 * @param resource $stream
+	 * @param int $tolerance
+	 * @return array
 	 */
-	public function displayDiff( $tolerance, $stream ) {
-		$data = $this->getAlikeColorsWithinTolerance($tolerance);
-
-		foreach( $data as $colorSet ) {
-			/**
-			 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
-			 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
-			 */
-			$colorOne = $colorSet['master'];
-			foreach( $colorSet['children'] as $childEntry ) {
-				$colorTwo = $childEntry['color'];
-
-				$oneString = "({$colorOne->getInstanceTotal()}) {$colorOne->getRgbaString()}";
-				$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getRgbaString()}";
-
-				if( $colorOne->getInstanceTotal() > $colorTwo->getInstanceTotal() ) {
-					$oneString = "*" . $oneString;
-				} elseif( $colorOne->getInstanceTotal() < $colorTwo->getInstanceTotal() ) {
-					$twoString = "* " . $twoString;
-				}
-
-				fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $childEntry['diff']));
-
-				$oneOrig = $colorOne->getDistinctInstances();
-				$twoOrig = $colorTwo->getDistinctInstances();
-
-				$max = max(count($oneOrig), count($twoOrig));
-
-				for( $i = 0; $i < $max; $i++ ) {
-					$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
-					$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
-
-					fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
-				}
-
-				fwrite($stream, "\n");
-			}
-		}
-	}
-
 	public function getAlikeColorsWithinTolerance( $tolerance ) {
 		$output = [ ];
 
@@ -120,9 +80,10 @@ class AlikeColorFinder {
 			if( !empty($result['hex']) ) {
 				$color = $this->factory->makeFromHexString($result['hex']);
 			} else {
+				$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
+
 				switch( $result['func'] ) {
 					case 'rgba':
-						$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
 						if( count($params) != 4 ) {
 							echo "Invalid param count\n";
 							continue;
@@ -131,13 +92,28 @@ class AlikeColorFinder {
 						$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
 						break;
 					case 'rgb':
-						$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
 						if( count($params) != 3 ) {
 							echo "Invalid param count\n";
 							continue;
 						}
 
 						$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
+						break;
+					case 'hsla':
+						if( count($params) != 4 ) {
+							echo "Invalid param count\n";
+							continue;
+						}
+
+						$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
+						break;
+					case 'hsl':
+						if( count($params) != 3 ) {
+							echo "Invalid param count\n";
+							continue;
+						}
+
+						$color = $this->factory->makeFromHsl($params[0], $params[1] / 100, $params[2] / 100);
 						break;
 					default:
 						echo "{$result['func']} not implemented yet\n";

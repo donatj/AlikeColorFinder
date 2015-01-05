@@ -16,6 +16,7 @@ foreach( $files as $file ) {
 $flags = new \donatj\Flags();
 
 $tolerance =& $flags->uint('tolerance', 5, 'Computed Difference Tolerance - default 5');
+$exitcode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code.');
 $help      =& $flags->bool('help', false, 'Displays this message');
 
 try {
@@ -40,5 +41,51 @@ if( $flags->args() ) {
 	$subject = file_get_contents("php://stdin");
 }
 
-$af = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
-$af->displayDiff($tolerance, fopen('php://output', 'w'));
+$af   = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
+$data = $af->getAlikeColorsWithinTolerance($tolerance);
+
+if($data) {
+	displayDiff($data, fopen('php://output', 'w'));
+	exit($exitcode);
+}else{
+	echo "No alike colors found!\n";
+}
+
+function displayDiff( $data, $stream ) {
+
+	foreach( $data as $colorSet ) {
+		/**
+		 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
+		 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
+		 */
+		$colorOne = $colorSet['master'];
+		foreach( $colorSet['children'] as $childEntry ) {
+			$colorTwo = $childEntry['color'];
+
+			$oneString = "({$colorOne->getInstanceTotal()}) {$colorOne->getRgbaString()}";
+			$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getRgbaString()}";
+
+			if( $colorOne->getInstanceTotal() > $colorTwo->getInstanceTotal() ) {
+				$oneString = "*" . $oneString;
+			} elseif( $colorOne->getInstanceTotal() < $colorTwo->getInstanceTotal() ) {
+				$twoString = "* " . $twoString;
+			}
+
+			fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $childEntry['diff']));
+
+			$oneOrig = $colorOne->getDistinctInstances();
+			$twoOrig = $colorTwo->getDistinctInstances();
+
+			$max = max(count($oneOrig), count($twoOrig));
+
+			for( $i = 0; $i < $max; $i++ ) {
+				$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
+				$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
+
+				fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
+			}
+
+			fwrite($stream, "\n");
+		}
+	}
+}
