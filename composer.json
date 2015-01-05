@@ -1,19 +1,24 @@
 {
-    "name": "donatj/alike-color-finder",
-    "require-dev": {
-        "donatj/drop": "*",
-        "donatj/flags": "*"
-    },
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Jesse Donat",
-            "email": "donatj@gmail.com"
-        }
-    ],
-    "autoload"   : {
-        "psr-4": {
-            "donatj\\AlikeColorFinder\\": "src/"
-        }
-    }
+	"name": "donatj/alike-color-finder",
+	"license": "MIT",
+	"require": {
+		"donatj/flags": "~1.1.0"
+	},
+	"require-dev": {
+		"donatj/drop": "*"
+	},
+	"authors": [
+		{
+			"name": "Jesse Donat",
+			"email": "donatj@gmail.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"donatj\\AlikeColorFinder\\": "src/"
+		}
+	},
+	"bin": [
+		"composer/bin/alike"
+	]
 }
