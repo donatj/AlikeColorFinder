@@ -18,26 +18,27 @@ class AlikeColorFinder {
 		$data = $this->getAlikeColorsWithinTolerance($tolerance);
 
 		foreach( $data as $colorSet ) {
+			/**
+			 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
+			 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
+			 */
 			$colorOne = $colorSet['master'];
-			foreach($colorSet['children'] as $childEntry) {
+			foreach( $colorSet['children'] as $childEntry ) {
 				$colorTwo = $childEntry['color'];
 
-				$oneString = "rgba({$colorOne['rgba']['r']},{$colorOne['rgba']['g']},{$colorOne['rgba']['b']},{$colorOne['rgba']['a']})";
-				$twoString = "rgba({$colorTwo['rgba']['r']},{$colorTwo['rgba']['g']},{$colorTwo['rgba']['b']},{$colorTwo['rgba']['a']})";
+				$oneString = "({$colorOne->getInstanceTotal()}) {$colorOne->getRgbaString()}";
+				$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getRgbaString()}";
 
-				$oneString = "({$colorOne['count']}) {$oneString}";
-				$twoString = "({$colorTwo['count']}) {$twoString}";
-
-				if( $colorOne['count'] > $colorTwo['count'] ) {
+				if( $colorOne->getInstanceTotal() > $colorTwo->getInstanceTotal() ) {
 					$oneString = "*" . $oneString;
-				} elseif( $colorOne['count'] > $colorTwo['count'] ) {
+				} elseif( $colorOne->getInstanceTotal() < $colorTwo->getInstanceTotal() ) {
 					$twoString = "* " . $twoString;
 				}
 
 				fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $childEntry['diff']));
 
-				$oneOrig = array_values($colorOne['orig']);
-				$twoOrig = array_values($colorTwo['orig']);
+				$oneOrig = $colorOne->getDistinctInstances();
+				$twoOrig = $colorTwo->getDistinctInstances();
 
 				$max = max(count($oneOrig), count($twoOrig));
 
@@ -55,15 +56,20 @@ class AlikeColorFinder {
 
 	public function getAlikeColorsWithinTolerance( $tolerance ) {
 		$output = [ ];
+
 		$colors = $this->extractColors($this->subject);
 
 		$colorStack = $colors;
 		while( count($colorStack) > 1 ) {
+			/**
+			 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
+			 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
+			 */
 			$colorOne = array_pop($colorStack);
 			$row      = [ ];
 
 			foreach( $colorStack as $colorTwo ) {
-				$diff = $this->rgbaAbsDiff($colorOne['rgba'], $colorTwo['rgba']);
+				$diff = $colorOne->getAbsDiff($colorTwo);
 
 				if( $diff < $tolerance ) {
 					if( !$row ) {
@@ -86,11 +92,14 @@ class AlikeColorFinder {
 
 	/**
 	 * @param string $subject
-	 * @return array
+	 * @return \donatj\AlikeColorFinder\ColorEntry[]
 	 */
 	private function extractColors( $subject ) {
 		preg_match_all('/(?P<hex>#[0-9a-f]{3}(?:[0-9a-f]{3})?)|(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))/i', $subject, $results, PREG_SET_ORDER);
 
+		/**
+		 * @var $colors \donatj\AlikeColorFinder\ColorEntry[]
+		 */
 		$colors = [ ];
 		foreach( $results as $result ) {
 			$rgba = false;
@@ -130,15 +139,10 @@ class AlikeColorFinder {
 				$key  = implode('|', $rgba);
 
 				if( !isset($colors[$key]) ) {
-					$colors[$key] = [
-						'rgba'  => $rgba,
-						'count' => 0,
-						'orig'  => [ ],
-					];
+					$colors[$key] = new ColorEntry($rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);;
 				}
 
-				$colors[$key]['count']++;
-				$colors[$key]['orig'][strtolower($result[0])] = $result[0];
+				$colors[$key]->addInstance($result[0]);
 
 			}
 		}
@@ -248,17 +252,4 @@ class AlikeColorFinder {
 		return $rgb; // returns an array with the rgb values
 	}
 
-	/**
-	 * @param $colorOne
-	 * @param $colorTwo
-	 * @return number
-	 */
-	private function rgbaAbsDiff( $colorOne, $colorTwo ) {
-		$diff = abs($colorOne['r'] - $colorTwo['r']) +
-				abs($colorOne['g'] - $colorTwo['g']) +
-				abs($colorOne['b'] - $colorTwo['b']) +
-				(abs($colorOne['a'] - $colorTwo['a']) * 255);
-
-		return $diff;
-	}
 }
