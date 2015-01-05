@@ -17,10 +17,7 @@ class AlikeColorFinder {
 			$colorOne = array_pop($colorStack);
 
 			foreach( $colorStack as $colorTwo ) {
-				$diff = abs($colorOne['rgba']['r'] - $colorTwo['rgba']['r']) +
-						abs($colorOne['rgba']['g'] - $colorTwo['rgba']['g']) +
-						abs($colorOne['rgba']['b'] - $colorTwo['rgba']['b']) +
-						(abs($colorOne['rgba']['a'] - $colorTwo['rgba']['a']) * 255);
+				$diff = $this->rgbaAbsDiff($colorOne['rgba'], $colorTwo['rgba']);
 
 				if( $diff < $tolerance ) {
 					$oneString = "rgba({$colorOne['rgba']['r']},{$colorOne['rgba']['g']},{$colorOne['rgba']['b']},{$colorOne['rgba']['a']})";
@@ -210,5 +207,19 @@ class AlikeColorFinder {
 		$rgb = array( 'r' => $r, 'g' => $g, 'b' => $b, 'a' => 1 );
 
 		return $rgb; // returns an array with the rgb values
+	}
+
+	/**
+	 * @param $colorOne
+	 * @param $colorTwo
+	 * @return number
+	 */
+	private function rgbaAbsDiff( $colorOne, $colorTwo ) {
+		$diff = abs($colorOne['r'] - $colorTwo['r']) +
+				abs($colorOne['g'] - $colorTwo['g']) +
+				abs($colorOne['b'] - $colorTwo['b']) +
+				(abs($colorOne['a'] - $colorTwo['a']) * 255);
+
+		return $diff;
 	}
 }
