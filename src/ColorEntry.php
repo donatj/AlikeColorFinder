@@ -56,7 +56,7 @@ class ColorEntry {
 	 */
 	public function setR( $r ) {
 		if( $r > 255 || $r < 0 ) {
-			throw new \RangeException('must be between 0 and 255');
+			throw new \RangeException('Red must be between 0 and 255');
 		}
 		$this->r = $r;
 	}
@@ -66,7 +66,7 @@ class ColorEntry {
 	 */
 	public function setG( $g ) {
 		if( $g > 255 || $g < 0 ) {
-			throw new \RangeException('must be between 0 and 255');
+			throw new \RangeException('Green must be between 0 and 255');
 		}
 		$this->g = $g;
 	}
@@ -76,7 +76,7 @@ class ColorEntry {
 	 */
 	public function setB( $b ) {
 		if( $b > 255 || $b < 0 ) {
-			throw new \RangeException('must be between 0 and 255');
+			throw new \RangeException('Blue must be between 0 and 255');
 		}
 		$this->b = $b;
 	}
@@ -86,7 +86,7 @@ class ColorEntry {
 	 */
 	public function setA( $a ) {
 		if( $a > 1 || $a < 0 ) {
-			throw new \RangeException('must be between 0 and 1');
+			throw new \RangeException('Alpha must be between 0 and 1');
 		}
 		$this->a = $a;
 	}
@@ -124,6 +124,23 @@ class ColorEntry {
 
 	public function getRgbaString() {
 		return "rgba({$this->r},{$this->g},{$this->b},{$this->a})";
+	}
+
+	function getRgbHexString() {
+		$hex = "#";
+		$hex .= str_pad(dechex($this->r), 2, "0", STR_PAD_LEFT);
+		$hex .= str_pad(dechex($this->g), 2, "0", STR_PAD_LEFT);
+		$hex .= str_pad(dechex($this->b), 2, "0", STR_PAD_LEFT);
+
+		return $hex;
+	}
+
+	public function getSimplestCssString() {
+		if( $this->a == 1 ) {
+			return $this->getRgbHexString();
+		} else {
+			return $this->getRgbaString();
+		}
 	}
 
 }

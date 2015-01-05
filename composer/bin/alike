@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+namespace alikecolor;
+
 $files = array(
 	__DIR__ . '/../../vendor/autoload.php',
 	__DIR__ . '/../../../../autoload.php'
@@ -22,9 +24,9 @@ $help      =& $flags->bool('help', false, 'Displays this message');
 try {
 	$flags->parse();
 	if( $help ) {
-		throw new Exception;
+		throw new \Exception;
 	}
-} catch(Exception $e) {
+} catch(\Exception $e) {
 	die($e->getMessage() . PHP_EOL . $flags->getDefaults() . PHP_EOL);
 }
 
@@ -42,10 +44,14 @@ if( $flags->args() ) {
 }
 
 $af   = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
-$data = $af->getAlikeColorsWithinTolerance($tolerance);
+$data = $af->getAlikeColorsWithinTolerance($tolerance, $errors);
 
-if($data) {
+if($data || $errors) {
 	displayDiff($data, fopen('php://output', 'w'));
+
+	foreach($errors as $error) {
+		echo "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n";
+	}
 	exit($exitcode);
 }else{
 	echo "No alike colors found!\n";
@@ -62,8 +68,8 @@ function displayDiff( $data, $stream ) {
 		foreach( $colorSet['children'] as $childEntry ) {
 			$colorTwo = $childEntry['color'];
 
-			$oneString = "({$colorOne->getInstanceTotal()}) {$colorOne->getRgbaString()}";
-			$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getRgbaString()}";
+			$oneString = "({$colorOne->getInstanceTotal()}) {$colorOne->getSimplestCssString()}";
+			$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getSimplestCssString()}";
 
 			if( $colorOne->getInstanceTotal() > $colorTwo->getInstanceTotal() ) {
 				$oneString = "*" . $oneString;

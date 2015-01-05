@@ -28,10 +28,10 @@ class AlikeColorFinder {
 	 * @param int $tolerance
 	 * @return array
 	 */
-	public function getAlikeColorsWithinTolerance( $tolerance ) {
+	public function getAlikeColorsWithinTolerance( $tolerance, &$errors = null ) {
 		$output = [ ];
 
-		$colors = $this->extractColors($this->subject);
+		$colors = $this->extractColors($this->subject, $errors);
 
 		$colorStack = $colors;
 		while( count($colorStack) > 1 ) {
@@ -45,7 +45,7 @@ class AlikeColorFinder {
 			foreach( $colorStack as $colorTwo ) {
 				$diff = $colorOne->getAbsDiff($colorTwo);
 
-				if( $diff < $tolerance ) {
+				if( $diff <= $tolerance ) {
 					if( !$row ) {
 						$row['master']   = $colorOne;
 						$row['children'] = [ ];
@@ -68,57 +68,61 @@ class AlikeColorFinder {
 	 * @param string $subject
 	 * @return \donatj\AlikeColorFinder\ColorEntry[]
 	 */
-	private function extractColors( $subject ) {
+	private function extractColors( $subject, &$errors = null ) {
 		preg_match_all('/(?P<hex>#[0-9a-f]{3}(?:[0-9a-f]{3})?)|(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))/i', $subject, $results, PREG_SET_ORDER);
 
 		/**
 		 * @var $colors \donatj\AlikeColorFinder\ColorEntry[]
 		 */
 		$colors = [ ];
+		$errors = [ ];
 		foreach( $results as $result ) {
 			$color = false;
-			if( !empty($result['hex']) ) {
-				$color = $this->factory->makeFromHexString($result['hex']);
-			} else {
-				$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
+			try {
+				if( !empty($result['hex']) ) {
+					$color = $this->factory->makeFromHexString($result['hex']);
+				} else {
+					$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
 
-				switch( $result['func'] ) {
-					case 'rgba':
-						if( count($params) != 4 ) {
-							echo "Invalid param count\n";
+					switch( $result['func'] ) {
+						case 'rgba':
+							if( count($params) != 4 ) {
+								throw new \Exception('Invalid param count');
+							}
+
+							$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
+							break;
+						case 'rgb':
+							if( count($params) != 3 ) {
+								throw new \Exception('Invalid param count');
+							}
+
+							$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
+							break;
+						case 'hsla':
+							if( count($params) != 4 ) {
+								throw new \Exception('Invalid param count');
+							}
+
+							$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
+							break;
+						case 'hsl':
+							if( count($params) != 3 ) {
+								throw new \Exception('Invalid param count');
+							}
+
+							$color = $this->factory->makeFromHsl($params[0], $params[1] / 100, $params[2] / 100);
+							break;
+						default:
+							throw new \Exception('Not Implemented');
 							continue;
-						}
-
-						$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
-						break;
-					case 'rgb':
-						if( count($params) != 3 ) {
-							echo "Invalid param count\n";
-							continue;
-						}
-
-						$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
-						break;
-					case 'hsla':
-						if( count($params) != 4 ) {
-							echo "Invalid param count\n";
-							continue;
-						}
-
-						$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
-						break;
-					case 'hsl':
-						if( count($params) != 3 ) {
-							echo "Invalid param count\n";
-							continue;
-						}
-
-						$color = $this->factory->makeFromHsl($params[0], $params[1] / 100, $params[2] / 100);
-						break;
-					default:
-						echo "{$result['func']} not implemented yet\n";
-						continue;
+					}
 				}
+			} catch(\Exception $e) {
+				$errors[] = [
+					'exception' => $e,
+					'result'    => $result,
+				];
 			}
 
 
