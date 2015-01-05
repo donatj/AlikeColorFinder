@@ -8,9 +8,7 @@ class AlikeColorFinder {
 	 * @param $tolerance
 	 */
 	public function ExtractColorInfo( $subject, $tolerance ) {
-		preg_match_all('/(?P<hex>#[0-9a-f]{3}(?:[0-9a-f]{3})?)|(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))/i', $subject, $results, PREG_SET_ORDER);
-
-		$colors = $this->extractColors($results);
+		$colors = $this->extractColors($subject);
 
 		$colorStack = $colors;
 		while( count($colorStack) > 1 ) {
@@ -52,10 +50,12 @@ class AlikeColorFinder {
 	}
 
 	/**
-	 * @param $results
+	 * @param string $subject
 	 * @return array
 	 */
-	private function extractColors( $results ) {
+	private function extractColors( $subject ) {
+		preg_match_all('/(?P<hex>#[0-9a-f]{3}(?:[0-9a-f]{3})?)|(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))/i', $subject, $results, PREG_SET_ORDER);
+
 		$colors = [ ];
 		foreach( $results as $result ) {
 			$rgba = false;
