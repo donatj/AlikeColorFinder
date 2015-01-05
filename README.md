@@ -1,3 +1,3 @@
 # AlikeColorFinder
 
-Finds Alike Colors in CSS, SCSS, etc.
+Finds Alike Colors in CSS, SCSS, LESS etc.
