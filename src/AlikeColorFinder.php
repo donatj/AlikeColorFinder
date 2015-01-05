@@ -15,46 +15,73 @@ class AlikeColorFinder {
 	 * @param resource $stream
 	 */
 	public function displayDiff( $tolerance, $stream ) {
+		$data = $this->getAlikeColorsWithinTolerance($tolerance);
+
+		foreach( $data as $colorSet ) {
+			$colorOne = $colorSet['master'];
+			foreach($colorSet['children'] as $childEntry) {
+				$colorTwo = $childEntry['color'];
+
+				$oneString = "rgba({$colorOne['rgba']['r']},{$colorOne['rgba']['g']},{$colorOne['rgba']['b']},{$colorOne['rgba']['a']})";
+				$twoString = "rgba({$colorTwo['rgba']['r']},{$colorTwo['rgba']['g']},{$colorTwo['rgba']['b']},{$colorTwo['rgba']['a']})";
+
+				$oneString = "({$colorOne['count']}) {$oneString}";
+				$twoString = "({$colorTwo['count']}) {$twoString}";
+
+				if( $colorOne['count'] > $colorTwo['count'] ) {
+					$oneString = "*" . $oneString;
+				} elseif( $colorOne['count'] > $colorTwo['count'] ) {
+					$twoString = "* " . $twoString;
+				}
+
+				fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $childEntry['diff']));
+
+				$oneOrig = array_values($colorOne['orig']);
+				$twoOrig = array_values($colorTwo['orig']);
+
+				$max = max(count($oneOrig), count($twoOrig));
+
+				for( $i = 0; $i < $max; $i++ ) {
+					$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
+					$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
+
+					fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
+				}
+
+				fwrite($stream, "\n");
+			}
+		}
+	}
+
+	public function getAlikeColorsWithinTolerance( $tolerance ) {
+		$output = [ ];
 		$colors = $this->extractColors($this->subject);
 
 		$colorStack = $colors;
 		while( count($colorStack) > 1 ) {
 			$colorOne = array_pop($colorStack);
+			$row      = [ ];
 
 			foreach( $colorStack as $colorTwo ) {
 				$diff = $this->rgbaAbsDiff($colorOne['rgba'], $colorTwo['rgba']);
 
 				if( $diff < $tolerance ) {
-					$oneString = "rgba({$colorOne['rgba']['r']},{$colorOne['rgba']['g']},{$colorOne['rgba']['b']},{$colorOne['rgba']['a']})";
-					$twoString = "rgba({$colorTwo['rgba']['r']},{$colorTwo['rgba']['g']},{$colorTwo['rgba']['b']},{$colorTwo['rgba']['a']})";
-
-					$oneString = "({$colorOne['count']}) {$oneString}";
-					$twoString = "({$colorTwo['count']}) {$twoString}";
-
-					if( $colorOne['count'] > $colorTwo['count'] ) {
-						$oneString = "*" . $oneString;
-					} elseif( $colorOne['count'] > $colorTwo['count'] ) {
-						$twoString = "* " . $twoString;
+					if( !$row ) {
+						$row['master']   = $colorOne;
+						$row['children'] = [ ];
 					}
-
-					fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $diff));
-
-					$oneOrig = array_values($colorOne['orig']);
-					$twoOrig = array_values($colorTwo['orig']);
-
-					$max = max(count($oneOrig), count($twoOrig));
-
-					for( $i = 0; $i < $max; $i++ ) {
-						$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
-						$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
-
-						fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
-					}
-
-					fwrite($stream, "\n");
+					$row['children'][] = [
+						'diff'  => $diff,
+						'color' => $colorTwo,
+					];
 				}
 			}
+			if( $row ) {
+				$output[] = $row;
+			}
 		}
+
+		return $output;
 	}
 
 	/**
