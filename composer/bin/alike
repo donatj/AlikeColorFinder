@@ -18,7 +18,7 @@ foreach( $files as $file ) {
 $flags = new \donatj\Flags();
 
 $tolerance =& $flags->uint('tolerance', 5, 'Computed Difference Tolerance - default 5');
-$exitcode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code.');
+$exitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code.');
 $help      =& $flags->bool('help', false, 'Displays this message');
 
 try {
@@ -52,10 +52,12 @@ if( $data || $errors ) {
 	foreach( $errors as $error ) {
 		echo "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n";
 	}
-	exit($exitcode);
+	exit($exitCode);
 } else {
 	echo "No alike colors found!\n";
 }
+
+
 
 function displayDiff( $data, $stream ) {
 
