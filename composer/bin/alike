@@ -40,5 +40,5 @@ if( $flags->args() ) {
 	$subject = file_get_contents("php://stdin");
 }
 
-$af = new \donatj\AlikeColorFinder\AlikeColorFinder();
-$af->ExtractColorInfo($subject, $tolerance);
+$af = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
+$af->displayDiff($tolerance);

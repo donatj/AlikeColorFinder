@@ -3,12 +3,18 @@
 namespace donatj\AlikeColorFinder;
 
 class AlikeColorFinder {
+
+	protected $subject;
+
+	public function __construct( $subject = "" ) {
+		$this->subject = $subject;
+	}
+
 	/**
-	 * @param $subject
-	 * @param $tolerance
+	 * @param int $tolerance
 	 */
-	public function ExtractColorInfo( $subject, $tolerance ) {
-		$colors = $this->extractColors($subject);
+	public function displayDiff( $tolerance ) {
+		$colors = $this->extractColors($this->subject);
 
 		$colorStack = $colors;
 		while( count($colorStack) > 1 ) {
@@ -192,6 +198,10 @@ class AlikeColorFinder {
 		return [ 'r' => $r, 'g' => $g, 'b' => $b, 'a' => $a ];
 	}
 
+	/**
+	 * @param string $hex
+	 * @return array
+	 */
 	private function hex2rgba( $hex ) {
 		$hex = str_replace("#", "", $hex);
 
