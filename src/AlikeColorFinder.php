@@ -6,8 +6,16 @@ class AlikeColorFinder {
 
 	protected $subject;
 
-	public function __construct( $subject = "" ) {
+	protected $factory;
+
+	public function __construct( $subject = "", ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
+
+		if( !is_null($colorEntryFactory) ) {
+			$this->factory = $colorEntryFactory;
+		} else {
+			$this->factory = new ColorEntryFactory();
+		}
 	}
 
 	/**
@@ -102,31 +110,28 @@ class AlikeColorFinder {
 		 */
 		$colors = [ ];
 		foreach( $results as $result ) {
-			$rgba = false;
+			$color = false;
 			if( !empty($result['hex']) ) {
-				$rgba = $this->hex2rgba($result['hex']);
-
+				$color = $this->factory->makeFromHexString($result['hex']);
 			} else {
 				switch( $result['func'] ) {
 					case 'rgba':
-						$params = array_map('\trim', explode(',', $result['params']));
+						$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
 						if( count($params) != 4 ) {
 							echo "Invalid param count\n";
 							continue;
 						}
 
-						$rgba = [ ];
-						list($rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']) = $params;
+						$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
 						break;
 					case 'rgb':
-						$params = array_map('\trim', explode(',', $result['params']));
+						$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
 						if( count($params) != 3 ) {
 							echo "Invalid param count\n";
 							continue;
 						}
 
-						$rgba = [ 'a' => 1 ];
-						list($rgba['r'], $rgba['g'], $rgba['b']) = $params;
+						$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
 						break;
 					default:
 						echo "{$result['func']} not implemented yet\n";
@@ -134,12 +139,12 @@ class AlikeColorFinder {
 				}
 			}
 
-			if( $rgba ) {
-				$rgba = array_map('\floatval', $rgba);
-				$key  = implode('|', $rgba);
+
+			if( $color ) {
+				$key = md5($color->getRgbaString());
 
 				if( !isset($colors[$key]) ) {
-					$colors[$key] = new ColorEntry($rgba['r'], $rgba['g'], $rgba['b'], $rgba['a']);;
+					$colors[$key] = $color;
 				}
 
 				$colors[$key]->addInstance($result[0]);
@@ -149,7 +154,6 @@ class AlikeColorFinder {
 
 		return $colors;
 	}
-
 
 	private function rgb2hsl( array $rgb ) {
 		$r = $rgb['r'];
@@ -229,27 +233,6 @@ class AlikeColorFinder {
 		$b = ($b + $m) * 255;
 
 		return [ 'r' => $r, 'g' => $g, 'b' => $b, 'a' => $a ];
-	}
-
-	/**
-	 * @param string $hex
-	 * @return array
-	 */
-	private function hex2rgba( $hex ) {
-		$hex = str_replace("#", "", $hex);
-
-		if( strlen($hex) == 3 ) {
-			$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-			$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-			$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-		} else {
-			$r = hexdec(substr($hex, 0, 2));
-			$g = hexdec(substr($hex, 2, 2));
-			$b = hexdec(substr($hex, 4, 2));
-		}
-		$rgb = array( 'r' => $r, 'g' => $g, 'b' => $b, 'a' => 1 );
-
-		return $rgb; // returns an array with the rgb values
 	}
 
 }
