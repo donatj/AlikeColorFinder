@@ -41,4 +41,4 @@ if( $flags->args() ) {
 }
 
 $af = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
-$af->displayDiff($tolerance);
+$af->displayDiff($tolerance, fopen('php://output', 'w'));

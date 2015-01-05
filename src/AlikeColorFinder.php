@@ -11,9 +11,10 @@ class AlikeColorFinder {
 	}
 
 	/**
-	 * @param int $tolerance
+	 * @param int      $tolerance
+	 * @param resource $stream
 	 */
-	public function displayDiff( $tolerance ) {
+	public function displayDiff( $tolerance, $stream ) {
 		$colors = $this->extractColors($this->subject);
 
 		$colorStack = $colors;
@@ -36,7 +37,7 @@ class AlikeColorFinder {
 						$twoString = "* " . $twoString;
 					}
 
-					echo sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $diff);
+					fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $diff));
 
 					$oneOrig = array_values($colorOne['orig']);
 					$twoOrig = array_values($colorTwo['orig']);
@@ -46,10 +47,11 @@ class AlikeColorFinder {
 					for( $i = 0; $i < $max; $i++ ) {
 						$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
 						$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
-						echo sprintf(" %30s %30s\n", $oneString, $twoString);
+
+						fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
 					}
 
-					echo "\n";
+					fwrite($stream, "\n");
 				}
 			}
 		}
