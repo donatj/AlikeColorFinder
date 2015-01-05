@@ -27,7 +27,18 @@ try {
 	die($e->getMessage() . PHP_EOL . $flags->getDefaults() . PHP_EOL);
 }
 
-$subject = file_get_contents("php://stdin");
+if( $flags->args() ) {
+	$subject = "";
+	foreach( $flags->args() as $arg ) {
+		if( !is_readable($arg) ) {
+			echo "Cannot read file: {$arg}\n";
+			die(1);
+		}
+		$subject .= file_get_contents($arg);
+	}
+} else {
+	$subject = file_get_contents("php://stdin");
+}
 
 $af = new \donatj\AlikeColorFinder\AlikeColorFinder();
 $af->ExtractColorInfo($subject, $tolerance);
