@@ -46,14 +46,14 @@ if( $flags->args() ) {
 $af   = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
 $data = $af->getAlikeColorsWithinTolerance($tolerance, $errors);
 
-if($data || $errors) {
+if( $data || $errors ) {
 	displayDiff($data, fopen('php://output', 'w'));
 
-	foreach($errors as $error) {
+	foreach( $errors as $error ) {
 		echo "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n";
 	}
 	exit($exitcode);
-}else{
+} else {
 	echo "No alike colors found!\n";
 }
 
