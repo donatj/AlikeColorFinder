@@ -11,5 +11,9 @@
             "email": "donatj@gmail.com"
         }
     ],
-    "require": {}
+    "autoload"   : {
+        "psr-4": {
+            "donatj\\AlikeColorFinder\\": "src/"
+        }
+    }
 }

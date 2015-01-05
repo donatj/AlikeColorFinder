@@ -1,7 +1,6 @@
 <?php
 
 require('vendor/autoload.php');
-require_once(__DIR__ . '/src/AlikeColorFinder.php');
 
 $flags = new \donatj\Flags();
 
