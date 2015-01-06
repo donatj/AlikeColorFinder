@@ -9,7 +9,7 @@ Finds similar (read: alike) colors in CSS-like data within a set likeness thresh
 
 ## Why
 
-***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
+***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any reasonable age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
 
 ## Requirements
 
