@@ -51,3 +51,30 @@ $ css-generating-process | alike
 ## Continuous Integration
 
 By default on finding any alike colors it will exit with an exit code of `2`. This is enough to flag as a failure with most CI tools. This value is also configurable with the `--exit-code` option or can be set to `0` to be disabled.
+
+## Example Output
+
+Help:
+
+```bash
+$ alike --help
+usage: ./composer/bin/alike [<files>]
+     --tolerance   [uint] Computed Difference Tolerance - default 5
+     --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
+          --help   Displays this message
+```
+
+Single CSS File:
+
+```bash
+$ alike main.css
+                    (8) #e4e4e4                 * (71) #e3e3e3   diff: 3
+                        #e4e4e4                        #e3e3e3
+
+                   *(8) #e4e4e4                    (5) #e5e5e5   diff: 3
+                        #e4e4e4                        #e5e5e5
+
+                   (17) #454545                 * (30) #444444   diff: 3
+                        #454545                           #444
+                                                       #444444
+```
