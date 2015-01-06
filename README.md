@@ -7,6 +7,8 @@
 
 Finds similar (read: alike) colors in CSS-like data within a set likeness threshold.
 
+A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
+
 ## Why
 
 ***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any reasonable age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
