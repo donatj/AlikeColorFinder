@@ -1,6 +1,15 @@
 # Alike Color Finder
 
-Finds similar (Alike) colors in CSS-like data within a set likeness threshold.
+[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
+[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder) 
+[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
+[![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
+
+Finds similar (read: alike) colors in CSS-like data within a set likeness threshold.
+
+## Why
+
+***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
 
 ## Requirements
 
@@ -38,3 +47,7 @@ Or pipe CSS into stdin.
 $ alike < main.css
 $ css-generating-process | alike
 ```
+
+## Continuous Integration
+
+By default on finding any alike colors it will exit with an exit code of `2`. This is enough to flag as a failure with most CI tools. This value is also configurable with the `--exit-code` option or can be set to `0` to be disabled.
