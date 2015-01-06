@@ -18,30 +18,35 @@ foreach( $files as $file ) {
 $flags = new \donatj\Flags();
 
 $tolerance =& $flags->uint('tolerance', 5, 'Computed Difference Tolerance - default 5');
-$exitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code.');
+$exitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code');
 $help      =& $flags->bool('help', false, 'Displays this message');
 
 try {
 	$flags->parse();
 	if( $help ) {
+		$exitCode = 0;
 		throw new \Exception;
 	}
+	foreach( $flags->args() as $arg ) {
+		if( !is_readable($arg) ) {
+			throw new \Exception("error: Cannot read file: {$arg}");
+		}
+	}
 } catch(\Exception $e) {
-	die($e->getMessage() . PHP_EOL . $flags->getDefaults() . PHP_EOL);
+	echo ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL;
+	die($exitCode);
 }
+
 
 if( $flags->args() ) {
 	$subject = "";
 	foreach( $flags->args() as $arg ) {
-		if( !is_readable($arg) ) {
-			echo "Cannot read file: {$arg}\n";
-			die(1);
-		}
 		$subject .= file_get_contents($arg);
 	}
 } else {
 	$subject = file_get_contents("php://stdin");
 }
+
 
 $af   = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
 $data = $af->getAlikeColorsWithinTolerance($tolerance, $errors);
