@@ -3,6 +3,10 @@
 
 namespace alikecolor;
 
+use donatj\AlikeColorFinder\AlikeColorFinder;
+use donatj\AlikeColorFinder\ColorDiffStrategy\Absolute;
+use donatj\AlikeColorFinder\ColorDiffStrategy\Cie94WithAlpha;
+
 $files = array(
 	__DIR__ . '/../../vendor/autoload.php',
 	__DIR__ . '/../../../../autoload.php'
@@ -17,6 +21,7 @@ foreach( $files as $file ) {
 
 $flags = new \donatj\Flags();
 
+$optionStrategy  =& $flags->string('strategy', 'perceptual', 'Color diff strategy. Options: perceptual, actual. Default: perceptual');
 $optionTolerance =& $flags->float('tolerance', 4, 'Computed Difference Tolerance - default 5');
 $optionExitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code');
 $optionHelp      =& $flags->bool('help', false, 'Displays this message');
@@ -31,6 +36,17 @@ try {
 		if( !is_readable($arg) ) {
 			throw new \Exception("error: Cannot read file: {$arg}");
 		}
+	}
+
+	switch( $optionStrategy ) {
+		case 'perceptual':
+			$diffStrategy = new Cie94WithAlpha();
+			break;
+		case 'actual':
+			$diffStrategy = new Absolute();
+			break;
+		default:
+			throw new \Exception("Unknown diff strategy: {$optionStrategy}");
 	}
 } catch(\Exception $e) {
 	echo ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL;
@@ -48,8 +64,8 @@ if( $flags->args() ) {
 }
 
 
-$af   = new \donatj\AlikeColorFinder\AlikeColorFinder($subject);
-$data = $af->getAlikeColorsWithinTolerance($tolerance, $errors);
+$af   = new AlikeColorFinder($subject, null, $diffStrategy);
+$data = $af->getAlikeColorsWithinTolerance($optionTolerance, $errors);
 
 if( $data || $errors ) {
 	displayDiff($data, fopen('php://output', 'w'));
