@@ -143,4 +143,80 @@ class ColorEntry {
 		}
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getRgbaArray() {
+		return [
+			'r' => $this->getR(),
+			'g' => $this->getG(),
+			'b' => $this->getB(),
+			'a' => $this->getA(),
+		];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getXyzaArray() {
+		$rgba = $this->getRgbaArray();
+		unset($rgba['a']);
+
+		// Normalize RGB values to 1
+		$rgba['r'] /= 255;
+		$rgba['g'] /= 255;
+		$rgba['b'] /= 255;
+
+		$rgba = array_map(function ( $item ) {
+			if( $item > 0.04045 ) {
+				$item = pow((($item + 0.055) / 1.055), 2.4);
+			} else {
+				$item = $item / 12.92;
+			}
+
+			return ($item * 100);
+		}, $rgba);
+
+		//Observer. = 2°, Illuminant = D65
+		$xyz = array(
+			'x' => ($rgba['r'] * 0.4124) + ($rgba['g'] * 0.3576) + ($rgba['b'] * 0.1805),
+			'y' => ($rgba['r'] * 0.2126) + ($rgba['g'] * 0.7152) + ($rgba['b'] * 0.0722),
+			'z' => ($rgba['r'] * 0.0193) + ($rgba['g'] * 0.1192) + ($rgba['b'] * 0.9505),
+			'a' => $this->getA(),
+		);
+
+		return $xyz;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getLabAlphaCieArray() {
+		$xyz = $this->getXyzaArray();
+		unset($xyz['a']);
+
+		//Ovserver = 2*, Iluminant=D65
+		$xyz['x'] /= 95.047;
+		$xyz['y'] /= 100;
+		$xyz['z'] /= 108.883;
+
+		$xyz = array_map(function ( $item ) {
+			if( $item > 0.008856 ) {
+				//return $item ^ (1/3);
+				return pow($item, 1 / 3);
+			} else {
+				return (7.787 * $item) + (16 / 116);
+			}
+		}, $xyz);
+
+		$lab = array(
+			'l'     => (116 * $xyz['y']) - 16,
+			'a'     => 500 * ($xyz['x'] - $xyz['y']),
+			'b'     => 200 * ($xyz['y'] - $xyz['z']),
+			'Alpha' => $this->getA(),
+		);
+
+		return $lab;
+	}
+
 }
