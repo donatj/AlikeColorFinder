@@ -4,6 +4,7 @@
 [![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/?branch=master)
 
 Finds similar (read: alike) colors in CSS-like data within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
 
