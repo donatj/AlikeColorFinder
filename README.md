@@ -61,7 +61,8 @@ Help:
 ```bash
 $ alike --help
 usage: alike [<files>]
-     --tolerance   [uint] Computed Difference Tolerance - default 5
+      --strategy   [string] Color diff strategy. Options: perceptual, actual. Default: perceptual
+     --tolerance   [float] Computed Difference Tolerance - default 5
      --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
           --help   Displays this message
 ```
