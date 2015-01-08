@@ -71,6 +71,15 @@ class AlikeColorFinder {
 				}
 			}
 			if( $row ) {
+
+				usort($row['children'], function ( $a, $b ) {
+					if( $a['diff'] == $b['diff'] ) {
+						return 0;
+					}
+
+					return ($a['diff'] < $b['diff']) ? -1 : 1;
+				});
+
 				$output[] = $row;
 			}
 		}
