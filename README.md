@@ -7,6 +7,8 @@
 
 Finds similar (read: alike) colors in CSS-like data within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
 
+Includes both *perceptual* 'cie94' by default as well as *actual* 'mathematical absolute' color diff strategies, switchable with a flag.
+
 A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
 
 ## Why
