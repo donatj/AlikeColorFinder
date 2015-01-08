@@ -2,6 +2,9 @@
 
 namespace donatj\AlikeColorFinder;
 
+use donatj\AlikeColorFinder\ColorDiffStrategy\Absolute;
+use donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface;
+
 class AlikeColorFinder {
 
 	/**
@@ -14,13 +17,24 @@ class AlikeColorFinder {
 	 */
 	protected $factory;
 
-	public function __construct( $subject = "", ColorEntryFactory $colorEntryFactory = null ) {
+	/**
+	 * @var \donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface
+	 */
+	protected $colorDiffer;
+
+	public function __construct( $subject = "", ColorEntryFactory $colorEntryFactory = null, ColorDiffStrategyInterface $colorDiffer = null ) {
 		$this->subject = $subject;
 
 		if( !is_null($colorEntryFactory) ) {
 			$this->factory = $colorEntryFactory;
 		} else {
 			$this->factory = new ColorEntryFactory();
+		}
+
+		if( !is_null($colorDiffer) ) {
+			$this->colorDiffer = $colorDiffer;
+		} else {
+			$this->colorDiffer = new Absolute();
 		}
 	}
 
@@ -43,7 +57,7 @@ class AlikeColorFinder {
 			$row      = [ ];
 
 			foreach( $colorStack as $colorTwo ) {
-				$diff = $colorOne->getAbsDiff($colorTwo);
+				$diff = $this->colorDiffer->__invoke($colorOne, $colorTwo);
 
 				if( $diff <= $tolerance ) {
 					if( !$row ) {

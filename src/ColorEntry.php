@@ -109,19 +109,6 @@ class ColorEntry {
 		return array_keys($this->distinctInstances);
 	}
 
-	/**
-	 * @param \donatj\AlikeColorFinder\ColorEntry $c
-	 * @return number
-	 */
-	public function getAbsDiff( ColorEntry $c ) {
-		$diff = abs($this->getR() - $c->getR()) +
-				abs($this->getG() - $c->getG()) +
-				abs($this->getB() - $c->getB()) +
-				(abs($this->getA() - $c->getA()) * 255);
-
-		return $diff;
-	}
-
 	public function getRgbaString() {
 		return "rgba({$this->r},{$this->g},{$this->b},{$this->a})";
 	}
