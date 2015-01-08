@@ -5,11 +5,13 @@
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
 
-Finds similar (read: alike) colors in CSS-like data within a set likeness threshold.
+Finds similar (read: alike) colors in CSS-like data within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
+
+A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
 
 ## Why
 
-***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
+***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any reasonable age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
 
 ## Requirements
 
@@ -58,7 +60,7 @@ Help:
 
 ```bash
 $ alike --help
-usage: ./composer/bin/alike [<files>]
+usage: alike [<files>]
      --tolerance   [uint] Computed Difference Tolerance - default 5
      --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
           --help   Displays this message
