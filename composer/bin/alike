@@ -99,7 +99,7 @@ function displayDiff( $data, $stream ) {
 				$twoString = "* " . $twoString;
 			}
 
-			fwrite($stream, sprintf(" %30s %30s   diff: %d\n", $oneString, $twoString, $childEntry['diff']));
+			fwrite($stream, sprintf(" %30s %30s   diff: %s\n", $oneString, $twoString, number_format((float)$childEntry['diff'], 3)));
 
 			$oneOrig = $colorOne->getDistinctInstances();
 			$twoOrig = $colorTwo->getDistinctInstances();
