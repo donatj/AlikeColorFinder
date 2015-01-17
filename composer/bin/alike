@@ -67,15 +67,24 @@ if( $flags->args() ) {
 $af   = new AlikeColorFinder($subject, null, $diffStrategy);
 $data = $af->getAlikeColorsWithinTolerance($optionTolerance, $errors);
 
+$stream = fopen('php://output', 'w');
+
 if( $data || $errors ) {
-	displayDiff($data, fopen('php://output', 'w'));
+	displayDiff($data, $stream);
 
 	foreach( $errors as $error ) {
-		echo "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n";
+		fwrite($stream, "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n");
 	}
+
+	if( !$errors ) {
+		list($sum, $count) = getDiffStats($data);
+		$avg = $sum == 0 ? 0 : $count / $sum;
+		fwrite($stream, "Total alike colors: {$count} - Average Δ: {$avg}\n");
+	}
+
 	exit($optionExitCode);
 } else {
-	echo "No alike colors found!\n";
+	fwrite($stream, "No alike colors found!\n");
 }
 
 
@@ -99,7 +108,7 @@ function displayDiff( $data, $stream ) {
 				$twoString = "* " . $twoString;
 			}
 
-			fwrite($stream, sprintf(" %30s %30s   diff: %s\n", $oneString, $twoString, number_format((float)$childEntry['diff'], 3)));
+			fwrite($stream, sprintf(" %30s %30s   Δ: %s\n", $oneString, $twoString, number_format((float)$childEntry['diff'], 3)));
 
 			$oneOrig = $colorOne->getDistinctInstances();
 			$twoOrig = $colorTwo->getDistinctInstances();
@@ -116,4 +125,18 @@ function displayDiff( $data, $stream ) {
 			fwrite($stream, "\n");
 		}
 	}
+}
+
+
+function getDiffStats( $data ) {
+	$sum   = 0;
+	$count = 0;
+	foreach( $data as $items ) {
+		foreach( $items['children'] as $child ) {
+			$sum += $child['diff'];
+			$count += 1;
+		}
+	}
+
+	return array( $sum, $count );
 }
