@@ -78,7 +78,7 @@ if( $data || $errors ) {
 
 	if( !$errors ) {
 		list($sum, $count) = getDiffStats($data);
-		$avg = $sum == 0 ? 0 : $count / $sum;
+		$avg = number_format($sum == 0 ? 0 : $count / $sum, 3);
 		fwrite($stream, "Total alike colors: {$count} - Average Δ: {$avg}\n");
 	}
 
