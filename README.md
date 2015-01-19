@@ -74,18 +74,18 @@ Single CSS File:
 
 ```bash
 $ alike main.css
-                   *(3) #444444                    (2) #454545   Δ: 0.437
-                        #444444                        #454545
-                           #444                               
-
-                    (2) #e5e5e5                  * (4) #e4e4e4   Δ: 0.352
-                        #e5e5e5                        #e4e4e4
-
-                    (2) #e5e5e5                    (2) #e3e3e3   Δ: 0.705
-                        #e5e5e5                        #e3e3e3
-
-                    (2) #e3e3e3                  * (4) #e4e4e4   Δ: 0.352
+                    (4) #e3e3e3                    (4) #e4e4e4   Δ: 0.352
                         #e3e3e3                        #e4e4e4
 
-Total alike colors: 4 - Average Δ: 2.167
+                    (4) #e3e3e3                    (4) #e5e5e5   Δ: 0.705
+                        #e3e3e3                        #e5e5e5
+
+                    (4) #e4e4e4                    (4) #e5e5e5   Δ: 0.352
+                        #e4e4e4                        #e5e5e5
+
+                    (2) #454545                  * (3) #444444   Δ: 0.437
+                        #454545                        #444444
+                                                          #444
+
+Total alike colors: 4 - Average Δ: 2.167 - Total colors: 17 - Distinct colors: 5
 ```
