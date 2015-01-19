@@ -6,6 +6,7 @@ namespace alikecolor;
 use donatj\AlikeColorFinder\AlikeColorFinder;
 use donatj\AlikeColorFinder\ColorDiffStrategy\Absolute;
 use donatj\AlikeColorFinder\ColorDiffStrategy\Cie94WithAlpha;
+use donatj\AlikeColorFinder\CssColorExtractor;
 
 $files = array(
 	__DIR__ . '/../../vendor/autoload.php',
@@ -63,9 +64,11 @@ if( $flags->args() ) {
 	$subject = file_get_contents("php://stdin");
 }
 
+$cce    = new CssColorExtractor($subject);
+$colors = $cce->extractColors($errors);
 
-$af   = new AlikeColorFinder($subject, null, $diffStrategy);
-$data = $af->getAlikeColorsWithinTolerance($optionTolerance, $errors);
+$af   = new AlikeColorFinder($colors, null, $diffStrategy);
+$data = $af->getAlikeColorsWithinTolerance($optionTolerance);
 
 $stream = fopen('php://output', 'w');
 
