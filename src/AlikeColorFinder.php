@@ -13,6 +13,11 @@ class AlikeColorFinder {
 	protected $colors;
 
 	/**
+	 * @var \donatj\AlikeColorFinder\ColorEntryFactory
+	 */
+	protected $factory;
+
+	/**
 	 * @var \donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface
 	 */
 	protected $colorDiffer;
