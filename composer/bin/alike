@@ -82,7 +82,7 @@ foreach( $errors as $error ) {
 list($sum, $count) = getDiffStats($data);
 
 $uniqueColors = count($colors);
-$totalColors = array_reduce($colors, function ( $carry, ColorEntry $item ) {
+$totalColors  = array_reduce($colors, function ( $carry, ColorEntry $item ) {
 	return $carry + $item->getInstanceTotal();
 }, 0);
 
