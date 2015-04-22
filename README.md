@@ -6,9 +6,9 @@
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/?branch=master)
 
-Finds similar (read: alike) colors in CSS-like data within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
+Finds similar (e.g. alike) colors in CSS and CSS-like data, within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
 
-Includes both "*perceptual*" [CIE94](http://en.wikipedia.org/wiki/Color_difference#CIE94)+Alpha (default) as well as "*actual*" mathematical absolute color diff strategies, switchable with a flag.
+Includes the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000)+Alpha (default), [CIE94](http://en.wikipedia.org/wiki/Color_difference#CIE94)+Alpha, as well as "*actual*" mathematical absolute color diff strategies, switchable with a flag.
 
 A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
 
@@ -64,7 +64,11 @@ Help:
 ```bash
 $ alike --help
 usage: alike [<files>]
-      --strategy   [string] Color diff strategy. Options: perceptual, actual. Default: perceptual
+      --strategy   [string] Color diff strategy.
+            Options:
+                actual
+                cie94
+                ciede2000 [default - aka. perceptual]
      --tolerance   [float] Computed Difference Tolerance - default 5
      --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
           --help   Displays this message
@@ -89,3 +93,7 @@ $ alike main.css
 
 Total alike colors: 4 - Average Δ: 2.167 - Total colors: 17 - Distinct colors: 5
 ```
+
+## Credits
+
+- SupplyHog, Inc - [CIEDE2000 Calculations](https://github.com/supplyhog/phpOptics/blob/e94ac9cf67fb61b89ad23bee01ae32365e587afa/OpticsColorPoint.php#L45-L157)
