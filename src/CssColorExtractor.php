@@ -174,7 +174,7 @@ class CssColorExtractor {
 	 */
 	public function extractColors( &$errors = null ) {
 		$preDefined = implode('|', array_keys($this->colors));
-		
+
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f]{3})?)|
 				(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))|
 				(?:(?<=[.\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`~?\s\t])(?P<named>red|blue)(?=[.\/\\\\(' .
