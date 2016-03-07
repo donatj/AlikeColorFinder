@@ -16,6 +16,8 @@ A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-C
 
 ***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any reasonable age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
 
+This is fully usable within CI solutions to pass/fail a project.
+
 ## Requirements
 
 - PHP 5.4.0+ with CLI and SPL
