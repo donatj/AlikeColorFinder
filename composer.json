@@ -2,7 +2,7 @@
 	"name": "donatj/alike-color-finder",
 	"license": "MIT",
 	"require": {
-		"donatj/flags": "~1.1.0"
+		"donatj/flags": "~1.2"
 	},
 	"require-dev": {
 		"donatj/drop": "*"
