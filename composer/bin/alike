@@ -10,14 +10,14 @@ use donatj\AlikeColorFinder\ColorDiffStrategy\CieDe2000WithAlpha;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\CssColorExtractor;
 
-$files = array(
+$files = [
 	__DIR__ . '/../../vendor/autoload.php',
-	__DIR__ . '/../../../../autoload.php'
-);
+	__DIR__ . '/../../../../autoload.php',
+];
 
 foreach( $files as $file ) {
 	if( file_exists($file) ) {
-		require($file);
+		require $file;
 		break;
 	}
 }
@@ -59,19 +59,19 @@ try {
 		default:
 			throw new \Exception("Unknown diff strategy: {$optionStrategy}");
 	}
-} catch(\Exception $e) {
+} catch( \Exception $e ) {
 	echo ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL;
 	die($optionExitCode);
 }
 
 
 if( $flags->args() ) {
-	$subject = "";
+	$subject = '';
 	foreach( $flags->args() as $arg ) {
 		$subject .= file_get_contents($arg);
 	}
 } else {
-	$subject = file_get_contents("php://stdin");
+	$subject = file_get_contents('php://stdin');
 }
 
 $cce    = new CssColorExtractor($subject);
@@ -117,9 +117,9 @@ function displayDiff( $data, $stream ) {
 			$twoString = "({$colorTwo->getInstanceTotal()}) {$colorTwo->getSimplestCssString()}";
 
 			if( $colorOne->getInstanceTotal() > $colorTwo->getInstanceTotal() ) {
-				$oneString = "*" . $oneString;
+				$oneString = '*' . $oneString;
 			} elseif( $colorOne->getInstanceTotal() < $colorTwo->getInstanceTotal() ) {
-				$twoString = "* " . $twoString;
+				$twoString = '* ' . $twoString;
 			}
 
 			fwrite($stream, sprintf(" %30s %30s   Δ: %s\n", $oneString, $twoString, number_format((float)$childEntry['diff'], 3)));
@@ -130,8 +130,8 @@ function displayDiff( $data, $stream ) {
 			$max = max(count($oneOrig), count($twoOrig));
 
 			for( $i = 0; $i < $max; $i++ ) {
-				$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : "";
-				$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : "";
+				$oneString = !empty($oneOrig[$i]) ? $oneOrig[$i] : '';
+				$twoString = !empty($twoOrig[$i]) ? $twoOrig[$i] : '';
 
 				fwrite($stream, sprintf(" %30s %30s\n", $oneString, $twoString));
 			}
@@ -147,10 +147,10 @@ function getDiffStats( $data ) {
 	$count = 0;
 	foreach( $data as $items ) {
 		foreach( $items['children'] as $child ) {
-			$sum += $child['diff'];
+			$sum   += $child['diff'];
 			$count += 1;
 		}
 	}
 
-	return array( $sum, $count );
+	return [ $sum, $count ];
 }

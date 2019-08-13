@@ -42,13 +42,13 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 	 * @return float
 	 * @throws \Exception
 	 */
-	function __invoke( ColorEntry $color1, ColorEntry $color2 ) {
+	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) {
 		$f1 = $color1->getLabAlphaCieArray();
 		$f2 = $color2->getLabAlphaCieArray();
 
 		$kl   = $kc = $kh = 1.0;
 		$barL = ($f1['l'] + $f2['l']) / 2.0;
-		//(Numbers corrispond to http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf eq)
+		//(Numbers correspond to http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf eq)
 		//2
 		$helperB1Sq = pow($f1['b'], 2);
 		$helperB2Sq = pow($f2['b'], 2);
@@ -84,11 +84,11 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		$helperH = $primeH2 - $primeH1;
 		if( $primeC1 * $primeC2 === 0 ) {
 			$deltahPrime = 0;
-		} else if( abs($helperH) <= 180 ) {
+		} elseif( abs($helperH) <= 180 ) {
 			$deltahPrime = $helperH;
-		} else if( $helperH > 180 ) {
+		} elseif( $helperH > 180 ) {
 			$deltahPrime = $helperH - 360.0;
-		} else if( $helperH < -180 ) {
+		} elseif( $helperH < -180 ) {
 			$deltahPrime = $helperH + 360.0;
 		} else {
 			throw new \Exception('Invalid delta h\'');
@@ -103,11 +103,11 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		$helperH = abs($primeH1 - $primeH2);
 		if( $primeC1 * $primeC2 === 0 ) {
 			$barHPrime = $primeH1 + $primeH2;
-		} else if( $helperH <= 180 ) {
+		} elseif( $helperH <= 180 ) {
 			$barHPrime = ($primeH1 + $primeH2) / 2.0;
-		} else if( $helperH > 180 && ($primeH1 + $primeH2) < 360 ) {
+		} elseif( $helperH > 180 && ($primeH1 + $primeH2) < 360 ) {
 			$barHPrime = ($primeH1 + $primeH2 + 360) / 2.0;
-		} else if( $helperH > 180 && ($primeH1 + $primeH2) >= 360 ) {
+		} elseif( $helperH > 180 && ($primeH1 + $primeH2) >= 360 ) {
 			$barHPrime = ($primeH1 + $primeH2 - 360) / 2.0;
 		} else {
 			throw new \Exception('Invalid bar h\'');

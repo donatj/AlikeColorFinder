@@ -14,9 +14,15 @@ class ColorEntry {
 	 */
 	protected $a;
 
-	protected $distinctInstances = [ ];
+	protected $distinctInstances = [];
 
-	function __construct( $r, $g, $b, $a = 1 ) {
+	/**
+	 * @param int   $r
+	 * @param int   $g
+	 * @param int   $b
+	 * @param float $a
+	 */
+	public function __construct( $r, $g, $b, $a = 1.0 ) {
 		$this->setR($r);
 		$this->setG($g);
 		$this->setB($b);
@@ -165,12 +171,12 @@ class ColorEntry {
 		}, $rgba);
 
 		//Observer. = 2°, Illuminant = D65
-		$xyz = array(
+		$xyz = [
 			'x' => ($rgba['r'] * 0.4124) + ($rgba['g'] * 0.3576) + ($rgba['b'] * 0.1805),
 			'y' => ($rgba['r'] * 0.2126) + ($rgba['g'] * 0.7152) + ($rgba['b'] * 0.0722),
 			'z' => ($rgba['r'] * 0.0193) + ($rgba['g'] * 0.1192) + ($rgba['b'] * 0.9505),
 			'a' => $this->getA(),
-		);
+		];
 
 		return $xyz;
 	}
@@ -196,12 +202,12 @@ class ColorEntry {
 			}
 		}, $xyz);
 
-		$lab = array(
+		$lab = [
 			'l'     => (116 * $xyz['y']) - 16,
 			'a'     => 500 * ($xyz['x'] - $xyz['y']),
 			'b'     => 200 * ($xyz['y'] - $xyz['z']),
 			'Alpha' => $this->getA(),
-		);
+		];
 
 		return $lab;
 	}

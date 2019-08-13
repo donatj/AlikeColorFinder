@@ -161,7 +161,7 @@ class CssColorExtractor {
 	public function __construct( $subject = "", ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
 
-		if( !is_null($colorEntryFactory) ) {
+		if( $colorEntryFactory !== null ) {
 			$this->factory = $colorEntryFactory;
 		} else {
 			$this->factory = new ColorEntryFactory();
@@ -183,8 +183,8 @@ class CssColorExtractor {
 		/**
 		 * @var $colors \donatj\AlikeColorFinder\ColorEntry[]
 		 */
-		$colors = [ ];
-		$errors = [ ];
+		$colors = [];
+		$errors = [];
 		foreach( $results as $result ) {
 			$color = false;
 			try {
@@ -197,28 +197,28 @@ class CssColorExtractor {
 
 					switch( $result['func'] ) {
 						case 'rgba':
-							if( count($params) != 4 ) {
+							if( count($params) !== 4 ) {
 								throw new \Exception('Invalid param count');
 							}
 
 							$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
 							break;
 						case 'rgb':
-							if( count($params) != 3 ) {
+							if( count($params) !== 3 ) {
 								throw new \Exception('Invalid param count');
 							}
 
 							$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
 							break;
 						case 'hsla':
-							if( count($params) != 4 ) {
+							if( count($params) !== 4 ) {
 								throw new \Exception('Invalid param count');
 							}
 
 							$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
 							break;
 						case 'hsl':
-							if( count($params) != 3 ) {
+							if( count($params) !== 3 ) {
 								throw new \Exception('Invalid param count');
 							}
 
@@ -226,10 +226,9 @@ class CssColorExtractor {
 							break;
 						default:
 							throw new \Exception('Not Implemented');
-							continue;
 					}
 				}
-			} catch(\Exception $e) {
+			} catch( \Exception $e ) {
 				$errors[] = [
 					'exception' => $e,
 					'result'    => $result,

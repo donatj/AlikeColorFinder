@@ -13,13 +13,13 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHexString( $hex ) {
-		$hex = str_replace("#", "", $hex);
+		$hex = str_replace('#', '', $hex);
 
-		if( strlen($hex) == 3 ) {
+		if( strlen($hex) === 3 ) {
 			$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
 			$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
 			$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-		} elseif( strlen($hex) == 6 ) {
+		} elseif( strlen($hex) === 6 ) {
 			$r = hexdec(substr($hex, 0, 2));
 			$g = hexdec(substr($hex, 2, 2));
 			$b = hexdec(substr($hex, 4, 2));
@@ -32,7 +32,7 @@ class ColorEntryFactory {
 
 	public function makeFromHsla( $h, $s, $l, $a ) {
 		$c = (1 - abs(2 * $l - 1)) * $s;
-		$x = $c * (1 - abs(fmod(($h / 60), 2) - 1));
+		$x = $c * (1 - abs(fmod($h / 60, 2) - 1));
 		$m = $l - ($c / 2);
 
 		if( $h < 60 ) {

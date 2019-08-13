@@ -25,13 +25,13 @@ class AlikeColorFinder {
 	public function __construct( array $colors, ColorEntryFactory $colorEntryFactory = null, ColorDiffStrategyInterface $colorDiffer = null ) {
 		$this->colors = $colors;
 
-		if( !is_null($colorEntryFactory) ) {
+		if( $colorEntryFactory !== null ) {
 			$this->factory = $colorEntryFactory;
 		} else {
 			$this->factory = new ColorEntryFactory();
 		}
 
-		if( !is_null($colorDiffer) ) {
+		if( $colorDiffer !== null ) {
 			$this->colorDiffer = $colorDiffer;
 		} else {
 			$this->colorDiffer = new Absolute();
