@@ -181,12 +181,13 @@ class CssColorExtractor {
 					   $preDefined . ')"\':,.;<>~!@#$%^&*|+=[\]{}`~?\s\t]))/x', $this->subject, $results, PREG_SET_ORDER);
 
 		/**
-		 * @var $colors \donatj\AlikeColorFinder\ColorEntry[]
+		 * @var \donatj\AlikeColorFinder\ColorEntry[] $colors
 		 */
 		$colors = [];
 		$errors = [];
 		foreach( $results as $result ) {
 			$color = false;
+
 			try {
 				if( !empty($result['hex']) ) {
 					$color = $this->factory->makeFromHexString($result['hex']);
@@ -234,7 +235,6 @@ class CssColorExtractor {
 					'result'    => $result,
 				];
 			}
-
 
 			if( $color ) {
 				$key = md5($color->getRgbaString());

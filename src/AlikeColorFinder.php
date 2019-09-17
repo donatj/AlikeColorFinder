@@ -48,8 +48,8 @@ class AlikeColorFinder {
 		$colorStack = $this->colors;
 		while( count($colorStack) > 1 ) {
 			/**
-			 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
-			 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
+			 * @var \donatj\AlikeColorFinder\ColorEntry $colorOne
+			 * @var \donatj\AlikeColorFinder\ColorEntry $colorTwo
 			 */
 			$colorOne = array_pop($colorStack);
 			$row      = [ ];
@@ -84,6 +84,5 @@ class AlikeColorFinder {
 
 		return $output;
 	}
-
 
 }

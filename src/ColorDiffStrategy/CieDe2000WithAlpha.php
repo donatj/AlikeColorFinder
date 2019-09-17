@@ -11,7 +11,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 	 *
 	 * Taken from:
 	 *
-	 * @link https://github.com/supplyhog/phpOptics/blob/e94ac9cf67fb61b89ad23bee01ae32365e587afa/OpticsColorPoint.php
+	 * @see https://github.com/supplyhog/phpOptics/blob/e94ac9cf67fb61b89ad23bee01ae32365e587afa/OpticsColorPoint.php
 	 *
 	 * The MIT License (MIT)
 	 *
@@ -35,12 +35,10 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 	 * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	 *
 	 * Which was based on:
-	 * @link http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
+	 * @see http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
 	 *
-	 * @param \donatj\AlikeColorFinder\ColorEntry $color1
-	 * @param \donatj\AlikeColorFinder\ColorEntry $color2
-	 * @return float
 	 * @throws \Exception
+	 * @return float
 	 */
 	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) {
 		$f1 = $color1->getLabAlphaCieArray();
