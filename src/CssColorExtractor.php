@@ -173,12 +173,13 @@ class CssColorExtractor {
 	 * @return \donatj\AlikeColorFinder\ColorEntry[]
 	 */
 	public function extractColors( &$errors = null ) {
-		$preDefined = implode('|', array_keys($this->colors));
+		$preDefined = implode('|', array_map(function( $color ) {
+			return preg_quote($color, '/');
+		}, array_keys($this->colors)));
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f]{3})?)|
 				(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))|
-				(?:(?<=[.\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`~?\s\t])(?P<named>red|blue)(?=[.\/\\\\(' .
-					   $preDefined . ')"\':,.;<>~!@#$%^&*|+=[\]{}`~?\s\t]))/x', $this->subject, $results, PREG_SET_ORDER);
+				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		/**
 		 * @var \donatj\AlikeColorFinder\ColorEntry[] $colors
