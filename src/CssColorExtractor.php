@@ -195,7 +195,16 @@ class CssColorExtractor {
 				} elseif( !empty($result['named']) ) {
 					$color = $this->factory->makeFromHexString($this->colors[$result['named']]);
 				} else {
-					$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
+					$params = preg_split('/\s*(,|\s)\s*/', $result['params'], -1, PREG_SPLIT_NO_EMPTY);
+					$params = array_map('\trim', $params);
+					foreach( $params as &$param ) {
+						if( substr($param, -1) === '%' ) {
+							$param = ((float)substr($param, 0, -1)) / 100;
+						} else {
+							$param = (float)$param;
+						}
+					}
+					unset($param);
 
 					switch( $result['func'] ) {
 						case 'rgba':
