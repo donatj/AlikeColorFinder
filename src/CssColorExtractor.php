@@ -193,7 +193,9 @@ class CssColorExtractor {
 				if( !empty($result['hex']) ) {
 					$color = $this->factory->makeFromHexString($result['hex']);
 				} elseif( !empty($result['named']) ) {
-					$color = $this->factory->makeFromHexString($this->colors[$result['named']]);
+					$color = $this->factory->makeFromHexString(
+						$this->colors[strtolower($result['named'])]
+					);
 				} else {
 					$params = preg_split('/\s*(,|\s)\s*/', $result['params'], -1, PREG_SPLIT_NO_EMPTY);
 					$params = array_map('\trim', $params);
