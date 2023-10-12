@@ -6,7 +6,8 @@
 		"php": ">=5.4"
 	},
 	"require-dev": {
-		"donatj/drop": "*"
+		"donatj/drop": "*",
+		"phpunit/phpunit": "^4.8 || ^9.6"
 	},
 	"authors": [
 		{
