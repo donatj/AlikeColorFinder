@@ -228,14 +228,14 @@ class CssColorExtractor {
 								throw new \Exception('Invalid param count');
 							}
 
-							$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
+							$color = $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
 							break;
 						case 'hsl':
 							if( count($params) !== 3 ) {
 								throw new \Exception('Invalid param count');
 							}
 
-							$color = $this->factory->makeFromHsl($params[0], $params[1] / 100, $params[2] / 100);
+							$color = $this->factory->makeFromHsl($params[0], $params[1], $params[2]);
 							break;
 						default:
 							throw new \Exception('Not Implemented');
