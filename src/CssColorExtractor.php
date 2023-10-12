@@ -66,6 +66,7 @@ class CssColorExtractor {
 		'gold'                 => 'ffd700',
 		'goldenrod'            => 'daa520',
 		'gray'                 => '808080',
+		'grey'                 => '808080',
 		'green'                => '008000',
 		'greenyellow'          => 'adff2f',
 		'honeydew'             => 'f0fff0',
