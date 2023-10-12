@@ -4,7 +4,6 @@
 [![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/donatj/AlikeColorFinder/?branch=master)
 
 Finds similar (e.g. alike) colors in CSS and CSS-like data, within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
 
@@ -20,24 +19,20 @@ This is fully usable within CI solutions to pass/fail a project.
 
 ## Requirements
 
-- PHP 5.4.0+ with CLI and SPL
+- PHP 5.4.0+ with CLI and SPL, PHP 7.4+ strongly recommended
 
 ## Installation
 
 Using composer, `alike` can be installed globally via:
 
 ```bash
-$ composer global require 'donatj/alike-color-finder=~0.1'
+$ composer global require 'donatj/alike-color-finder'
 ```
 
 Or if you are using composer for the project you wish to test, you can simply add it as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
 
 ```bash
-{
-  "require-dev": {
-      "donatj/alike-color-finder": "~0.1"
-  }
-}
+composer require --dev 'donatj/alike-color-finder'
 ```
 
 ## Usage

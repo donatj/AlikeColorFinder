@@ -66,6 +66,7 @@ class CssColorExtractor {
 		'gold'                 => 'ffd700',
 		'goldenrod'            => 'daa520',
 		'gray'                 => '808080',
+		'grey'                 => '808080',
 		'green'                => '008000',
 		'greenyellow'          => 'adff2f',
 		'honeydew'             => 'f0fff0',
@@ -177,9 +178,13 @@ class CssColorExtractor {
 			return preg_quote($color, '/');
 		}, array_keys($this->colors)));
 
-		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f]{3})?)|
+		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
 				(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
+
+		if( preg_last_error() !== PREG_NO_ERROR ) {
+			throw new \RuntimeException('Regex Error: ' . preg_last_error());
+		}
 
 		/**
 		 * @var \donatj\AlikeColorFinder\ColorEntry[] $colors
@@ -193,9 +198,20 @@ class CssColorExtractor {
 				if( !empty($result['hex']) ) {
 					$color = $this->factory->makeFromHexString($result['hex']);
 				} elseif( !empty($result['named']) ) {
-					$color = $this->factory->makeFromHexString($this->colors[$result['named']]);
+					$color = $this->factory->makeFromHexString(
+						$this->colors[strtolower($result['named'])]
+					);
 				} else {
-					$params = array_map('\floatval', array_map('\trim', explode(',', $result['params'])));
+					$params = preg_split('/\s*(,|\s)\s*/', $result['params'], -1, PREG_SPLIT_NO_EMPTY);
+					$params = array_map('\trim', $params);
+					foreach( $params as &$param ) {
+						if( substr($param, -1) === '%' ) {
+							$param = ((float)substr($param, 0, -1)) / 100;
+						} else {
+							$param = (float)$param;
+						}
+					}
+					unset($param);
 
 					switch( $result['func'] ) {
 						case 'rgba':
@@ -217,14 +233,14 @@ class CssColorExtractor {
 								throw new \Exception('Invalid param count');
 							}
 
-							$color = $this->factory->makeFromHsla($params[0], $params[1] / 100, $params[2] / 100, $params[3]);
+							$color = $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
 							break;
 						case 'hsl':
 							if( count($params) !== 3 ) {
 								throw new \Exception('Invalid param count');
 							}
 
-							$color = $this->factory->makeFromHsl($params[0], $params[1] / 100, $params[2] / 100);
+							$color = $this->factory->makeFromHsl($params[0], $params[1], $params[2]);
 							break;
 						default:
 							throw new \Exception('Not Implemented');

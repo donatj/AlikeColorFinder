@@ -5,7 +5,7 @@ namespace donatj\AlikeColorFinder;
 class ColorEntry {
 
 	/**
-	 * @var int
+	 * @var float
 	 */
 	protected $r, $g, $b;
 
@@ -17,9 +17,9 @@ class ColorEntry {
 	protected $distinctInstances = [];
 
 	/**
-	 * @param int   $r
-	 * @param int   $g
-	 * @param int   $b
+	 * @param float $r
+	 * @param float $g
+	 * @param float $b
 	 * @param float $a
 	 */
 	public function __construct( $r, $g, $b, $a = 1.0 ) {
@@ -30,21 +30,21 @@ class ColorEntry {
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getR() {
 		return $this->r;
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getG() {
 		return $this->g;
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getB() {
 		return $this->b;
@@ -58,7 +58,7 @@ class ColorEntry {
 	}
 
 	/**
-	 * @param int $r
+	 * @param float $r
 	 */
 	public function setR( $r ) {
 		if( $r > 255 || $r < 0 ) {
@@ -68,7 +68,7 @@ class ColorEntry {
 	}
 
 	/**
-	 * @param int $g
+	 * @param float $g
 	 */
 	public function setG( $g ) {
 		if( $g > 255 || $g < 0 ) {
@@ -78,7 +78,7 @@ class ColorEntry {
 	}
 
 	/**
-	 * @param int $b
+	 * @param float $b
 	 */
 	public function setB( $b ) {
 		if( $b > 255 || $b < 0 ) {
@@ -116,14 +116,17 @@ class ColorEntry {
 	}
 
 	public function getRgbaString() {
-		return "rgba({$this->r},{$this->g},{$this->b},{$this->a})";
+		$r = round($this->r);
+		$g = round($this->g);
+		$b = round($this->b);
+		return "rgba({$r},{$g},{$b},{$this->a})";
 	}
 
 	public function getRgbHexString() {
 		$hex = "#";
-		$hex .= str_pad(dechex($this->r), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex($this->g), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex($this->b), 2, "0", STR_PAD_LEFT);
+		$hex .= str_pad(dechex((int)$this->r), 2, "0", STR_PAD_LEFT);
+		$hex .= str_pad(dechex((int)$this->g), 2, "0", STR_PAD_LEFT);
+		$hex .= str_pad(dechex((int)$this->b), 2, "0", STR_PAD_LEFT);
 
 		return $hex;
 	}
@@ -160,7 +163,7 @@ class ColorEntry {
 		$rgba['g'] /= 255;
 		$rgba['b'] /= 255;
 
-		$rgba = array_map(function ( $item ) {
+		$rgba = array_map(function( $item ) {
 			if( $item > 0.04045 ) {
 				$item = pow((($item + 0.055) / 1.055), 2.4);
 			} else {
@@ -191,7 +194,7 @@ class ColorEntry {
 		$xyz['y'] /= 100;
 		$xyz['z'] /= 108.883;
 
-		$xyz = array_map(function ( $item ) {
+		$xyz = array_map(function( $item ) {
 			if( $item > 0.008856 ) {
 				//return $item ^ (1/3);
 				return pow($item, 1 / 3);
