@@ -178,9 +178,13 @@ class CssColorExtractor {
 			return preg_quote($color, '/');
 		}, array_keys($this->colors)));
 
-		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f]{3})?)|
+		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
 				(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
+
+		if( preg_last_error() !== PREG_NO_ERROR ) {
+			throw new \RuntimeException('Regex Error: ' . preg_last_error());
+		}
 
 		/**
 		 * @var \donatj\AlikeColorFinder\ColorEntry[] $colors

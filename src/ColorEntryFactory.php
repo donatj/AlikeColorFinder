@@ -14,20 +14,31 @@ class ColorEntryFactory {
 
 	public function makeFromHexString( $hex ) {
 		$hex = str_replace('#', '', $hex);
+		$a   = 1;
 
 		if( strlen($hex) === 3 ) {
-			$r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
-			$g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
-			$b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
+			$r = hexdec($hex[0] . $hex[0]);
+			$g = hexdec($hex[1] . $hex[1]);
+			$b = hexdec($hex[2] . $hex[2]);
+		} elseif( strlen($hex) === 4 ) {
+			$r = hexdec($hex[0] . $hex[0]);
+			$g = hexdec($hex[1] . $hex[1]);
+			$b = hexdec($hex[2] . $hex[2]);
+			$a = hexdec($hex[3] . $hex[3]) / 255;
 		} elseif( strlen($hex) === 6 ) {
 			$r = hexdec(substr($hex, 0, 2));
 			$g = hexdec(substr($hex, 2, 2));
 			$b = hexdec(substr($hex, 4, 2));
+		} elseif( strlen($hex) === 8 ) {
+			$r = hexdec(substr($hex, 0, 2));
+			$g = hexdec(substr($hex, 2, 2));
+			$b = hexdec(substr($hex, 4, 2));
+			$a = hexdec(substr($hex, 6, 2)) / 255;
 		} else {
 			throw new \InvalidArgumentException('Invalid Hex "' . $hex . '"');
 		}
 
-		return new ColorEntry($r, $g, $b, 1);
+		return new ColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsla( $h, $s, $l, $a ) {

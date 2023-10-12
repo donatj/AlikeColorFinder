@@ -11,6 +11,11 @@ class CssColorExtractorTest extends TestCase {
 	 */
 	public function testExtract( $actual, $expected ) {
 		$colors = (new CssColorExtractor("a { color: {$actual}; }"))->extractColors($errors);
+
+		foreach( $errors as $error ) {
+			throw $error['exception'];
+		}
+
 		$this->assertCount(1, $colors);
 		$this->assertSame($expected, reset($colors)->getSimplestCssString());
 	}
