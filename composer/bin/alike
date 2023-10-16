@@ -22,6 +22,9 @@ foreach( $files as $file ) {
 	}
 }
 
+$stdout = fopen('php://output', 'w');
+$stderr = fopen('php://stderr', 'w');
+
 $flags = new \donatj\Flags();
 
 $optionStrategy  =& $flags->string('strategy', 'ciede2000', 'Color diff strategy.
@@ -31,10 +34,12 @@ $optionStrategy  =& $flags->string('strategy', 'ciede2000', 'Color diff strategy
                 ciede2000 [default - aka. perceptual]');
 $optionTolerance =& $flags->float('tolerance', 4, 'Computed Difference Tolerance - default 5');
 $optionExitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code');
+$optionGlob      =& $flags->string('glob', '*.css;*.scss;*.less', 'Glob pattern to match files against when argument is a directory');
 $optionHelp      =& $flags->bool('help', false, 'Displays this message');
 
 try {
 	$flags->parse();
+
 	if( $optionHelp ) {
 		$optionExitCode = 0;
 		throw new \Exception;
@@ -60,7 +65,7 @@ try {
 			throw new \Exception("Unknown diff strategy: {$optionStrategy}");
 	}
 } catch( \Exception $e ) {
-	echo ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL;
+	fwrite($stderr, ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL);
 	die($optionExitCode);
 }
 
@@ -80,23 +85,21 @@ $colors = $cce->extractColors($errors);
 $af   = new AlikeColorFinder($colors, null, $diffStrategy);
 $data = $af->getAlikeColorsWithinTolerance($optionTolerance);
 
-$stream = fopen('php://output', 'w');
-
-displayDiff($data, $stream);
+displayDiff($data, $stdout);
 
 foreach( $errors as $error ) {
-	fwrite($stream, "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n");
+	fwrite($stdout, "Error: {$error['result'][0]}: {$error['exception']->getMessage()}\n");
 }
 
 list($sum, $count) = getDiffStats($data);
 
 $uniqueColors = count($colors);
-$totalColors  = array_reduce($colors, function ( $carry, ColorEntry $item ) {
+$totalColors  = array_reduce($colors, function( $carry, ColorEntry $item ) {
 	return $carry + $item->getInstanceTotal();
 }, 0);
 
 $avg = number_format($sum == 0 ? 0 : $count / $sum, 3);
-fwrite($stream, "Total alike colors: {$count} - Average Δ: {$avg} - Total colors: {$totalColors} - Distinct colors: {$uniqueColors}\n");
+fwrite($stdout, "Total alike colors: {$count} - Average Δ: {$avg} - Total colors: {$totalColors} - Distinct colors: {$uniqueColors}\n");
 
 if( $data || $errors ) {
 	exit($optionExitCode);
@@ -142,7 +145,7 @@ function displayDiff( $data, $stream ) {
 }
 
 
-function getDiffStats( $data ) {
+function getDiffStats( $data ) : array {
 	$sum   = 0;
 	$count = 0;
 	foreach( $data as $items ) {
