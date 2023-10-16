@@ -9,6 +9,7 @@ use donatj\AlikeColorFinder\ColorDiffStrategy\Cie94WithAlpha;
 use donatj\AlikeColorFinder\ColorDiffStrategy\CieDe2000WithAlpha;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\CssColorExtractor;
+use donatj\AlikeColorFinder\Exceptions\CliException;
 
 $files = [
 	__DIR__ . '/../../vendor/autoload.php',
@@ -34,19 +35,33 @@ $optionStrategy  =& $flags->string('strategy', 'ciede2000', 'Color diff strategy
                 ciede2000 [default - aka. perceptual]');
 $optionTolerance =& $flags->float('tolerance', 4, 'Computed Difference Tolerance - default 5');
 $optionExitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code');
-$optionGlob      =& $flags->string('glob', '*.css;*.scss;*.less', 'Glob pattern to match files against when argument is a directory');
+$optionRegex     =& $flags->string('glob', '/(\\.css|\\.scss|\\.less|\\.styl|\\.pcss)$/i', 'Regex pattern to match files against when argument is a directory');
 $optionHelp      =& $flags->bool('help', false, 'Displays this message');
+
+$fileIterator = new \AppendIterator();
 
 try {
 	$flags->parse();
 
 	if( $optionHelp ) {
 		$optionExitCode = 0;
-		throw new \Exception;
+		throw new CliException;
 	}
 	foreach( $flags->args() as $arg ) {
 		if( !is_readable($arg) ) {
-			throw new \Exception("error: Cannot read file: {$arg}");
+			throw new CliException("error: Cannot read file: {$arg}");
+		}
+
+		if( is_dir($arg) ) {
+			$dir   = new \RecursiveDirectoryIterator($arg);
+			$ite   = new \RecursiveIteratorIterator($dir);
+			$match = new \RegexIterator($ite, $optionRegex);
+
+			$fileIterator->append($match);
+		} else {
+			$fileIterator->append(new \ArrayIterator([
+				new \SplFileInfo($arg),
+			]));
 		}
 	}
 
@@ -62,18 +77,21 @@ try {
 			$diffStrategy = new Absolute;
 			break;
 		default:
-			throw new \Exception("Unknown diff strategy: {$optionStrategy}");
+			throw new CliException("Unknown diff strategy: {$optionStrategy}");
 	}
 } catch( \Exception $e ) {
-	fwrite($stderr, ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>]\n" . $flags->getDefaults() . PHP_EOL);
+	fwrite($stderr, ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>] [<dirs>]\n" . $flags->getDefaults() . PHP_EOL);
 	die($optionExitCode);
 }
 
-
-if( $flags->args() ) {
+/**
+ * @var $colorFiles \SplFileInfo[]
+ */
+$colorFiles = iterator_to_array($fileIterator, false);
+if( $colorFiles ) {
 	$subject = '';
-	foreach( $flags->args() as $arg ) {
-		$subject .= file_get_contents($arg);
+	foreach( $colorFiles as $arg ) {
+		$subject .= file_get_contents($arg->getRealPath());
 	}
 } else {
 	fwrite($stderr, "No files specified, reading from stdin...\n");
