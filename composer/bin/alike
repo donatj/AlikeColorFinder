@@ -76,6 +76,7 @@ if( $flags->args() ) {
 		$subject .= file_get_contents($arg);
 	}
 } else {
+	fwrite($stderr, "No files specified, reading from stdin...\n");
 	$subject = file_get_contents('php://stdin');
 }
 
