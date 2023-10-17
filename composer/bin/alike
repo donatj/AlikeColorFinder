@@ -33,7 +33,7 @@ $optionStrategy  =& $flags->string('strategy', 'ciede2000', 'Color diff strategy
                 actual
                 cie94
                 ciede2000 [default - aka. perceptual]');
-$optionTolerance =& $flags->float('tolerance', 4, 'Computed Difference Tolerance - default 5');
+$optionTolerance =& $flags->float('tolerance', 4, 'Computed Difference Tolerance - default 4');
 $optionExitCode  =& $flags->uint('exit-code', 2, 'Exit code to raise on alike. 0 for no exit code');
 $optionRegex     =& $flags->string('glob', '/(\\.css|\\.scss|\\.less|\\.styl|\\.pcss)$/i', 'Regex pattern to match files against when argument is a directory');
 $optionHelp      =& $flags->bool('help', false, 'Displays this message');
