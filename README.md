@@ -1,5 +1,6 @@
 # Alike Color Finder
 
+[![CI](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
@@ -52,7 +53,7 @@ $ css-generating-process | alike
 
 ## Continuous Integration
 
-By default on finding any alike colors it will exit with an exit code of `2`. This is enough to flag as a failure with most CI tools. This value is also configurable with the `--exit-code` option or can be set to `0` to be disabled.
+By default, on finding any alike colors it will exit with an exit code of `2`. This is enough to flag as a failure with most CI tools. This value is also configurable with the `--exit-code` option or can be set to `0` to be disabled.
 
 ## Example Output
 
@@ -60,14 +61,15 @@ Help:
 
 ```bash
 $ alike --help
-usage: alike [<files>]
+usage: ./composer/bin/alike [<files>] [<dirs>]
       --strategy   [string] Color diff strategy.
             Options:
                 actual
                 cie94
                 ciede2000 [default - aka. perceptual]
-     --tolerance   [float] Computed Difference Tolerance - default 5
+     --tolerance   [float] Computed Difference Tolerance - default 4
      --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
+       --pattern   [string] Regex pattern to match files against when argument is a directory
           --help   Displays this message
 ```
 

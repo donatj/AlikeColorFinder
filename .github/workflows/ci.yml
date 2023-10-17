@@ -30,3 +30,6 @@ jobs:
 
       - name: Run tests
         run: ./vendor/bin/phpunit
+
+      - name: Run linter
+        run: ./vendor/bin/parallel-lint src composer/bin/alike
