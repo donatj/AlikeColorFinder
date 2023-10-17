@@ -185,7 +185,8 @@ class CssColorExtractor {
 		}, array_keys($this->colors)));
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-				(?:(?P<func>(?:rgb|hsl)a?)\s*\((?P<params>[\s0-9.%,]+)\))|
+(?:(?P<func>rgb|hsl)\s*\((?P<params>(?:\s*(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*(?:\d*\.)?\d+%?)?)\))|
+(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*(?:\d*\.)?\d+%?\s*,?){4})\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -208,7 +209,10 @@ class CssColorExtractor {
 						$this->colors[strtolower($result['named'])]
 					);
 				} else {
-					$params = preg_split('/\s*(,|\s)\s*/', $result['params'], -1, PREG_SPLIT_NO_EMPTY);
+					$funcMatch    = $result['func'] ?: $result['func2'];
+					$paramMatches = $result['params'] ?: $result['params2'];
+
+					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
 					$params = array_map('\trim', $params);
 					foreach( $params as &$param ) {
 						if( substr($param, -1) === '%' ) {
@@ -219,57 +223,70 @@ class CssColorExtractor {
 					}
 					unset($param);
 
-					switch( $result['func'] ) {
-						case 'rgba':
-							if( count($params) !== 4 ) {
-								throw new \Exception('Invalid param count');
-							}
-
-							$color = $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
-							break;
-						case 'rgb':
-							if( count($params) !== 3 ) {
-								throw new \Exception('Invalid param count');
-							}
-
-							$color = $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
-							break;
-						case 'hsla':
-							if( count($params) !== 4 ) {
-								throw new \Exception('Invalid param count');
-							}
-
-							$color = $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
-							break;
-						case 'hsl':
-							if( count($params) !== 3 ) {
-								throw new \Exception('Invalid param count');
-							}
-
-							$color = $this->factory->makeFromHsl($params[0], $params[1], $params[2]);
-							break;
-						default:
-							throw new \Exception('Not Implemented');
-					}
+					$color = $this->getFuncColor($funcMatch, $params);
 				}
 			} catch( \Exception $e ) {
 				$errors[] = [
 					'exception' => $e,
 					'result'    => $result,
 				];
+
+				continue;
 			}
 
-			if( $color ) {
-				$key = md5($color->getRgbaString());
-
-				if( !isset($colors[$key]) ) {
-					$colors[$key] = $color;
-				}
-
-				$colors[$key]->addInstance($result[0]);
+			$key = md5($color->getRgbaString());
+			if( !isset($colors[$key]) ) {
+				$colors[$key] = $color;
 			}
+
+			$colors[$key]->addInstance($result[0]);
 		}
 
 		return $colors;
+	}
+
+	/**
+	 * @param string $func
+	 * @param array  $params
+	 * @return \donatj\AlikeColorFinder\ColorEntry
+	 * @throws \LogicException
+	 */
+	private function getFuncColor( $func, array $params ) {
+		switch( $func ) {
+			case 'rgba':
+				if( count($params) !== 4 ) {
+					throw new \LogicException('Invalid param count');
+				}
+
+				return $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
+			case 'rgb':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'hsla':
+				if( count($params) !== 4 ) {
+					throw new \LogicException('Invalid param count');
+				}
+
+				return $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
+			case 'hsl':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromHsl($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+		}
+
+		throw new \LogicException("Func type '{$func}' not implemented");
 	}
 }
