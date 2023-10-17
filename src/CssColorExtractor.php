@@ -189,7 +189,7 @@ class CssColorExtractor {
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
-			throw new \RuntimeException('Regex Error: ' . preg_last_error());
+			throw new \LogicException('Regex Error: ' . preg_last_error());
 		}
 
 		/**
