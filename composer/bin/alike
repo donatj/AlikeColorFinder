@@ -164,7 +164,7 @@ function displayDiff( $data, $stream ) {
 }
 
 
-function getDiffStats( $data ) : array {
+function getDiffStats( $data ) {
 	$sum   = 0;
 	$count = 0;
 	foreach( $data as $items ) {
