@@ -16,7 +16,7 @@ class CssColorExtractorTest extends TestCase {
 			throw $error['exception'];
 		}
 
-		$this->assertCount(1, $colors);
+		$this->assertCount(1, $colors, 'Color count mismatch');
 		$this->assertSame($expected, reset($colors)->getSimplestCssString());
 	}
 
@@ -32,7 +32,7 @@ class CssColorExtractorTest extends TestCase {
 				break;
 			}
 
-			$colors[] = [ $data[0], $data[1] ];
+			$colors[$data[0]] = [ $data[0], $data[1] ];
 		}
 
 		fclose($file);
