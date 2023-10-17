@@ -60,14 +60,15 @@ Help:
 
 ```bash
 $ alike --help
-usage: alike [<files>]
+usage: ./composer/bin/alike [<files>] [<dirs>]
       --strategy   [string] Color diff strategy.
             Options:
                 actual
                 cie94
                 ciede2000 [default - aka. perceptual]
-     --tolerance   [float] Computed Difference Tolerance - default 5
+     --tolerance   [float] Computed Difference Tolerance - default 4
      --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
+       --pattern   [string] Regex pattern to match files against when argument is a directory
           --help   Displays this message
 ```
 
