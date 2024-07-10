@@ -7,7 +7,7 @@
 	},
 	"require-dev": {
 		"donatj/drop": "*",
-		"phpunit/phpunit": "^4.8 || ^9.6",
+		"phpunit/phpunit": "^11.2.7",
 		"php-parallel-lint/php-parallel-lint": "^1.3"
 	},
 	"authors": [
