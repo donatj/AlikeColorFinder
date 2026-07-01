@@ -72,9 +72,9 @@ class ColorEntryFactory {
 			$b = $x;
 		}
 
-		$r = round(($r + $m) * 255);
-		$g = round(($g + $m) * 255);
-		$b = round(($b + $m) * 255);
+		$r = ($r + $m) * 255;
+		$g = ($g + $m) * 255;
+		$b = ($b + $m) * 255;
 
 		return new ColorEntry($r, $g, $b, $a);
 	}
@@ -86,7 +86,7 @@ class ColorEntryFactory {
 	public function makeFromHwb( $h, $w, $b, $a = 1.0 ) {
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
-			$gray = round($w / ($w + $b) * 255);
+			$gray = $w / ($w + $b) * 255;
 			return new ColorEntry($gray, $gray, $gray, $a);
 		}
 
@@ -107,9 +107,9 @@ class ColorEntryFactory {
 
 		$scale = 1 - $w - $b;
 		return new ColorEntry(
-			round(($pr * $scale + $w) * 255),
-			round(($pg * $scale + $w) * 255),
-			round(($pb * $scale + $w) * 255),
+			($pr * $scale + $w) * 255,
+			($pg * $scale + $w) * 255,
+			($pb * $scale + $w) * 255,
 			$a
 		);
 	}
