@@ -45,6 +45,15 @@ class ColorDiffStrategyTest extends TestCase {
 				break;
 			}
 
+			// skip blank lines
+			if( count($data) === 1 && trim((string)$data[0]) === '' ) {
+				continue;
+			}
+
+			if( count($data) < 5 ) {
+				throw new \UnexpectedValueException('Invalid color-diffs.csv row: expected 5 columns, got ' . count($data));
+			}
+
 			$rows[$data[0] . ' -> ' . $data[1]] = [ $data[0], $data[1], (float)$data[2], (float)$data[3], (float)$data[4] ];
 		}
 
