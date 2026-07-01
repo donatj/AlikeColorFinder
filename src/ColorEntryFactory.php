@@ -5,7 +5,7 @@ namespace donatj\AlikeColorFinder;
 class ColorEntryFactory {
 
 	public function makeFromRgba( $r, $g, $b, $a ) {
-		return new ColorEntry($r, $g, $b, $a);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromRgb( $r, $g, $b ) {
@@ -38,7 +38,7 @@ class ColorEntryFactory {
 			throw new \InvalidArgumentException('Invalid Hex "' . $hex . '"');
 		}
 
-		return new ColorEntry($r, $g, $b, $a);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsla( $h, $s, $l, $a ) {
@@ -76,7 +76,7 @@ class ColorEntryFactory {
 		$g = ($g + $m) * 255;
 		$b = ($b + $m) * 255;
 
-		return new ColorEntry($r, $g, $b, $a);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsl( $h, $s, $l ) {
@@ -87,7 +87,7 @@ class ColorEntryFactory {
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
 			$gray = $w / ($w + $b) * 255;
-			return new ColorEntry($gray, $gray, $gray, $a);
+			return new SrgbColorEntry($gray, $gray, $gray, $a);
 		}
 
 		// Compute pure hue RGB (0-1 range) by sector
@@ -106,7 +106,7 @@ class ColorEntryFactory {
 		}
 
 		$scale = 1 - $w - $b;
-		return new ColorEntry(
+		return new SrgbColorEntry(
 			($pr * $scale + $w) * 255,
 			($pg * $scale + $w) * 255,
 			($pb * $scale + $w) * 255,
@@ -118,7 +118,7 @@ class ColorEntryFactory {
 		list($x50, $y50, $z50) = self::labD50ToXyzD50($l, $aVal, $bVal);
 		list($x65, $y65, $z65) = self::xyzD50ToXyzD65($x50, $y50, $z50);
 
-		return ColorEntry::fromXyzD65($x65, $y65, $z65, $a);
+		return new XyzColorEntry($x65, $y65, $z65, $a);
 	}
 
 	public function makeFromLch( $l, $c, $h, $a = 1.0 ) {
@@ -143,7 +143,7 @@ class ColorEntryFactory {
 
 		list($x, $y, $z) = self::linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
-		return ColorEntry::fromXyzD65($x, $y, $z, $a);
+		return new XyzColorEntry($x, $y, $z, $a);
 	}
 
 	public function makeFromOklch( $l, $c, $h, $a = 1.0 ) {
@@ -155,7 +155,7 @@ class ColorEntryFactory {
 		switch( $colorSpace ) {
 			case 'srgb':
 				// Gamma-encoded sRGB 0–1; snap to the integer sRGB lattice
-				return new ColorEntry(
+				return new SrgbColorEntry(
 					round(max(0.0, min(1.0, $c1)) * 255),
 					round(max(0.0, min(1.0, $c2)) * 255),
 					round(max(0.0, min(1.0, $c3)) * 255),
@@ -165,7 +165,7 @@ class ColorEntryFactory {
 			case 'srgb-linear':
 				list($x, $y, $z) = self::linearSrgbToXyzD65($c1, $c2, $c3);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'display-p3':
 				$rLin = self::srgbToLinear($c1);
@@ -173,7 +173,7 @@ class ColorEntryFactory {
 				$bLin = self::srgbToLinear($c3);
 				list($x, $y, $z) = self::displayP3LinearToXyzD65($rLin, $gLin, $bLin);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'a98-rgb':
 				// A98-RGB uses gamma 563/256 ≈ 2.19921875
@@ -182,7 +182,7 @@ class ColorEntryFactory {
 				$bLin = ($c3 >= 0 ? 1 : -1) * (abs($c3) ** (563 / 256));
 				list($x, $y, $z) = self::a98RgbLinearToXyzD65($rLin, $gLin, $bLin);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'prophoto-rgb':
 				// ProPhoto RGB uses gamma 1.8 with a linear toe
@@ -192,7 +192,7 @@ class ColorEntryFactory {
 				list($x50, $y50, $z50) = self::prophotorgbLinearToXyzD50($rLin, $gLin, $bLin);
 				list($x, $y, $z) = self::xyzD50ToXyzD65($x50, $y50, $z50);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'rec2020':
 				// Rec2020 uses a transfer function similar to sRGB
@@ -201,16 +201,16 @@ class ColorEntryFactory {
 				$bLin = self::rec2020ToLinear($c3);
 				list($x, $y, $z) = self::rec2020LinearToXyzD65($rLin, $gLin, $bLin);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'xyz':
 			case 'xyz-d65':
-				return ColorEntry::fromXyzD65($c1, $c2, $c3, $a);
+				return new XyzColorEntry($c1, $c2, $c3, $a);
 
 			case 'xyz-d50':
 				list($x, $y, $z) = self::xyzD50ToXyzD65($c1, $c2, $c3);
 
-				return ColorEntry::fromXyzD65($x, $y, $z, $a);
+				return new XyzColorEntry($x, $y, $z, $a);
 		}
 
 		throw new \LogicException("Color space '{$colorSpace}' not implemented");
@@ -256,25 +256,6 @@ class ColorEntryFactory {
 			0.2126 * $r + 0.7152 * $g + 0.0722 * $b,
 			0.0193 * $r + 0.1192 * $g + 0.9505 * $b,
 		];
-	}
-
-	private static function xyzD65ToLinearSrgb( $x, $y, $z ) {
-		return [
-			+3.2404542 * $x - 1.5371385 * $y - 0.4985314 * $z,
-			-0.9692660 * $x + 1.8760108 * $y + 0.0415560 * $z,
-			+0.0556434 * $x - 0.2040259 * $y + 1.0572252 * $z,
-		];
-	}
-
-	private static function linearToSrgbGamma( $c ) {
-		if( $c <= 0.0031308 ) {
-			return 12.92 * $c;
-		}
-		return 1.055 * ($c ** (1 / 2.4)) - 0.055;
-	}
-
-	private static function linearToSrgb255( $c ) {
-		return max(0, min(255, round(self::linearToSrgbGamma($c) * 255)));
 	}
 
 	private static function srgbToLinear( $c ) {
