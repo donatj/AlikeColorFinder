@@ -257,7 +257,10 @@ class CssColorExtractor {
 				continue;
 			}
 
-			$key = md5($color->getRgbaString());
+			// Use XYZ coordinates for deduplication to preserve HDR/wide-gamut distinctions
+			// Colors that clamp to the same sRGB may have different XYZ values
+			$xyz = $color->getXyzaArray();
+			$key = md5(sprintf('%.8f,%.8f,%.8f,%.8f', $xyz['x'], $xyz['y'], $xyz['z'], $xyz['a']));
 			if( !isset($colors[$key]) ) {
 				$colors[$key] = $color;
 			}
