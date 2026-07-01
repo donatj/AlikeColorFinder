@@ -72,9 +72,9 @@ class ColorEntryFactory {
 			$b = $x;
 		}
 
-		$r = ($r + $m) * 255;
-		$g = ($g + $m) * 255;
-		$b = ($b + $m) * 255;
+		$r = round(($r + $m) * 255);
+		$g = round(($g + $m) * 255);
+		$b = round(($b + $m) * 255);
 
 		return new ColorEntry($r, $g, $b, $a);
 	}
@@ -86,7 +86,7 @@ class ColorEntryFactory {
 	public function makeFromHwb( $h, $w, $b, $a = 1.0 ) {
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
-			$gray = $w / ($w + $b) * 255;
+			$gray = round($w / ($w + $b) * 255);
 			return new ColorEntry($gray, $gray, $gray, $a);
 		}
 
@@ -107,9 +107,9 @@ class ColorEntryFactory {
 
 		$scale = 1 - $w - $b;
 		return new ColorEntry(
-			($pr * $scale + $w) * 255,
-			($pg * $scale + $w) * 255,
-			($pb * $scale + $w) * 255,
+			round(($pr * $scale + $w) * 255),
+			round(($pg * $scale + $w) * 255),
+			round(($pb * $scale + $w) * 255),
 			$a
 		);
 	}
@@ -117,14 +117,8 @@ class ColorEntryFactory {
 	public function makeFromLab( $l, $aVal, $bVal, $a = 1.0 ) {
 		list($x50, $y50, $z50) = self::labD50ToXyzD50($l, $aVal, $bVal);
 		list($x65, $y65, $z65) = self::xyzD50ToXyzD65($x50, $y50, $z50);
-		list($rLin, $gLin, $bLin) = self::xyzD65ToLinearSrgb($x65, $y65, $z65);
 
-		return new ColorEntry(
-			self::linearToSrgb255($rLin),
-			self::linearToSrgb255($gLin),
-			self::linearToSrgb255($bLin),
-			$a
-		);
+		return ColorEntry::fromXyzD65($x65, $y65, $z65, $a);
 	}
 
 	public function makeFromLch( $l, $c, $h, $a = 1.0 ) {
@@ -147,12 +141,9 @@ class ColorEntryFactory {
 		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
 		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
 
-		return new ColorEntry(
-			self::linearToSrgb255($rLin),
-			self::linearToSrgb255($gLin),
-			self::linearToSrgb255($bLin),
-			$a
-		);
+		list($x, $y, $z) = self::linearSrgbToXyzD65($rLin, $gLin, $bLin);
+
+		return ColorEntry::fromXyzD65($x, $y, $z, $a);
 	}
 
 	public function makeFromOklch( $l, $c, $h, $a = 1.0 ) {
@@ -163,33 +154,26 @@ class ColorEntryFactory {
 	public function makeFromColorSpace( $colorSpace, $c1, $c2, $c3, $a = 1.0 ) {
 		switch( $colorSpace ) {
 			case 'srgb':
+				// Gamma-encoded sRGB 0–1; snap to the integer sRGB lattice
 				return new ColorEntry(
-					max(0, min(255, round($c1 * 255))),
-					max(0, min(255, round($c2 * 255))),
-					max(0, min(255, round($c3 * 255))),
+					round(max(0.0, min(1.0, $c1)) * 255),
+					round(max(0.0, min(1.0, $c2)) * 255),
+					round(max(0.0, min(1.0, $c3)) * 255),
 					$a
 				);
 
 			case 'srgb-linear':
-				return new ColorEntry(
-					self::linearToSrgb255($c1),
-					self::linearToSrgb255($c2),
-					self::linearToSrgb255($c3),
-					$a
-				);
+				list($x, $y, $z) = self::linearSrgbToXyzD65($c1, $c2, $c3);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 
 			case 'display-p3':
 				$rLin = self::srgbToLinear($c1);
 				$gLin = self::srgbToLinear($c2);
 				$bLin = self::srgbToLinear($c3);
 				list($x, $y, $z) = self::displayP3LinearToXyzD65($rLin, $gLin, $bLin);
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($x, $y, $z);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 
 			case 'a98-rgb':
 				// A98-RGB uses gamma 563/256 ≈ 2.19921875
@@ -197,13 +181,8 @@ class ColorEntryFactory {
 				$gLin = ($c2 >= 0 ? 1 : -1) * (abs($c2) ** (563 / 256));
 				$bLin = ($c3 >= 0 ? 1 : -1) * (abs($c3) ** (563 / 256));
 				list($x, $y, $z) = self::a98RgbLinearToXyzD65($rLin, $gLin, $bLin);
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($x, $y, $z);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 
 			case 'prophoto-rgb':
 				// ProPhoto RGB uses gamma 1.8 with a linear toe
@@ -212,13 +191,8 @@ class ColorEntryFactory {
 				$bLin = self::prophotoToLinear($c3);
 				list($x50, $y50, $z50) = self::prophotorgbLinearToXyzD50($rLin, $gLin, $bLin);
 				list($x, $y, $z) = self::xyzD50ToXyzD65($x50, $y50, $z50);
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($x, $y, $z);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 
 			case 'rec2020':
 				// Rec2020 uses a transfer function similar to sRGB
@@ -226,33 +200,17 @@ class ColorEntryFactory {
 				$gLin = self::rec2020ToLinear($c2);
 				$bLin = self::rec2020ToLinear($c3);
 				list($x, $y, $z) = self::rec2020LinearToXyzD65($rLin, $gLin, $bLin);
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($x, $y, $z);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 
 			case 'xyz':
 			case 'xyz-d65':
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($c1, $c2, $c3);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+				return ColorEntry::fromXyzD65($c1, $c2, $c3, $a);
 
 			case 'xyz-d50':
 				list($x, $y, $z) = self::xyzD50ToXyzD65($c1, $c2, $c3);
-				list($rOut, $gOut, $bOut) = self::xyzD65ToLinearSrgb($x, $y, $z);
-				return new ColorEntry(
-					self::linearToSrgb255($rOut),
-					self::linearToSrgb255($gOut),
-					self::linearToSrgb255($bOut),
-					$a
-				);
+
+				return ColorEntry::fromXyzD65($x, $y, $z, $a);
 		}
 
 		throw new \LogicException("Color space '{$colorSpace}' not implemented");
@@ -288,6 +246,15 @@ class ColorEntryFactory {
 			0.9554734527042182 * $x - 0.02301801888092314 * $y + 0.0632352294227355 * $z,
 			-0.0283697093338637 * $x + 1.0099953980813410 * $y + 0.0210413696583471 * $z,
 			0.0123140016883655 * $x - 0.0205076964334771 * $y + 1.3303659366080753 * $z,
+		];
+	}
+
+	private static function linearSrgbToXyzD65( $r, $g, $b ) {
+		// Observer 2°, Illuminant D65
+		return [
+			0.4124 * $r + 0.3576 * $g + 0.1805 * $b,
+			0.2126 * $r + 0.7152 * $g + 0.0722 * $b,
+			0.0193 * $r + 0.1192 * $g + 0.9505 * $b,
 		];
 	}
 
