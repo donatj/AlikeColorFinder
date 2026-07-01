@@ -3,7 +3,7 @@
 	"license": "MIT",
 	"require": {
 		"donatj/flags": "^1.5",
-		"php": ">=5.4"
+		"php": ">=7.2"
 	},
 	"require-dev": {
 		"donatj/drop": "*",
