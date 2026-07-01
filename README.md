@@ -6,9 +6,11 @@
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
 
-Finds similar (e.g. alike) colors in CSS and CSS-like data, within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, and `hsla()` colors.
+Finds similar (e.g. alike) colors in CSS and CSS-like data, within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, `lab()`, `lch()`, `oklab()`, `oklch()`, and `color()` function colors including HDR and wide-gamut color spaces.
 
 Includes the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000)+Alpha (default), [CIE94](http://en.wikipedia.org/wiki/Color_difference#CIE94)+Alpha, as well as "*actual*" mathematical absolute color diff strategies, switchable with a flag.
+
+Supports modern CSS Color Level 4 formats including Display P3, Rec2020, ProPhoto RGB, and other wide-gamut color spaces.
 
 A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
 
@@ -20,7 +22,7 @@ This is fully usable within CI solutions to pass/fail a project.
 
 ## Requirements
 
-- PHP 7.2+ with CLI and SPL, PHP 7.4+ strongly recommended
+- PHP 7.4+ with CLI and SPL
 
 ## Installation
 

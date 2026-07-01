@@ -4,17 +4,13 @@ namespace donatj\AlikeColorFinder;
 
 class SrgbColorEntry implements ColorEntry {
 
-	/**
-	 * @var float
-	 */
-	protected $r, $g, $b;
+	protected float $r;
+	protected float $g;
+	protected float $b;
+	protected float $a;
 
-	/**
-	 * @var float
-	 */
-	protected $a;
-
-	protected $distinctInstances = [];
+	/** @var array<string, int> */
+	protected array $distinctInstances = [];
 
 	/**
 	 * @param float $r  sRGB red   0–255
@@ -22,7 +18,7 @@ class SrgbColorEntry implements ColorEntry {
 	 * @param float $b  sRGB blue  0–255
 	 * @param float $a  alpha      0–1
 	 */
-	public function __construct( $r, $g, $b, $a = 1.0 ) {
+	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
 		if( $r > 255 || $r < 0 ) {
 			throw new \RangeException('Red must be between 0 and 255');
 		}
@@ -44,57 +40,57 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR() {
+	public function getR(): float {
 		return $this->r;
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG() {
+	public function getG(): float {
 		return $this->g;
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB() {
+	public function getB(): float {
 		return $this->b;
 	}
 
 	/**
 	 * @return float
 	 */
-	public function getA() {
+	public function getA(): float {
 		return $this->a;
 	}
 
-	public function addInstance( $instance ) {
+	public function addInstance( string $instance ): void {
 		if( !isset($this->distinctInstances[$instance]) ) {
 			$this->distinctInstances[$instance] = 0;
 		}
 		$this->distinctInstances[$instance]++;
 	}
 
-	public function getInstanceTotal() {
+	public function getInstanceTotal(): int {
 		return array_sum($this->distinctInstances);
 	}
 
 	/**
 	 * @return string[]
 	 */
-	public function getDistinctInstances() {
+	public function getDistinctInstances(): array {
 		return array_keys($this->distinctInstances);
 	}
 
-	public function getRgbaString() {
+	public function getRgbaString(): string {
 		$r = round($this->r);
 		$g = round($this->g);
 		$b = round($this->b);
 		return "rgba({$r},{$g},{$b},{$this->a})";
 	}
 
-	public function getRgbHexString() {
+	public function getRgbHexString(): string {
 		$hex = "#";
 		$hex .= str_pad(dechex((int)round($this->r)), 2, "0", STR_PAD_LEFT);
 		$hex .= str_pad(dechex((int)round($this->g)), 2, "0", STR_PAD_LEFT);
@@ -103,7 +99,7 @@ class SrgbColorEntry implements ColorEntry {
 		return $hex;
 	}
 
-	public function getSimplestCssString() {
+	public function getSimplestCssString(): string {
 		if( $this->a == 1 ) {
 			return $this->getRgbHexString();
 		}
@@ -114,7 +110,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array
 	 */
-	public function getRgbaArray() {
+	public function getRgbaArray(): array {
 		return [
 			'r' => $this->r,
 			'g' => $this->g,
@@ -126,7 +122,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array
 	 */
-	public function getXyzaArray() {
+	public function getXyzaArray(): array {
 		// Normalize RGB values to 1
 		$r = $this->r / 255;
 		$g = $this->g / 255;
@@ -154,7 +150,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array
 	 */
-	public function getLabAlphaCieArray() {
+	public function getLabAlphaCieArray(): array {
 		$xyz = $this->getXyzaArray();
 
 		// Observer = 2°, Illuminant = D65

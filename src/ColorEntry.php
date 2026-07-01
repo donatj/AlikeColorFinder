@@ -7,51 +7,51 @@ interface ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR();
+	public function getR(): float;
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG();
+	public function getG(): float;
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB();
+	public function getB(): float;
 
 	/**
 	 * @return float  alpha 0–1
 	 */
-	public function getA();
+	public function getA(): float;
 
-	public function addInstance( $instance );
+	public function addInstance( string $instance ): void;
 
-	public function getInstanceTotal();
+	public function getInstanceTotal(): int;
 
 	/**
 	 * @return string[]
 	 */
-	public function getDistinctInstances();
+	public function getDistinctInstances(): array;
 
-	public function getRgbaString();
+	public function getRgbaString(): string;
 
-	public function getRgbHexString();
+	public function getRgbHexString(): string;
 
-	public function getSimplestCssString();
-
-	/**
-	 * @return array
-	 */
-	public function getRgbaArray();
+	public function getSimplestCssString(): string;
 
 	/**
 	 * @return array
 	 */
-	public function getXyzaArray();
+	public function getRgbaArray(): array;
 
 	/**
 	 * @return array
 	 */
-	public function getLabAlphaCieArray();
+	public function getXyzaArray(): array;
+
+	/**
+	 * @return array
+	 */
+	public function getLabAlphaCieArray(): array;
 
 }
