@@ -20,7 +20,7 @@ This is fully usable within CI solutions to pass/fail a project.
 
 ## Requirements
 
-- PHP 5.4.0+ with CLI and SPL, PHP 7.4+ strongly recommended
+- PHP 7.2+ with CLI and SPL, PHP 7.4+ strongly recommended
 
 ## Installation
 
