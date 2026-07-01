@@ -42,6 +42,12 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHsla( $h, $s, $l, $a ) {
+		// Normalize hue to [0, 360) range
+		$h = fmod($h, 360);
+		if( $h < 0 ) {
+			$h += 360;
+		}
+
 		$c = (1 - abs(2 * $l - 1)) * $s;
 		$x = $c * (1 - abs(fmod($h / 60, 2) - 1));
 		$m = $l - ($c / 2);

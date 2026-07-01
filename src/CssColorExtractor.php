@@ -186,7 +186,7 @@ class CssColorExtractor {
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
 (?:(?P<func>rgb|hsl|lab|lch|oklab|oklch|hwb)\s*\((?P<params>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
-(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*(?:\d*\.)?\d+%?\s*,?){4})\))|
+(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){4})\))|
 (?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>(?:-?(?:\d*\.)?\d+%?\s*){3}(?:\/\s*-?(?:\d*\.)?\d+%?)?)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
