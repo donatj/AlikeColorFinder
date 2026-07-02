@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class SrgbColorEntry implements ColorEntry {
 
@@ -13,10 +17,10 @@ class SrgbColorEntry implements ColorEntry {
 	protected float $a;
 
 	/**
-	 * @param float $r  sRGB red   0–255
-	 * @param float $g  sRGB green 0–255
-	 * @param float $b  sRGB blue  0–255
-	 * @param float $a  alpha      0–1
+	 * @param float $r sRGB red   0–255
+	 * @param float $g sRGB green 0–255
+	 * @param float $b sRGB blue  0–255
+	 * @param float $a alpha      0–1
 	 */
 	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
 		if( $r > 255 || $r < 0 ) {

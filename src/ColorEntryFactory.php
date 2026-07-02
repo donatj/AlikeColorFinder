@@ -2,6 +2,15 @@
 
 namespace donatj\AlikeColorFinder;
 
+use donatj\AlikeColorFinder\ColorEntries\DisplayP3ColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\LabColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\LchColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\OklabColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\OklchColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\Rec2020ColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\SrgbColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\XyzColorEntry;
+
 class ColorEntryFactory {
 
 	public function makeFromRgba( $r, $g, $b, $a ) {

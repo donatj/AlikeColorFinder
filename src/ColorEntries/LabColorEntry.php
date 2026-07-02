@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class LabColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class LabColorEntry implements ColorEntry {
 	protected float $bVal;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $l Lab lightness (0–100)
 	 * @param float $aVal Lab a component
 	 * @param float $bVal Lab b component
@@ -28,10 +32,10 @@ class LabColorEntry implements ColorEntry {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
-		$this->l = $l;
+		$this->l    = $l;
 		$this->aVal = $aVal;
 		$this->bVal = $bVal;
-		$this->a = $a;
+		$this->a    = $a;
 	}
 
 	/**
@@ -116,9 +120,9 @@ class LabColorEntry implements ColorEntry {
 	 */
 	private function getLinearSrgb(): array {
 		$xyz = $this->getXyzaArray();
-		$x = $xyz['x'] / 100;
-		$y = $xyz['y'] / 100;
-		$z = $xyz['z'] / 100;
+		$x   = $xyz['x'] / 100;
+		$y   = $xyz['y'] / 100;
+		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
 		return [

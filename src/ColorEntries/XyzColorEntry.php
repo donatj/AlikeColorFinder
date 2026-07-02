@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class XyzColorEntry implements ColorEntry {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
 
 trait ColorEntryTrait {
 
@@ -77,7 +77,8 @@ trait ColorEntryTrait {
 	 * Default behavior: hex/rgba if in sRGB gamut, native format otherwise.
 	 * Classes can override for custom behavior (e.g., XyzColorEntry uses custom epsilon).
 	 *
-	 * @param float $epsilon*/
+	 * @param float $epsilon
+	 */
 	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( $this->isInSrgbGamut() ) {
 			// Can be losslessly represented in sRGB
@@ -99,8 +100,9 @@ trait ColorEntryTrait {
 	 * @return bool True if alpha round-trips through hex without loss
 	 */
 	public function isAlphaHexCompatible( float $epsilon = 0.001 ): bool {
-		$hexValue   = round($this->a * 255);
-		$roundTrip  = $hexValue / 255;
+		$hexValue  = round($this->a * 255);
+		$roundTrip = $hexValue / 255;
+
 		return abs($this->a - $roundTrip) <= $epsilon;
 	}
 
@@ -113,9 +115,9 @@ trait ColorEntryTrait {
 	public function isInSrgbGamut( float $epsilon = 0.001 ): bool {
 		// Convert to XYZ then to linear sRGB to check bounds
 		$xyz = $this->getXyzaArray();
-		$x = $xyz['x'] / 100;
-		$y = $xyz['y'] / 100;
-		$z = $xyz['z'] / 100;
+		$x   = $xyz['x'] / 100;
+		$y   = $xyz['y'] / 100;
+		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
 		$linear = [
@@ -126,8 +128,8 @@ trait ColorEntryTrait {
 
 		// Check if all components are within [0, 1] with epsilon tolerance
 		return $linear[0] >= -$epsilon && $linear[0] <= 1 + $epsilon
-		    && $linear[1] >= -$epsilon && $linear[1] <= 1 + $epsilon
-		    && $linear[2] >= -$epsilon && $linear[2] <= 1 + $epsilon;
+			&& $linear[1] >= -$epsilon && $linear[1] <= 1 + $epsilon
+			&& $linear[2] >= -$epsilon && $linear[2] <= 1 + $epsilon;
 	}
 
 	/**

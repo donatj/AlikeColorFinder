@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class Rec2020ColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class Rec2020ColorEntry implements ColorEntry {
 	protected float $b;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $r Rec.2020 red (0–1 range; may exceed for HDR)
 	 * @param float $g Rec.2020 green (0–1 range; may exceed for HDR)
 	 * @param float $b Rec.2020 blue (0–1 range; may exceed for HDR)
@@ -123,6 +127,7 @@ class Rec2020ColorEntry implements ColorEntry {
 		if( $c < $beta * 4.5 ) {
 			return $c / 4.5;
 		}
+
 		return (($c + $alpha - 1) / $alpha) ** (1 / 0.45);
 	}
 

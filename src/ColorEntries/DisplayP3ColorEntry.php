@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class DisplayP3ColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class DisplayP3ColorEntry implements ColorEntry {
 	protected float $b;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $r Display P3 red (0–1 range; may exceed for HDR)
 	 * @param float $g Display P3 green (0–1 range; may exceed for HDR)
 	 * @param float $b Display P3 blue (0–1 range; may exceed for HDR)
@@ -121,6 +125,7 @@ class DisplayP3ColorEntry implements ColorEntry {
 		if( $c <= 0.04045 ) {
 			return $c / 12.92;
 		}
+
 		return (($c + 0.055) / 1.055) ** 2.4;
 	}
 

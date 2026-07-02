@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class LchColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class LchColorEntry implements ColorEntry {
 	protected float $h;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $l LCH lightness (0–100)
 	 * @param float $c LCH chroma
 	 * @param float $h LCH hue (degrees)
@@ -121,9 +125,9 @@ class LchColorEntry implements ColorEntry {
 	 */
 	private function getLinearSrgb(): array {
 		$xyz = $this->getXyzaArray();
-		$x = $xyz['x'] / 100;
-		$y = $xyz['y'] / 100;
-		$z = $xyz['z'] / 100;
+		$x   = $xyz['x'] / 100;
+		$y   = $xyz['y'] / 100;
+		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
 		return [

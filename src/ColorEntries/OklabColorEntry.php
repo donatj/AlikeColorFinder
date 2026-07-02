@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class OklabColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class OklabColorEntry implements ColorEntry {
 	protected float $bVal;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $l OKLab lightness (0–1)
 	 * @param float $aVal OKLab a component
 	 * @param float $bVal OKLab b component
@@ -28,10 +32,10 @@ class OklabColorEntry implements ColorEntry {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
-		$this->l = $l;
+		$this->l    = $l;
 		$this->aVal = $aVal;
 		$this->bVal = $bVal;
-		$this->a = $a;
+		$this->a    = $a;
 	}
 
 	/**

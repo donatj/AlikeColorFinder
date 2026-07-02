@@ -1,6 +1,10 @@
 <?php
 
-namespace donatj\AlikeColorFinder;
+namespace donatj\AlikeColorFinder\ColorEntries;
+
+use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorInstanceTrait;
+
 
 class OklchColorEntry implements ColorEntry {
 
@@ -13,7 +17,7 @@ class OklchColorEntry implements ColorEntry {
 	protected float $h;
 	protected float $a;
 
-/**
+	/**
 	 * @param float $l OKLch lightness (0–1)
 	 * @param float $c OKLch chroma
 	 * @param float $h OKLch hue (degrees)
