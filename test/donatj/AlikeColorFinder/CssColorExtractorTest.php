@@ -24,10 +24,10 @@ class CssColorExtractorTest extends TestCase {
 		$colors = [];
 		$file   = fopen(__DIR__ . '/colors.csv', 'r');
 
-		fgetcsv($file, 0); // skip header line
+		fgetcsv($file, 0, ',', '"', ''); // skip header line
 
 		for( ; ; ) {
-			$data = fgetcsv($file, 0);
+			$data = fgetcsv($file, 0, ',', '"', '');
 			if( $data === false ) {
 				break;
 			}

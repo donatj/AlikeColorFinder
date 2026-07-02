@@ -185,8 +185,9 @@ class CssColorExtractor {
 		}, array_keys($this->colors)));
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-(?:(?P<func>rgb|hsl)\s*\((?P<params>(?:\s*(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*(?:\d*\.)?\d+%?)?)\))|
-(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*(?:\d*\.)?\d+%?\s*,?){4})\))|
+(?:(?P<func>rgb|hsl|lab|lch|oklab|oklch|hwb)\s*\((?P<params>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
+(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){4})\))|
+(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>(?:-?(?:\d*\.)?\d+%?\s*){3}(?:\/\s*-?(?:\d*\.)?\d+%?)?)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -207,6 +208,28 @@ class CssColorExtractor {
 				} elseif( !empty($result['named']) ) {
 					$color = $this->factory->makeFromHexString(
 						$this->colors[strtolower($result['named'])]
+					);
+				} elseif( !empty($result['color_func']) ) {
+					$colorSpace   = $result['color_space'];
+					$paramMatches = trim($result['color_params']);
+
+					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
+					$params = array_map('\trim', $params);
+					foreach( $params as &$param ) {
+						if( substr($param, -1) === '%' ) {
+							$param = ((float)substr($param, 0, -1)) / 100;
+						} else {
+							$param = (float)$param;
+						}
+					}
+					unset($param);
+
+					$color = $this->factory->makeFromColorSpace(
+						$colorSpace,
+						$params[0] ?? 0,
+						$params[1] ?? 0,
+						$params[2] ?? 0,
+						$params[3] ?? 1.0
 					);
 				} else {
 					$funcMatch    = $result['func'] ?: $result['func2'];
@@ -234,7 +257,10 @@ class CssColorExtractor {
 				continue;
 			}
 
-			$key = md5($color->getRgbaString());
+			// Use XYZ coordinates for deduplication to preserve HDR/wide-gamut distinctions
+			// Colors that clamp to the same sRGB may have different XYZ values
+			$xyz = $color->getXyzaArray();
+			$key = md5(sprintf('%.8f,%.8f,%.8f,%.8f', $xyz['x'], $xyz['y'], $xyz['z'], $xyz['a']));
 			if( !isset($colors[$key]) ) {
 				$colors[$key] = $color;
 			}
@@ -282,6 +308,56 @@ class CssColorExtractor {
 
 				if( count($params) === 4 ) {
 					return $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'hwb':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromHwb($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromHwb($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'lab':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromLab($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromLab($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'lch':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromLch($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromLch($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'oklab':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromOklab($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromOklab($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'oklch':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromOklch($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromOklch($params[0], $params[1], $params[2], $params[3]);
 				}
 
 				throw new \LogicException('Invalid param count');
