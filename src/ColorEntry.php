@@ -40,6 +40,12 @@ interface ColorEntry {
 	public function getSimplestCssString(): string;
 
 	/**
+	 * Returns the native CSS string representation for this color space.
+	 * For example: "lab(50 0 0)" for Lab, "oklch(0.5 0.1 180)" for OKLch
+	 */
+	public function getNativeCssString(): string;
+
+	/**
 	 * @return array
 	 */
 	public function getRgbaArray(): array;

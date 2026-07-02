@@ -127,40 +127,19 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromLab( $l, $aVal, $bVal, $a = 1.0 ) {
-		list($x50, $y50, $z50) = self::labD50ToXyzD50($l, $aVal, $bVal);
-		list($x65, $y65, $z65) = self::xyzD50ToXyzD65($x50, $y50, $z50);
-
-		return new XyzColorEntry($x65, $y65, $z65, $a);
+		return new LabColorEntry($l, $aVal, $bVal, $a);
 	}
 
 	public function makeFromLch( $l, $c, $h, $a = 1.0 ) {
-		$hRad = $h * M_PI / 180;
-		return $this->makeFromLab($l, $c * cos($hRad), $c * sin($hRad), $a);
+		return new LchColorEntry($l, $c, $h, $a);
 	}
 
 	public function makeFromOklab( $l, $aVal, $bVal, $a = 1.0 ) {
-		// OKLab to LMS (via cube-root-compressed LMS)
-		$lPrime = $l + 0.3963377774 * $aVal + 0.2158037573 * $bVal;
-		$mPrime = $l - 0.1055613458 * $aVal - 0.0638541728 * $bVal;
-		$sPrime = $l - 0.0894841775 * $aVal - 1.2914855480 * $bVal;
-
-		$lm = $lPrime ** 3;
-		$mm = $mPrime ** 3;
-		$sm = $sPrime ** 3;
-
-		// LMS to linear sRGB
-		$rLin = +4.0767416621 * $lm - 3.3077115913 * $mm + 0.2309699292 * $sm;
-		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
-		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
-
-		list($x, $y, $z) = self::linearSrgbToXyzD65($rLin, $gLin, $bLin);
-
-		return new XyzColorEntry($x, $y, $z, $a);
+		return new OklabColorEntry($l, $aVal, $bVal, $a);
 	}
 
 	public function makeFromOklch( $l, $c, $h, $a = 1.0 ) {
-		$hRad = $h * M_PI / 180;
-		return $this->makeFromOklab($l, $c * cos($hRad), $c * sin($hRad), $a);
+		return new OklchColorEntry($l, $c, $h, $a);
 	}
 
 	public function makeFromColorSpace( $colorSpace, $c1, $c2, $c3, $a = 1.0 ) {
@@ -180,12 +159,7 @@ class ColorEntryFactory {
 				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'display-p3':
-				$rLin = self::srgbToLinear($c1);
-				$gLin = self::srgbToLinear($c2);
-				$bLin = self::srgbToLinear($c3);
-				list($x, $y, $z) = self::displayP3LinearToXyzD65($rLin, $gLin, $bLin);
-
-				return new XyzColorEntry($x, $y, $z, $a);
+				return new DisplayP3ColorEntry($c1, $c2, $c3, $a);
 
 			case 'a98-rgb':
 				// A98-RGB uses gamma 563/256 ≈ 2.19921875
@@ -207,13 +181,7 @@ class ColorEntryFactory {
 				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'rec2020':
-				// Rec2020 uses a transfer function similar to sRGB
-				$rLin = self::rec2020ToLinear($c1);
-				$gLin = self::rec2020ToLinear($c2);
-				$bLin = self::rec2020ToLinear($c3);
-				list($x, $y, $z) = self::rec2020LinearToXyzD65($rLin, $gLin, $bLin);
-
-				return new XyzColorEntry($x, $y, $z, $a);
+				return new Rec2020ColorEntry($c1, $c2, $c3, $a);
 
 			case 'xyz':
 			case 'xyz-d65':

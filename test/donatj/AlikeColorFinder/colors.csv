@@ -38,26 +38,36 @@ hwb(-30 0% 0%),#ff0080
 hwb(-120 0% 0%),#0000ff
 hwb(-240 0% 0%),#00ff00
 "hwb(-30 0% 0% / 0.5)","rgba(255,0,128,0.5)"
+hwb(390 0% 0%),#ff8000
+hwb(480 0% 0%),#00ff00
+hwb(-390 0% 0%),#ff0080
 lab(0 0 0),#000000
 lab(100 0 0),#ffffff
 lab(50 0 0),#777777
 "lab(50 50 -50)",#a753ce
 "lab(50 -50 50)",#028b09
 "lab(50 0 0 / 0.5)","rgba(119,119,119,0.5)"
-"lab(70 -40 -20)","color(xyz-d65 0.288249 0.413994 0.648895)"
+"lab(70 -40 -20)","lab(70 -40 -20)"
+"lab(50.0 0.0 0.0)",#777777
+"lab(100.000 0.000 0.000)",#ffffff
 lch(50 50 0),#c14e79
+"lch(50.0 50.0 0.0)",#c14e79
 lch(50 50 120),#5c8225
-lch(50 50 240),"color(xyz-d65 0.149824 0.190617 0.529834)"
+lch(50 50 240),"lch(50 50 240)"
 "lch(50 50 120 / 0.25)","rgba(92,130,37,0.25)"
 oklab(0 0 0),#000000
 oklab(1 0 0),#ffffff
 oklab(0.5 0 0),#636363
 "oklab(0.7 -0.15 0.1)",#3ebb54
 "oklab(0.5 0 0 / 0)","rgba(99,99,99,0)"
-oklch(0.5 0.2 120),"color(xyz-d65 0.0883116 0.131949 -0.0251109)"
-oklch(0.7 0.15 180),"color(xyz-d65 0.220028 0.371312 0.401545)"
+"oklab(0.50 0.00 0.00)",#636363
+"oklab(1.000 0.000 0.000)",#ffffff
+oklch(0.5 0.2 120),"oklch(0.5 0.2 120)"
+oklch(0.7 0.15 180),"oklch(0.7 0.15 180)"
 oklch(1 0 0),#ffffff
-"oklch(0.7 0.15 180 / 1)","color(xyz-d65 0.220028 0.371312 0.401545)"
+"oklch(0.70 0.15 180.0)","oklch(0.7 0.15 180)"
+"oklch(1.000 0.000 0.000)",#ffffff
+"oklch(0.7 0.15 180 / 1)","oklch(0.7 0.15 180)"
 color(srgb 1 0 0),#ff0000
 color(srgb 0 1 0),#00ff00
 color(srgb 0 0 1),#0000ff
@@ -65,14 +75,17 @@ color(srgb 0.5 0.5 0.5),#808080
 "color(srgb 1 0 0 / 0.5)","rgba(255,0,0,0.5)"
 color(srgb-linear 1 0 0),#ff0000
 color(srgb-linear 0.5 0.5 0.5),#bcbcbc
-color(display-p3 1 0 0),"color(xyz-d65 0.486571 0.228975 0)"
-color(display-p3 0 1 0),"color(xyz-d65 0.265668 0.691739 0.0451134)"
-color(display-p3 0 0 1),"color(xyz-d65 0.198217 0.0792869 1.04394)"
-"color(display-p3 0.9 0.5 0.1)","color(xyz-d65 0.441982 0.329153 0.0201194)"
+color(display-p3 1 0 0),"color(display-p3 1 0 0)"
+color(display-p3 0 1 0),"color(display-p3 0 1 0)"
+"color(display-p3 1.0 0.0 0.0)","color(display-p3 1 0 0)"
+"color(display-p3 0.50 0.50 0.50)",#7f8080
+color(display-p3 0 0 1),"color(display-p3 0 0 1)"
+"color(display-p3 0.9 0.5 0.1)","color(display-p3 0.9 0.5 0.1)"
 "color(a98-rgb 0.5 0.3 0.8)",#8f4bd1
 "color(prophoto-rgb 0.5 0.5 0.5)",#929292
-color(rec2020 1 0 0),"color(xyz-d65 0.636958 0.2627 0)"
+color(rec2020 1 0 0),"color(rec2020 1 0 0)"
 "color(rec2020 0.5 0.5 0.5)",#8b8b8b
+"color(rec2020 1.000 0.000 0.000)","color(rec2020 1 0 0)"
 color(xyz 0 0 0),#000000
 "color(xyz-d65 0.95045 1 1.08905)",#ffffff
 "color(xyz-d50 0.5 0.4 0.2)",#ea9183

@@ -4,13 +4,12 @@ namespace donatj\AlikeColorFinder;
 
 class SrgbColorEntry implements ColorEntry {
 
+	use ColorEntryTrait;
+
 	protected float $r;
 	protected float $g;
 	protected float $b;
 	protected float $a;
-
-	/** @var array<string, int> */
-	protected array $distinctInstances = [];
 
 	/**
 	 * @param float $r  sRGB red   0–255
@@ -65,58 +64,15 @@ class SrgbColorEntry implements ColorEntry {
 		return $this->a;
 	}
 
-	public function addInstance( string $instance ): void {
-		if( !isset($this->distinctInstances[$instance]) ) {
-			$this->distinctInstances[$instance] = 0;
-		}
-		$this->distinctInstances[$instance]++;
-	}
-
-	public function getInstanceTotal(): int {
-		return array_sum($this->distinctInstances);
-	}
-
 	/**
-	 * @return string[]
+	 * sRGB colors are already in the native sRGB format
 	 */
-	public function getDistinctInstances(): array {
-		return array_keys($this->distinctInstances);
-	}
-
-	public function getRgbaString(): string {
-		$r = round($this->r);
-		$g = round($this->g);
-		$b = round($this->b);
-		return "rgba({$r},{$g},{$b},{$this->a})";
-	}
-
-	public function getRgbHexString(): string {
-		$hex = "#";
-		$hex .= str_pad(dechex((int)round($this->r)), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex((int)round($this->g)), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex((int)round($this->b)), 2, "0", STR_PAD_LEFT);
-
-		return $hex;
-	}
-
-	public function getSimplestCssString(): string {
+	public function getNativeCssString(): string {
 		if( $this->a == 1 ) {
 			return $this->getRgbHexString();
 		}
 
 		return $this->getRgbaString();
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getRgbaArray(): array {
-		return [
-			'r' => $this->r,
-			'g' => $this->g,
-			'b' => $this->b,
-			'a' => $this->a,
-		];
 	}
 
 	/**
@@ -144,33 +100,6 @@ class SrgbColorEntry implements ColorEntry {
 			'y' => ($linearR * 0.2126) + ($linearG * 0.7152) + ($linearB * 0.0722),
 			'z' => ($linearR * 0.0193) + ($linearG * 0.1192) + ($linearB * 0.9505),
 			'a' => $this->a,
-		];
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getLabAlphaCieArray(): array {
-		$xyz = $this->getXyzaArray();
-
-		// Observer = 2°, Illuminant = D65
-		$xyz['x'] /= 95.047;
-		$xyz['y'] /= 100;
-		$xyz['z'] /= 108.883;
-
-		$xyz = array_map(function( $item ) {
-			if( $item > 0.008856 ) {
-				return pow($item, 1 / 3);
-			}
-
-			return (7.787 * $item) + (16 / 116);
-		}, $xyz);
-
-		return [
-			'l'     => (116 * $xyz['y']) - 16,
-			'a'     => 500 * ($xyz['x'] - $xyz['y']),
-			'b'     => 200 * ($xyz['y'] - $xyz['z']),
-			'Alpha' => $this->a,
 		];
 	}
 
