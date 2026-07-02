@@ -69,23 +69,6 @@ class XyzColorEntry implements ColorEntry {
 	}
 
 	/**
-	 * XyzColorEntry needs custom gamut checking with configurable epsilon
-	 */
-	public function getSimplestCssString(): string {
-		if( $this->isInSrgbGamut($this->gamutEpsilon) ) {
-			// Can be losslessly represented in sRGB
-			if( $this->a == 1 ) {
-				return $this->getRgbHexString();
-			}
-
-			return $this->getRgbaString();
-		}
-
-		// Out of sRGB gamut; use native format
-		return $this->getNativeCssString();
-	}
-
-	/**
 	 * Returns XYZ D65 color() format
 	 */
 	public function getNativeCssString(): string {

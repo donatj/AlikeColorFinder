@@ -37,7 +37,7 @@ interface ColorEntry {
 
 	public function getRgbHexString(): string;
 
-	public function getSimplestCssString(): string;
+	public function getSimplestCssString( float $epsilon = 0.001 ): string;
 
 	/**
 	 * Returns the native CSS string representation for this color space.

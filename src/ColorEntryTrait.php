@@ -13,12 +13,24 @@ trait ColorEntryTrait {
 	}
 
 	public function getRgbHexString(): string {
-		$hex = "#";
-		$hex .= str_pad(dechex((int)round($this->getR())), 2, "0", STR_PAD_LEFT);
+		$hex = str_pad(dechex((int)round($this->getR())), 2, "0", STR_PAD_LEFT);
 		$hex .= str_pad(dechex((int)round($this->getG())), 2, "0", STR_PAD_LEFT);
 		$hex .= str_pad(dechex((int)round($this->getB())), 2, "0", STR_PAD_LEFT);
 
-		return $hex;
+		$a = $this->getA();
+		if( $a < 1.0 ) {
+			$hex .= str_pad(dechex((int)round($a * 255)), 2, "0", STR_PAD_LEFT);
+		}
+
+		if( preg_match('/^(.{2})(.{2})(.{2})(.{2})?$/u', $hex, $regs) ) {
+			$hex = $regs[1][0] . $regs[2][0] . $regs[3][0];
+
+			if( isset($regs[4]) ) {
+				$hex .= $regs[4][0];
+			}
+		}
+
+		return '#' . $hex;
 	}
 
 	/**
@@ -64,11 +76,12 @@ trait ColorEntryTrait {
 	 * Returns the simplest CSS representation.
 	 * Default behavior: hex/rgba if in sRGB gamut, native format otherwise.
 	 * Classes can override for custom behavior (e.g., XyzColorEntry uses custom epsilon).
-	 */
-	public function getSimplestCssString(): string {
+	 *
+	 * @param float $epsilon*/
+	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( $this->isInSrgbGamut() ) {
 			// Can be losslessly represented in sRGB
-			if( $this->a == 1 ) {
+			if( $this->isAlphaHexCompatible($epsilon) ) {
 				return $this->getRgbHexString();
 			}
 
