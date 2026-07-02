@@ -22,7 +22,7 @@ trait ColorEntryTrait {
 			$hex .= str_pad(dechex((int)round($a * 255)), 2, "0", STR_PAD_LEFT);
 		}
 
-		if( preg_match('/^(.{2})(.{2})(.{2})(.{2})?$/u', $hex, $regs) ) {
+		if( preg_match('/^(.)\1(.)\2(.)\3(?:(.)\4)?$/u', $hex, $regs) ) {
 			$hex = $regs[1][0] . $regs[2][0] . $regs[3][0];
 
 			if( isset($regs[4]) ) {
