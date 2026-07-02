@@ -80,6 +80,18 @@ trait ColorEntryTrait {
 	}
 
 	/**
+	 * Check if alpha can be losslessly represented as 2-digit hex (00-FF).
+	 *
+	 * @param float $epsilon Tolerance for round-trip conversion (default 0.001)
+	 * @return bool True if alpha round-trips through hex without loss
+	 */
+	public function isAlphaHexCompatible( float $epsilon = 0.001 ): bool {
+		$hexValue   = round($this->a * 255);
+		$roundTrip  = $hexValue / 255;
+		return abs($this->a - $roundTrip) <= $epsilon;
+	}
+
+	/**
 	 * Check if this color is within the sRGB gamut (with floating-point tolerance).
 	 *
 	 * @param float $epsilon Tolerance for gamut boundary (default 0.001)
