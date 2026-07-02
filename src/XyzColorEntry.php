@@ -14,13 +14,22 @@ class XyzColorEntry implements ColorEntry {
 	/** @var array<string, int> */
 	protected array $distinctInstances = [];
 
+	protected float $gamutEpsilon;
+
 	/**
-	 * @param float $x  XYZ X coordinate (0–1 range; may exceed for HDR)
-	 * @param float $y  XYZ Y coordinate (0–1 range; may exceed for HDR)
-	 * @param float $z  XYZ Z coordinate (0–1 range; may exceed for HDR)
-	 * @param float $a  alpha 0–1
+	 * @param float $x XYZ X coordinate (0–1 range; may exceed for HDR)
+	 * @param float $y XYZ Y coordinate (0–1 range; may exceed for HDR)
+	 * @param float $z XYZ Z coordinate (0–1 range; may exceed for HDR)
+	 * @param float $a alpha 0–1
+	 * @param float $gamutEpsilon tolerance for gamut detection (default 0.001)
 	 */
-	public function __construct( float $x, float $y, float $z, float $a = 1.0 ) {
+	public function __construct(
+		float $x,
+		float $y,
+		float $z,
+		float $a = 1.0,
+		float $gamutEpsilon = 0.001,
+	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
@@ -28,6 +37,8 @@ class XyzColorEntry implements ColorEntry {
 		$this->xyzY = $y;
 		$this->xyzZ = $z;
 		$this->a    = $a;
+
+		$this->gamutEpsilon = $gamutEpsilon;
 	}
 
 	/**
@@ -80,6 +91,7 @@ class XyzColorEntry implements ColorEntry {
 		$r = round($this->getR());
 		$g = round($this->getG());
 		$b = round($this->getB());
+
 		return "rgba({$r},{$g},{$b},{$this->a})";
 	}
 
@@ -93,11 +105,31 @@ class XyzColorEntry implements ColorEntry {
 	}
 
 	public function getSimplestCssString(): string {
-		if( $this->a == 1 ) {
-			return $this->getRgbHexString();
+		// Check if color is within sRGB gamut (all linear RGB components in [0, 1])
+		// Use epsilon for floating-point tolerance
+		$linear  = $this->getLinearSrgb();
+		$inGamut = $linear[0] >= -$this->gamutEpsilon && $linear[0] <= 1 + $this->gamutEpsilon
+			&& $linear[1] >= -$this->gamutEpsilon && $linear[1] <= 1 + $this->gamutEpsilon
+			&& $linear[2] >= -$this->gamutEpsilon && $linear[2] <= 1 + $this->gamutEpsilon;
+
+		if( $inGamut ) {
+			// Can be losslessly represented in sRGB
+			if( $this->a == 1 ) {
+				return $this->getRgbHexString();
+			}
+
+			return $this->getRgbaString();
 		}
 
-		return $this->getRgbaString();
+		// Out of sRGB gamut; preserve HDR data with xyz-d65
+		$x = $this->xyzX;
+		$y = $this->xyzY;
+		$z = $this->xyzZ;
+		if( $this->a == 1 ) {
+			return sprintf('color(xyz-d65 %.6g %.6g %.6g)', $x, $y, $z);
+		}
+
+		return sprintf('color(xyz-d65 %.6g %.6g %.6g / %.6g)', $x, $y, $z, $this->a);
 	}
 
 	/**
