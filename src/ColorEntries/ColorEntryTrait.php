@@ -46,7 +46,7 @@ trait ColorEntryTrait {
 	}
 
 	/**
-	 * @return array
+	 * @return array{l: float, a: float, b: float, alpha: float}
 	 */
 	public function getLabAlphaCieArray(): array {
 		$xyz = $this->getXyzaArray();
@@ -55,6 +55,9 @@ trait ColorEntryTrait {
 		$xyz['x'] /= 95.047;
 		$xyz['y'] /= 100;
 		$xyz['z'] /= 108.883;
+
+		// Unset alpha before array_map to avoid unnecessary computation
+		unset($xyz['a']);
 
 		$xyz = array_map(function( $item ) {
 			if( $item > 0.008856 ) {
@@ -68,7 +71,7 @@ trait ColorEntryTrait {
 			'l'     => (116 * $xyz['y']) - 16,
 			'a'     => 500 * ($xyz['x'] - $xyz['y']),
 			'b'     => 200 * ($xyz['y'] - $xyz['z']),
-			'Alpha' => $this->a,
+			'alpha' => $this->a,
 		];
 	}
 

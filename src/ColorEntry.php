@@ -56,7 +56,7 @@ interface ColorEntry {
 	public function getXyzaArray(): array;
 
 	/**
-	 * @return array
+	 * @return array{l: float, a: float, b: float, alpha: float}
 	 */
 	public function getLabAlphaCieArray(): array;
 
