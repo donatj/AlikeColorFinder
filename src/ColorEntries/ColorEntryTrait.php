@@ -80,7 +80,7 @@ trait ColorEntryTrait {
 	 * @param float $epsilon
 	 */
 	public function getSimplestCssString( float $epsilon = 0.001 ): string {
-		if( $this->isInSrgbGamut() ) {
+		if( $this->isInSrgbGamut($epsilon) ) {
 			// Can be losslessly represented in sRGB
 			if( $this->isAlphaHexCompatible($epsilon) ) {
 				return $this->getRgbHexString();
