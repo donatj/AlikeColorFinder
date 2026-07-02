@@ -37,10 +37,10 @@ class ColorDiffStrategyTest extends TestCase {
 		$rows = [];
 		$file = fopen(__DIR__ . '/color-diffs.csv', 'r');
 
-		fgetcsv($file, 0); // skip header line
+		fgetcsv($file, 0, ',', '"', ''); // skip header line
 
 		for( ; ; ) {
-			$data = fgetcsv($file, 0);
+			$data = fgetcsv($file, 0, ',', '"', '');
 			if( $data === false ) {
 				break;
 			}
