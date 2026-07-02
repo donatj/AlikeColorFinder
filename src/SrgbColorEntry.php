@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class SrgbColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	protected float $r;
 	protected float $g;

@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class XyzColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** XYZ D65 storage (float, 0–1 range; may exceed 1 for HDR colors). */
 	protected float $xyzX;

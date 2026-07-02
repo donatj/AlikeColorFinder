@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class OklabColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** OKLab storage */
 	protected float $l;

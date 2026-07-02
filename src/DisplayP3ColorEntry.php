@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class DisplayP3ColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** Display P3 RGB storage (float, 0–1 range; may exceed for HDR). */
 	protected float $r;

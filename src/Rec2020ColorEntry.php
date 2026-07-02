@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class Rec2020ColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** Rec.2020 RGB storage (float, 0–1 range; may exceed for HDR). */
 	protected float $r;

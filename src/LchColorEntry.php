@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class LchColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** LCH D50 storage (polar Lab) */
 	protected float $l;

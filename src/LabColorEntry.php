@@ -5,6 +5,7 @@ namespace donatj\AlikeColorFinder;
 class LabColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
+	use ColorInstanceTrait;
 
 	/** Lab D50 storage */
 	protected float $l;

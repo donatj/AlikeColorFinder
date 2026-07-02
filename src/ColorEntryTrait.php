@@ -4,27 +4,6 @@ namespace donatj\AlikeColorFinder;
 
 trait ColorEntryTrait {
 
-	/** @var array<string, int> */
-	protected array $distinctInstances = [];
-
-	public function addInstance( string $instance ): void {
-		if( !isset($this->distinctInstances[$instance]) ) {
-			$this->distinctInstances[$instance] = 0;
-		}
-		$this->distinctInstances[$instance]++;
-	}
-
-	public function getInstanceTotal(): int {
-		return array_sum($this->distinctInstances);
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getDistinctInstances(): array {
-		return array_keys($this->distinctInstances);
-	}
-
 	public function getRgbaString(): string {
 		$r = round($this->getR());
 		$g = round($this->getG());
