@@ -90,6 +90,12 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHwb( $h, $w, $b, $a = 1.0 ) {
+		// Normalize hue to [0, 360) range
+		$h = fmod($h, 360);
+		if( $h < 0 ) {
+			$h += 360;
+		}
+
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
 			$gray = $w / ($w + $b) * 255;
@@ -97,7 +103,7 @@ class ColorEntryFactory {
 		}
 
 		// Compute pure hue RGB (0-1 range) by sector
-		$hNorm   = fmod($h, 360);
+		$hNorm   = $h;
 		$hSector = $hNorm / 60;
 		$sector  = (int)$hSector % 6;
 		$f       = $hSector - floor($hSector);
