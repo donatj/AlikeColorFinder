@@ -122,13 +122,7 @@ class Rec2020ColorEntry implements ColorEntry {
 	}
 
 	private static function rec2020ToLinear( float $c ): float {
-		$alpha = 1.09929682680944;
-		$beta  = 0.018053968510807;
-		if( $c < $beta * 4.5 ) {
-			return $c / 4.5;
-		}
-
-		return (($c + $alpha - 1) / $alpha) ** (1 / 0.45);
+		return ($c < 0 ? -1 : 1) * (abs($c) ** 2.4);
 	}
 
 }

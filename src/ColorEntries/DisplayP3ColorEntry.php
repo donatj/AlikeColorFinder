@@ -122,11 +122,14 @@ class DisplayP3ColorEntry implements ColorEntry {
 	}
 
 	private static function srgbToLinear( float $c ): float {
-		if( $c <= 0.04045 ) {
+		$sign = $c < 0 ? -1 : 1;
+		$abs  = abs($c);
+
+		if( $abs <= 0.04045 ) {
 			return $c / 12.92;
 		}
 
-		return (($c + 0.055) / 1.055) ** 2.4;
+		return $sign * (($abs + 0.055) / 1.055) ** 2.4;
 	}
 
 }

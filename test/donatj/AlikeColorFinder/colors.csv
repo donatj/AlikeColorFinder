@@ -90,7 +90,7 @@ grey,#808080
 "color(a98-rgb 0.5 0.3 0.8)",#8f4bd1
 "color(prophoto-rgb 0.5 0.5 0.5)",#929292
 "color(rec2020 1 0 0)",color(rec2020 1 0 0)
-"color(rec2020 0.5 0.5 0.5)",#8b8b8b
+"color(rec2020 0.5 0.5 0.5)",#787879
 "color(rec2020 1.000 0.000 0.000)",color(rec2020 1 0 0)
 "color(xyz 0 0 0)",#000
 "color(xyz-d65 0.95045 1 1.08905)",#fff

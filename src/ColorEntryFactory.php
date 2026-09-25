@@ -264,10 +264,14 @@ class ColorEntryFactory {
 	}
 
 	private static function prophotoToLinear( $c ) {
-		if( $c <= 16 / 512 ) {
+		$sign = $c < 0 ? -1 : 1;
+		$abs  = abs($c);
+
+		if( $abs <= 16 / 512 ) {
 			return $c / 16;
 		}
-		return $c ** 1.8;
+
+		return $sign * ($abs ** 1.8);
 	}
 
 	private static function prophotorgbLinearToXyzD50( $r, $g, $b ) {
@@ -279,12 +283,7 @@ class ColorEntryFactory {
 	}
 
 	private static function rec2020ToLinear( $c ) {
-		$alpha = 1.09929682680944;
-		$beta  = 0.018053968510807;
-		if( $c < $beta * 4.5 ) {
-			return $c / 4.5;
-		}
-		return (($c + $alpha - 1) / $alpha) ** (1 / 0.45);
+		return ($c < 0 ? -1 : 1) * (abs($c) ** 2.4);
 	}
 
 	private static function rec2020LinearToXyzD65( $r, $g, $b ) {

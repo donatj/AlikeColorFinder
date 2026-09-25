@@ -30,6 +30,31 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
+	public function testExtendedTransferFunctionsPreserveSign() {
+		foreach( [ 'display-p3', 'prophoto-rgb', 'rec2020' ] as $colorSpace ) {
+			$positive = $this->extractSingleColor("color({$colorSpace} 0.5 0 0)");
+			$negative = $this->extractSingleColor("color({$colorSpace} -0.5 0 0)");
+			$positiveXyz = $positive->getXyzaArray();
+			$negativeXyz = $negative->getXyzaArray();
+
+			$this->assertEqualsWithDelta(-$positiveXyz['x'], $negativeXyz['x'], 0.000000001);
+			$this->assertEqualsWithDelta(-$positiveXyz['y'], $negativeXyz['y'], 0.000000001);
+			$this->assertEqualsWithDelta(-$positiveXyz['z'], $negativeXyz['z'], 0.000000001);
+		}
+	}
+
+	private function extractSingleColor( $css ) {
+		$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
+
+		foreach( $errors as $error ) {
+			throw $error['exception'];
+		}
+
+		$this->assertCount(1, $colors);
+
+		return reset($colors);
+	}
+
 	public function colorProvider() {
 		$colors = [];
 		$file   = fopen(__DIR__ . '/colors.csv', 'r');
