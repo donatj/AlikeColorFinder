@@ -20,6 +20,16 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertSame($expected, reset($colors)->getSimplestCssString());
 	}
 
+	public function testExtendedSrgbValuesAreNotCollapsed() {
+		$colors = (new CssColorExtractor('a { color: #f00; background: color(srgb 1.1 0 0); }'))->extractColors($errors);
+
+		foreach( $errors as $error ) {
+			throw $error['exception'];
+		}
+
+		$this->assertCount(2, $colors);
+	}
+
 	public function colorProvider() {
 		$colors = [];
 		$file   = fopen(__DIR__ . '/colors.csv', 'r');

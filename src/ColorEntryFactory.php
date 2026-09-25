@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder;
 
 use donatj\AlikeColorFinder\ColorEntries\DisplayP3ColorEntry;
+use donatj\AlikeColorFinder\ColorEntries\ExtendedSrgbColorEntry;
 use donatj\AlikeColorFinder\ColorEntries\LabColorEntry;
 use donatj\AlikeColorFinder\ColorEntries\LchColorEntry;
 use donatj\AlikeColorFinder\ColorEntries\OklabColorEntry;
@@ -154,13 +155,7 @@ class ColorEntryFactory {
 	public function makeFromColorSpace( $colorSpace, $c1, $c2, $c3, $a = 1.0 ) {
 		switch( $colorSpace ) {
 			case 'srgb':
-				// Gamma-encoded sRGB 0–1; snap to the integer sRGB lattice
-				return new SrgbColorEntry(
-					round(max(0.0, min(1.0, $c1)) * 255),
-					round(max(0.0, min(1.0, $c2)) * 255),
-					round(max(0.0, min(1.0, $c3)) * 255),
-					$a
-				);
+				return new ExtendedSrgbColorEntry($c1, $c2, $c3, $a);
 
 			case 'srgb-linear':
 				list($x, $y, $z) = self::linearSrgbToXyzD65($c1, $c2, $c3);
@@ -250,13 +245,6 @@ class ColorEntryFactory {
 			0.2126 * $r + 0.7152 * $g + 0.0722 * $b,
 			0.0193 * $r + 0.1192 * $g + 0.9505 * $b,
 		];
-	}
-
-	private static function srgbToLinear( $c ) {
-		if( $c <= 0.04045 ) {
-			return $c / 12.92;
-		}
-		return (($c + 0.055) / 1.055) ** 2.4;
 	}
 
 	private static function displayP3LinearToXyzD65( $r, $g, $b ) {
