@@ -78,13 +78,13 @@ trait ColorEntryTrait {
 	/**
 	 * Returns the simplest CSS representation.
 	 * Default behavior: hex/rgba if in sRGB gamut, native format otherwise.
-	 * Classes can override for custom behavior (e.g., XyzColorEntry uses custom epsilon).
+	 * Classes can override for custom behavior.
 	 *
 	 * @param float $epsilon
 	 */
 	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( $this->isInSrgbGamut($epsilon) ) {
-			// Can be losslessly represented in sRGB
+			// In-gamut colors use an sRGB representation.
 			if( $this->isAlphaHexCompatible($epsilon) ) {
 				return $this->getRgbHexString();
 			}
@@ -97,10 +97,10 @@ trait ColorEntryTrait {
 	}
 
 	/**
-	 * Check if alpha can be losslessly represented as 2-digit hex (00-FF).
+	 * Check if alpha is sufficiently close to an 8-bit hex value (00-FF).
 	 *
-	 * @param float $epsilon Tolerance for round-trip conversion (default 0.001)
-	 * @return bool True if alpha round-trips through hex without loss
+	 * @param float $epsilon Maximum permitted round-trip error (default 0.001)
+	 * @return bool True if alpha differs from its 8-bit representation by no more than epsilon
 	 */
 	public function isAlphaHexCompatible( float $epsilon = 0.001 ): bool {
 		$hexValue  = round($this->a * 255);
