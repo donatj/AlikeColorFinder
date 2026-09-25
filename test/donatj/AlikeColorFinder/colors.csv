@@ -41,6 +41,10 @@ grey,#808080
 "hwb(390 0% 0%)",#ff8000
 "hwb(480 0% 0%)",#0f0
 "hwb(-390 0% 0%)",#ff0080
+"rgb(100% 0% 0%)",#f00
+"lab(50% 0% 0%)",#777
+"oklab(50% 0% 0%)",#636363
+"LAB(50 0 0)",#777
 "lab(0 0 0)",#000
 "lab(100 0 0)",#fff
 "lab(50 0 0)",#777
@@ -75,6 +79,8 @@ grey,#808080
 "color(srgb 1 0 0 / 0.5)","rgba(255,0,0,0.5)"
 "color(srgb-linear 1 0 0)",#f00
 "color(srgb-linear 0.5 0.5 0.5)",#bcbcbc
+"color(sRGB 1 0 0)",#f00
+"color(display-p3-linear 1 0 0)","color(xyz-d65 0.486571 0.228975 0)"
 "color(display-p3 1 0 0)",color(display-p3 1 0 0)
 "color(display-p3 0 1 0)",color(display-p3 0 1 0)
 "color(display-p3 1.0 0.0 0.0)",color(display-p3 1 0 0)

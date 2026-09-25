@@ -170,6 +170,11 @@ class ColorEntryFactory {
 			case 'display-p3':
 				return new DisplayP3ColorEntry($c1, $c2, $c3, $a);
 
+			case 'display-p3-linear':
+				list($x, $y, $z) = self::displayP3LinearToXyzD65($c1, $c2, $c3);
+
+				return new XyzColorEntry($x, $y, $z, $a);
+
 			case 'a98-rgb':
 				// A98-RGB uses gamma 563/256 ≈ 2.19921875
 				$rLin = ($c1 >= 0 ? 1 : -1) * (abs($c1) ** (563 / 256));

@@ -187,7 +187,7 @@ class CssColorExtractor {
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
 (?:(?P<func>rgb|hsl|lab|lch|oklab|oklch|hwb)\s*\((?P<params>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
 (?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){4})\))|
-(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>(?:-?(?:\d*\.)?\d+%?\s*){3}(?:\/\s*-?(?:\d*\.)?\d+%?)?)\))|
+(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>(?:-?(?:\d*\.)?\d+%?\s*){3}(?:\/\s*-?(?:\d*\.)?\d+%?)?)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -210,7 +210,7 @@ class CssColorExtractor {
 						$this->colors[strtolower($result['named'])]
 					);
 				} elseif( !empty($result['color_func']) ) {
-					$colorSpace   = $result['color_space'];
+					$colorSpace   = strtolower($result['color_space']);
 					$paramMatches = trim($result['color_params']);
 
 					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
@@ -232,19 +232,12 @@ class CssColorExtractor {
 						$params[3] ?? 1.0
 					);
 				} else {
-					$funcMatch    = $result['func'] ?: $result['func2'];
+					$funcMatch    = strtolower($result['func'] ?: $result['func2']);
 					$paramMatches = $result['params'] ?: $result['params2'];
 
 					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
 					$params = array_map('\trim', $params);
-					foreach( $params as &$param ) {
-						if( substr($param, -1) === '%' ) {
-							$param = ((float)substr($param, 0, -1)) / 100;
-						} else {
-							$param = (float)$param;
-						}
-					}
-					unset($param);
+					$params = $this->normalizeFunctionParams($funcMatch, $params);
 
 					$color = $this->getFuncColor($funcMatch, $params);
 				}
@@ -269,6 +262,53 @@ class CssColorExtractor {
 		}
 
 		return $colors;
+	}
+
+	/**
+	 * Convert CSS percentage components to their function-specific reference range.
+	 *
+	 * @param string $func
+	 * @param string[] $params
+	 * @return float[]
+	 */
+	private function normalizeFunctionParams( $func, array $params ) {
+		foreach( $params as $index => $param ) {
+			$isPercentage = substr($param, -1) === '%';
+			$value        = (float)($isPercentage ? substr($param, 0, -1) : $param);
+
+			if( !$isPercentage ) {
+				$params[$index] = $value;
+				continue;
+			}
+
+			if( $index === 3 ) {
+				$params[$index] = $value / 100;
+				continue;
+			}
+
+			switch( $func ) {
+				case 'rgb':
+				case 'rgba':
+					$params[$index] = $value * 2.55;
+					break;
+				case 'lab':
+					$params[$index] = $index === 0 ? $value : $value * 1.25;
+					break;
+				case 'lch':
+					$params[$index] = $index === 0 ? $value : ($index === 1 ? $value * 1.5 : $value);
+					break;
+				case 'oklab':
+					$params[$index] = $index === 0 ? $value / 100 : $value * 0.004;
+					break;
+				case 'oklch':
+					$params[$index] = $index === 0 ? $value / 100 : ($index === 1 ? $value * 0.004 : $value);
+					break;
+				default:
+					$params[$index] = $value / 100;
+			}
+		}
+
+		return $params;
 	}
 
 	/**
