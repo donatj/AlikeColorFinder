@@ -2,213 +2,62 @@
 
 namespace donatj\AlikeColorFinder;
 
-class ColorEntry {
+interface ColorEntry {
 
 	/**
-	 * @var float
+	 * @return float  sRGB red 0–255
 	 */
-	protected $r, $g, $b;
+	public function getR(): float;
 
 	/**
-	 * @var float
+	 * @return float  sRGB green 0–255
 	 */
-	protected $a;
-
-	protected $distinctInstances = [];
+	public function getG(): float;
 
 	/**
-	 * @param float $r
-	 * @param float $g
-	 * @param float $b
-	 * @param float $a
+	 * @return float  sRGB blue 0–255
 	 */
-	public function __construct( $r, $g, $b, $a = 1.0 ) {
-		$this->setR($r);
-		$this->setG($g);
-		$this->setB($b);
-		$this->setA($a);
-	}
+	public function getB(): float;
 
 	/**
-	 * @return float
+	 * @return float  alpha 0–1
 	 */
-	public function getR() {
-		return $this->r;
-	}
+	public function getA(): float;
 
-	/**
-	 * @return float
-	 */
-	public function getG() {
-		return $this->g;
-	}
+	public function addInstance( string $instance ): void;
 
-	/**
-	 * @return float
-	 */
-	public function getB() {
-		return $this->b;
-	}
-
-	/**
-	 * @return float
-	 */
-	public function getA() {
-		return $this->a;
-	}
-
-	/**
-	 * @param float $r
-	 */
-	public function setR( $r ) {
-		if( $r > 255 || $r < 0 ) {
-			throw new \RangeException('Red must be between 0 and 255');
-		}
-		$this->r = $r;
-	}
-
-	/**
-	 * @param float $g
-	 */
-	public function setG( $g ) {
-		if( $g > 255 || $g < 0 ) {
-			throw new \RangeException('Green must be between 0 and 255');
-		}
-		$this->g = $g;
-	}
-
-	/**
-	 * @param float $b
-	 */
-	public function setB( $b ) {
-		if( $b > 255 || $b < 0 ) {
-			throw new \RangeException('Blue must be between 0 and 255');
-		}
-		$this->b = $b;
-	}
-
-	/**
-	 * @param float $a
-	 */
-	public function setA( $a ) {
-		if( $a > 1 || $a < 0 ) {
-			throw new \RangeException('Alpha must be between 0 and 1');
-		}
-		$this->a = $a;
-	}
-
-	public function addInstance( $instance ) {
-		if( !isset($this->distinctInstances[$instance]) ) {
-			$this->distinctInstances[$instance] = 0;
-		}
-		$this->distinctInstances[$instance]++;
-	}
-
-	public function getInstanceTotal() {
-		return array_sum($this->distinctInstances);
-	}
+	public function getInstanceTotal(): int;
 
 	/**
 	 * @return string[]
 	 */
-	public function getDistinctInstances() {
-		return array_keys($this->distinctInstances);
-	}
+	public function getDistinctInstances(): array;
 
-	public function getRgbaString() {
-		$r = round($this->r);
-		$g = round($this->g);
-		$b = round($this->b);
-		return "rgba({$r},{$g},{$b},{$this->a})";
-	}
+	public function getRgbaString(): string;
 
-	public function getRgbHexString() {
-		$hex = "#";
-		$hex .= str_pad(dechex((int)$this->r), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex((int)$this->g), 2, "0", STR_PAD_LEFT);
-		$hex .= str_pad(dechex((int)$this->b), 2, "0", STR_PAD_LEFT);
+	public function getRgbHexString(): string;
 
-		return $hex;
-	}
+	public function getSimplestCssString( float $epsilon = 0.001 ): string;
 
-	public function getSimplestCssString() {
-		if( $this->a == 1 ) {
-			return $this->getRgbHexString();
-		}
-
-		return $this->getRgbaString();
-	}
+	/**
+	 * Returns the native CSS string representation for this color space.
+	 * For example: "lab(50 0 0)" for Lab, "oklch(0.5 0.1 180)" for OKLch
+	 */
+	public function getNativeCssString(): string;
 
 	/**
 	 * @return array
 	 */
-	public function getRgbaArray() {
-		return [
-			'r' => $this->getR(),
-			'g' => $this->getG(),
-			'b' => $this->getB(),
-			'a' => $this->getA(),
-		];
-	}
+	public function getRgbaArray(): array;
 
 	/**
 	 * @return array
 	 */
-	public function getXyzaArray() {
-		$rgba = $this->getRgbaArray();
-		unset($rgba['a']);
-
-		// Normalize RGB values to 1
-		$rgba['r'] /= 255;
-		$rgba['g'] /= 255;
-		$rgba['b'] /= 255;
-
-		$rgba = array_map(function( $item ) {
-			if( $item > 0.04045 ) {
-				$item = pow((($item + 0.055) / 1.055), 2.4);
-			} else {
-				$item = $item / 12.92;
-			}
-
-			return $item * 100;
-		}, $rgba);
-
-		//Observer. = 2°, Illuminant = D65
-		return [
-			'x' => ($rgba['r'] * 0.4124) + ($rgba['g'] * 0.3576) + ($rgba['b'] * 0.1805),
-			'y' => ($rgba['r'] * 0.2126) + ($rgba['g'] * 0.7152) + ($rgba['b'] * 0.0722),
-			'z' => ($rgba['r'] * 0.0193) + ($rgba['g'] * 0.1192) + ($rgba['b'] * 0.9505),
-			'a' => $this->getA(),
-		];
-	}
+	public function getXyzaArray(): array;
 
 	/**
-	 * @return array
+	 * @return array{l: float, a: float, b: float, alpha: float}
 	 */
-	public function getLabAlphaCieArray() {
-		$xyz = $this->getXyzaArray();
-		unset($xyz['a']);
-
-		//Ovserver = 2*, Iluminant=D65
-		$xyz['x'] /= 95.047;
-		$xyz['y'] /= 100;
-		$xyz['z'] /= 108.883;
-
-		$xyz = array_map(function( $item ) {
-			if( $item > 0.008856 ) {
-				//return $item ^ (1/3);
-				return pow($item, 1 / 3);
-			}
-
-			return (7.787 * $item) + (16 / 116);
-		}, $xyz);
-
-		return [
-			'l'     => (116 * $xyz['y']) - 16,
-			'a'     => 500 * ($xyz['x'] - $xyz['y']),
-			'b'     => 200 * ($xyz['y'] - $xyz['z']),
-			'Alpha' => $this->getA(),
-		];
-	}
+	public function getLabAlphaCieArray(): array;
 
 }

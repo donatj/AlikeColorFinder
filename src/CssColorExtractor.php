@@ -185,8 +185,9 @@ class CssColorExtractor {
 		}, array_keys($this->colors)));
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-(?:(?P<func>rgb|hsl)\s*\((?P<params>(?:\s*(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*(?:\d*\.)?\d+%?)?)\))|
-(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*(?:\d*\.)?\d+%?\s*,?){4})\))|
+(?:(?P<func>rgb|hsl|lab|lch|oklab|oklch|hwb)\s*\((?P<params>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
+(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){4})\))|
+(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>(?:-?(?:\d*\.)?\d+%?\s*){3}(?:\/\s*-?(?:\d*\.)?\d+%?)?)\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -208,9 +209,9 @@ class CssColorExtractor {
 					$color = $this->factory->makeFromHexString(
 						$this->colors[strtolower($result['named'])]
 					);
-				} else {
-					$funcMatch    = $result['func'] ?: $result['func2'];
-					$paramMatches = $result['params'] ?: $result['params2'];
+				} elseif( !empty($result['color_func']) ) {
+					$colorSpace   = strtolower($result['color_space']);
+					$paramMatches = trim($result['color_params']);
 
 					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
 					$params = array_map('\trim', $params);
@@ -223,6 +224,21 @@ class CssColorExtractor {
 					}
 					unset($param);
 
+					$color = $this->factory->makeFromColorSpace(
+						$colorSpace,
+						$params[0] ?? 0,
+						$params[1] ?? 0,
+						$params[2] ?? 0,
+						$params[3] ?? 1.0
+					);
+				} else {
+					$funcMatch    = strtolower($result['func'] ?: $result['func2']);
+					$paramMatches = $result['params'] ?: $result['params2'];
+
+					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
+					$params = array_map('\trim', $params);
+					$params = $this->normalizeFunctionParams($funcMatch, $params);
+
 					$color = $this->getFuncColor($funcMatch, $params);
 				}
 			} catch( \Exception $e ) {
@@ -234,7 +250,10 @@ class CssColorExtractor {
 				continue;
 			}
 
-			$key = md5($color->getRgbaString());
+			// Use XYZ coordinates for deduplication to preserve HDR/wide-gamut distinctions
+			// Colors that clamp to the same sRGB may have different XYZ values
+			$xyz = $color->getXyzaArray();
+			$key = md5(sprintf('%.8f,%.8f,%.8f,%.8f', $xyz['x'], $xyz['y'], $xyz['z'], $xyz['a']));
 			if( !isset($colors[$key]) ) {
 				$colors[$key] = $color;
 			}
@@ -243,6 +262,53 @@ class CssColorExtractor {
 		}
 
 		return $colors;
+	}
+
+	/**
+	 * Convert CSS percentage components to their function-specific reference range.
+	 *
+	 * @param string $func
+	 * @param string[] $params
+	 * @return float[]
+	 */
+	private function normalizeFunctionParams( $func, array $params ) {
+		foreach( $params as $index => $param ) {
+			$isPercentage = substr($param, -1) === '%';
+			$value        = (float)($isPercentage ? substr($param, 0, -1) : $param);
+
+			if( !$isPercentage ) {
+				$params[$index] = $value;
+				continue;
+			}
+
+			if( $index === 3 ) {
+				$params[$index] = $value / 100;
+				continue;
+			}
+
+			switch( $func ) {
+				case 'rgb':
+				case 'rgba':
+					$params[$index] = $value * 2.55;
+					break;
+				case 'lab':
+					$params[$index] = $index === 0 ? $value : $value * 1.25;
+					break;
+				case 'lch':
+					$params[$index] = $index === 0 ? $value : ($index === 1 ? $value * 1.5 : $value);
+					break;
+				case 'oklab':
+					$params[$index] = $index === 0 ? $value / 100 : $value * 0.004;
+					break;
+				case 'oklch':
+					$params[$index] = $index === 0 ? $value / 100 : ($index === 1 ? $value * 0.004 : $value);
+					break;
+				default:
+					$params[$index] = $value / 100;
+			}
+		}
+
+		return $params;
 	}
 
 	/**
@@ -282,6 +348,56 @@ class CssColorExtractor {
 
 				if( count($params) === 4 ) {
 					return $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'hwb':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromHwb($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromHwb($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'lab':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromLab($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromLab($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'lch':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromLch($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromLch($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'oklab':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromOklab($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromOklab($params[0], $params[1], $params[2], $params[3]);
+				}
+
+				throw new \LogicException('Invalid param count');
+			case 'oklch':
+				if( count($params) === 3 ) {
+					return $this->factory->makeFromOklch($params[0], $params[1], $params[2]);
+				}
+
+				if( count($params) === 4 ) {
+					return $this->factory->makeFromOklch($params[0], $params[1], $params[2], $params[3]);
 				}
 
 				throw new \LogicException('Invalid param count');
