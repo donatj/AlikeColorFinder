@@ -17,21 +17,18 @@ class XyzColorEntry implements ColorEntry {
 	protected float $xyzZ;
 
 	protected float $a;
-	protected float $gamutEpsilon;
 
 	/**
 	 * @param float $x XYZ X coordinate (0–1 range; may exceed for HDR)
 	 * @param float $y XYZ Y coordinate (0–1 range; may exceed for HDR)
 	 * @param float $z XYZ Z coordinate (0–1 range; may exceed for HDR)
 	 * @param float $a alpha 0–1
-	 * @param float $gamutEpsilon tolerance for gamut detection (default 0.001)
 	 */
 	public function __construct(
 		float $x,
 		float $y,
 		float $z,
-		float $a = 1.0,
-		float $gamutEpsilon = 0.001
+		float $a = 1.0
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -40,8 +37,6 @@ class XyzColorEntry implements ColorEntry {
 		$this->xyzY = $y;
 		$this->xyzZ = $z;
 		$this->a    = $a;
-
-		$this->gamutEpsilon = $gamutEpsilon;
 	}
 
 	/**
