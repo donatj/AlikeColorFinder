@@ -273,13 +273,19 @@ class CssColorExtractor {
 	 * @return list<float>
 	 */
 	private function normalizeColorSpaceParams( array $params ): array {
-		return array_map(static function( string $param ): float {
+		$params = array_map(static function( string $param ): float {
 			if( substr($param, -1) === '%' ) {
 				return ((float)substr($param, 0, -1)) / 100;
 			}
 
 			return (float)$param;
 		}, $params);
+
+		if( isset($params[3]) ) {
+			$params[3] = self::clamp($params[3], 0.0, 1.0);
+		}
+
+		return $params;
 	}
 
 	/**
@@ -324,7 +330,44 @@ class CssColorExtractor {
 			}
 		}
 
-		return $params;
+		if( isset($params[3]) ) {
+			$params[3] = self::clamp($params[3], 0.0, 1.0);
+		}
+
+		switch( $func ) {
+			case 'rgb':
+			case 'rgba':
+				$params[0] = self::clamp($params[0], 0.0, 255.0);
+				$params[1] = self::clamp($params[1], 0.0, 255.0);
+				$params[2] = self::clamp($params[2], 0.0, 255.0);
+				break;
+			case 'hsl':
+			case 'hsla':
+			case 'hwb':
+				$params[1] = self::clamp($params[1], 0.0, 1.0);
+				$params[2] = self::clamp($params[2], 0.0, 1.0);
+				break;
+			case 'lab':
+				$params[0] = self::clamp($params[0], 0.0, 100.0);
+				break;
+			case 'lch':
+				$params[0] = self::clamp($params[0], 0.0, 100.0);
+				$params[1] = max(0.0, $params[1]);
+				break;
+			case 'oklab':
+				$params[0] = self::clamp($params[0], 0.0, 1.0);
+				break;
+			case 'oklch':
+				$params[0] = self::clamp($params[0], 0.0, 1.0);
+				$params[1] = max(0.0, $params[1]);
+				break;
+		}
+
+		return array_values($params);
+	}
+
+	private static function clamp( float $value, float $minimum, float $maximum ): float {
+		return max($minimum, min($maximum, $value));
 	}
 
 	/**
