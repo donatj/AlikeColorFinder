@@ -31,11 +31,18 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testColorFunctionRejectsWrongComponentCount() {
-		$colors = (new CssColorExtractor('a { color: color(srgb 100); }'))->extractColors($errors);
+		foreach( [
+			'color(srgb 100)',
+			'color(srgb 1 2)',
+			'color(srgb 1 2 3 4)',
+			'color(srgb 1 2 / 0.5)',
+		] as $css ) {
+			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
-		$this->assertCount(0, $colors);
-		$this->assertCount(1, $errors);
-		$this->assertInstanceOf(\LogicException::class, $errors[0]['exception']);
+			$this->assertCount(0, $colors, $css);
+			$this->assertCount(1, $errors, $css);
+			$this->assertInstanceOf(\LogicException::class, $errors[0]['exception'], $css);
+		}
 	}
 
 	public function testExtendedTransferFunctionsPreserveSign() {
