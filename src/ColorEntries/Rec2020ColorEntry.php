@@ -108,16 +108,12 @@ class Rec2020ColorEntry implements ColorEntry {
 		$gLin = self::rec2020ToLinear($this->g);
 		$bLin = self::rec2020ToLinear($this->b);
 
-		// Convert linear Rec.2020 to XYZ D65
-		$x = 0.6369580483012914 * $rLin + 0.14461690358620832 * $gLin + 0.1688809751641721 * $bLin;
-		$y = 0.2627002120112671 * $rLin + 0.6779980715188708 * $gLin + 0.05930171646986196 * $bLin;
-		$z = 0.0 * $rLin + 0.028072693049087428 * $gLin + 1.0609850577107909 * $bLin;
-
-		// XYZ D65 to linear sRGB
+		// Direct Rec.2020 to linear sRGB matrix, composed from the CSS Color 4
+		// Rec.2020-to-XYZ and XYZ-to-sRGB matrices at their specified precision.
 		return [
-			+3.2404542 * $x - 1.5371385 * $y - 0.4985314 * $z,
-			-0.9692660 * $x + 1.8760108 * $y + 0.0415560 * $z,
-			+0.0556434 * $x - 0.2040259 * $y + 1.0572252 * $z,
+			+1.6604910021084343 * $rLin - 0.58764113878854962 * $gLin - 0.0728498633198848 * $bLin,
+			-0.12455047452159085 * $rLin + 1.1328998971259603 * $gLin - 0.0083494226043694733 * $bLin,
+			-0.018150763354905307 * $rLin - 0.10057889800800737 * $gLin + 1.1187296613629127 * $bLin,
 		];
 	}
 

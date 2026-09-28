@@ -102,7 +102,7 @@ grey,#808080
 "color(prophoto-rgb 0.5 0.5 0.5)",#929292
 "color(prophoto-rgb 1 0 0)","color(xyz-d65 0.755608 0.268318 0.00391595)"
 "color(rec2020 1 0 0)",color(rec2020 1 0 0)
-"color(rec2020 0.5 0.5 0.5)",#787879
+"color(rec2020 0.5 0.5 0.5)",#787878
 "color(rec2020 1.000 0.000 0.000)",color(rec2020 1 0 0)
 "color(xyz 0 0 0)",#000
 "color(xyz 0.6 0 0)","color(xyz-d65 0.6 0 0)"
