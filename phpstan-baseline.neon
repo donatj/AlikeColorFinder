@@ -55,7 +55,7 @@ parameters:
 			path: composer/bin/alike
 
 		-
-			message: '#^Parameter \#1 \$stream of function fwrite expects resource, resource\|false given\.$#'
+			message: '#^Parameter \#1 \$[a-z]+ of function fwrite expects resource, resource\|false given\.$#'
 			identifier: argument.type
 			count: 4
 			path: composer/bin/alike
