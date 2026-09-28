@@ -108,16 +108,12 @@ class DisplayP3ColorEntry implements ColorEntry {
 		$gLin = self::srgbToLinear($this->g);
 		$bLin = self::srgbToLinear($this->b);
 
-		// Convert linear Display P3 to XYZ D65
-		$x = 0.4865709486482162 * $rLin + 0.26566769316909306 * $gLin + 0.1982172852343625 * $bLin;
-		$y = 0.22897456406974884 * $rLin + 0.6917385218564081 * $gLin + 0.07928691407384083 * $bLin;
-		$z = 0.0 * $rLin + 0.04511338185890264 * $gLin + 1.0439443689736354 * $bLin;
-
-		// XYZ D65 to linear sRGB
+		// Direct linear Display P3 to linear sRGB conversion composed from the
+		// CSS Color 4 matrices. Difference form preserves shared D65 neutrals.
 		return [
-			+3.2404542 * $x - 1.5371385 * $y - 0.4985314 * $z,
-			-0.9692660 * $x + 1.8760108 * $y + 0.0415560 * $z,
-			+0.0556434 * $x - 0.2040259 * $y + 1.0572252 * $z,
+			$rLin - 0.22494017628055993 * ($gLin - $rLin),
+			$gLin - 0.04205695470968818 * ($rLin - $gLin),
+			$bLin - 0.01963755459033444 * ($rLin - $bLin) - 0.07863604555063189 * ($gLin - $bLin),
 		];
 	}
 
