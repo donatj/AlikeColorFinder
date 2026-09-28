@@ -106,6 +106,7 @@ class LchColorEntry implements ColorEntry {
 		$z50 *= $d50Z;
 
 		// XYZ D50 to XYZ D65 (Bradford chromatic adaptation)
+		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 		$x = 0.955473421488075 * $x50 - 0.02309845494876471 * $y50 + 0.06325924320057072 * $z50;
 		$y = -0.0283697093338637 * $x50 + 1.0099953980813041 * $y50 + 0.021041441191917323 * $z50;
 		$z = 0.012314014864481998 * $x50 - 0.020507649298898964 * $y50 + 1.330365926242124 * $z50;

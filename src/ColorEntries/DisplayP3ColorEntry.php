@@ -110,6 +110,7 @@ class DisplayP3ColorEntry implements ColorEntry {
 
 		// Direct linear Display P3 to linear sRGB conversion composed from the
 		// CSS Color 4 matrices. Difference form preserves shared D65 neutrals.
+		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 		return [
 			$rLin - 0.22494017628055993 * ($gLin - $rLin),
 			$gLin - 0.04205695470968818 * ($rLin - $gLin),

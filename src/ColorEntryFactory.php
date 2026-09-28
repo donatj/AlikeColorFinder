@@ -212,6 +212,7 @@ class ColorEntryFactory {
 	/** @return array{float, float, float} */
 	private static function xyzD50ToXyzD65( float $x, float $y, float $z ): array {
 		// Bradford chromatic adaptation D50 → D65
+		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 		return [
 			0.955473421488075 * $x - 0.02309845494876471 * $y + 0.06325924320057072 * $z,
 			-0.0283697093338637 * $x + 1.0099953980813041 * $y + 0.021041441191917323 * $z,
