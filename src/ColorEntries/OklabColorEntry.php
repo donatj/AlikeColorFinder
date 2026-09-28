@@ -76,7 +76,7 @@ class OklabColorEntry implements ColorEntry {
 
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// OKLab to linear sRGB via LMS

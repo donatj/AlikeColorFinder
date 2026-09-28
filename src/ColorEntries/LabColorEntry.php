@@ -76,7 +76,7 @@ class LabColorEntry implements ColorEntry {
 
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Lab D50 to XYZ D50

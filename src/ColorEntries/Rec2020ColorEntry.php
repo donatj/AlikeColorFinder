@@ -76,7 +76,7 @@ class Rec2020ColorEntry implements ColorEntry {
 
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Convert Rec.2020 to linear

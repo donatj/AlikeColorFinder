@@ -34,7 +34,7 @@ trait ColorEntryTrait {
 	}
 
 	/**
-	 * @return array
+	 * @return array{r: float, g: float, b: float, a: float}
 	 */
 	public function getRgbaArray(): array {
 		return [

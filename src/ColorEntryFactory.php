@@ -99,7 +99,7 @@ class ColorEntryFactory {
 		return $this->makeFromHsla($h, $s, $l, 1);
 	}
 
-	public function makeFromHwb( $h, $w, $b, $a = 1.0 ) {
+	public function makeFromHwb( float $h, float $w, float $b, float $a = 1.0 ): ColorEntry {
 		// Normalize hue to [0, 360) range
 		$h = fmod($h, 360);
 		if( $h < 0 ) {
@@ -136,23 +136,23 @@ class ColorEntryFactory {
 		);
 	}
 
-	public function makeFromLab( $l, $aVal, $bVal, $a = 1.0 ) {
+	public function makeFromLab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
 		return new LabColorEntry($l, $aVal, $bVal, $a);
 	}
 
-	public function makeFromLch( $l, $c, $h, $a = 1.0 ) {
+	public function makeFromLch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
 		return new LchColorEntry($l, $c, $h, $a);
 	}
 
-	public function makeFromOklab( $l, $aVal, $bVal, $a = 1.0 ) {
+	public function makeFromOklab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
 		return new OklabColorEntry($l, $aVal, $bVal, $a);
 	}
 
-	public function makeFromOklch( $l, $c, $h, $a = 1.0 ) {
+	public function makeFromOklch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
 		return new OklchColorEntry($l, $c, $h, $a);
 	}
 
-	public function makeFromColorSpace( $colorSpace, $c1, $c2, $c3, $a = 1.0 ) {
+	public function makeFromColorSpace( string $colorSpace, float $c1, float $c2, float $c3, float $a = 1.0 ): ColorEntry {
 		switch( $colorSpace ) {
 			case 'srgb':
 				return new ExtendedSrgbColorEntry($c1, $c2, $c3, $a);
@@ -209,27 +209,8 @@ class ColorEntryFactory {
 	// Private conversion helpers
 	// -------------------------------------------------------------------------
 
-	private static function labD50ToXyzD50( $l, $a, $b ) {
-		$kappa   = 24389 / 27;
-		$epsilon = 216 / 24389;
-
-		// D50 white point
-		$d50X = 0.3457 / 0.3585;
-		$d50Y = 1.0;
-		$d50Z = (1.0 - 0.3457 - 0.3585) / 0.3585;
-
-		$fy = ($l + 16) / 116;
-		$fx = $a / 500 + $fy;
-		$fz = $fy - $b / 200;
-
-		$x = ($fx ** 3 > $epsilon) ? ($fx ** 3) : ((116 * $fx - 16) / $kappa);
-		$y = ($l > 8) ? (($l + 16) / 116) ** 3 : ($l / $kappa);
-		$z = ($fz ** 3 > $epsilon) ? ($fz ** 3) : ((116 * $fz - 16) / $kappa);
-
-		return [ $x * $d50X, $y * $d50Y, $z * $d50Z ];
-	}
-
-	private static function xyzD50ToXyzD65( $x, $y, $z ) {
+	/** @return array{float, float, float} */
+	private static function xyzD50ToXyzD65( float $x, float $y, float $z ): array {
 		// Bradford chromatic adaptation D50 → D65
 		return [
 			0.9554734527042182 * $x - 0.02301801888092314 * $y + 0.0632352294227355 * $z,
@@ -238,7 +219,8 @@ class ColorEntryFactory {
 		];
 	}
 
-	private static function linearSrgbToXyzD65( $r, $g, $b ) {
+	/** @return array{float, float, float} */
+	private static function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
 		// Observer 2°, Illuminant D65
 		return [
 			0.4124 * $r + 0.3576 * $g + 0.1805 * $b,
@@ -247,7 +229,8 @@ class ColorEntryFactory {
 		];
 	}
 
-	private static function displayP3LinearToXyzD65( $r, $g, $b ) {
+	/** @return array{float, float, float} */
+	private static function displayP3LinearToXyzD65( float $r, float $g, float $b ): array {
 		return [
 			0.4865709486482162 * $r + 0.26566769316909306 * $g + 0.1982172852343625 * $b,
 			0.22897456406974884 * $r + 0.6917385218564081 * $g + 0.07928691407384083 * $b,
@@ -255,7 +238,8 @@ class ColorEntryFactory {
 		];
 	}
 
-	private static function a98RgbLinearToXyzD65( $r, $g, $b ) {
+	/** @return array{float, float, float} */
+	private static function a98RgbLinearToXyzD65( float $r, float $g, float $b ): array {
 		return [
 			0.5766690429101305 * $r + 0.1855582379065463 * $g + 0.1882286462349947 * $b,
 			0.29734497525053605 * $r + 0.6273635662554661 * $g + 0.07529145849399788 * $b,
@@ -263,7 +247,7 @@ class ColorEntryFactory {
 		];
 	}
 
-	private static function prophotoToLinear( $c ) {
+	private static function prophotoToLinear( float $c ): float {
 		$sign = $c < 0 ? -1 : 1;
 		$abs  = abs($c);
 
@@ -274,23 +258,12 @@ class ColorEntryFactory {
 		return $sign * ($abs ** 1.8);
 	}
 
-	private static function prophotorgbLinearToXyzD50( $r, $g, $b ) {
+	/** @return array{float, float, float} */
+	private static function prophotorgbLinearToXyzD50( float $r, float $g, float $b ): array {
 		return [
 			0.7977604896723027 * $r + 0.13518583717574031 * $g + 0.03135495205777543 * $b,
 			0.2880711282292934 * $r + 0.7118432178101014 * $g + 0.00008565396060525902 * $b,
 			0.0 * $r + 0.0 * $g + 0.8251046025104601 * $b,
-		];
-	}
-
-	private static function rec2020ToLinear( $c ) {
-		return ($c < 0 ? -1 : 1) * (abs($c) ** 2.4);
-	}
-
-	private static function rec2020LinearToXyzD65( $r, $g, $b ) {
-		return [
-			0.6369580483012914 * $r + 0.14461690358620832 * $g + 0.1688809751641721 * $b,
-			0.2627002120112671 * $r + 0.6779980715188708 * $g + 0.05930171646986196 * $b,
-			0.0 * $r + 0.028072693049087428 * $g + 1.0609850577107909 * $b,
 		];
 	}
 

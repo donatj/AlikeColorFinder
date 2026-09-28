@@ -213,16 +213,7 @@ class CssColorExtractor {
 					$colorSpace   = strtolower($result['color_space']);
 					$paramMatches = trim($result['color_params']);
 
-					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
-					$params = array_map('\trim', $params);
-					foreach( $params as &$param ) {
-						if( substr($param, -1) === '%' ) {
-							$param = ((float)substr($param, 0, -1)) / 100;
-						} else {
-							$param = (float)$param;
-						}
-					}
-					unset($param);
+					$params = $this->normalizeColorSpaceParams($this->splitFunctionParams($paramMatches));
 
 					$color = $this->factory->makeFromColorSpace(
 						$colorSpace,
@@ -235,8 +226,7 @@ class CssColorExtractor {
 					$funcMatch    = strtolower($result['func'] ?: $result['func2']);
 					$paramMatches = $result['params'] ?: $result['params2'];
 
-					$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
-					$params = array_map('\trim', $params);
+					$params = $this->splitFunctionParams($paramMatches);
 					$params = $this->normalizeFunctionParams($funcMatch, $params);
 
 					$color = $this->getFuncColor($funcMatch, $params);
@@ -267,11 +257,37 @@ class CssColorExtractor {
 	/**
 	 * Convert CSS percentage components to their function-specific reference range.
 	 *
-	 * @param string $func
-	 * @param string[] $params
-	 * @return float[]
+	 * @return list<string>
 	 */
-	private function normalizeFunctionParams( $func, array $params ) {
+	private function splitFunctionParams( string $paramMatches ): array {
+		$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
+		if( $params === false ) {
+			throw new \LogicException('Unable to split color parameters');
+		}
+
+		return array_map('\trim', $params);
+	}
+
+	/**
+	 * @param list<string> $params
+	 * @return list<float>
+	 */
+	private function normalizeColorSpaceParams( array $params ): array {
+		return array_map(static function( string $param ): float {
+			if( substr($param, -1) === '%' ) {
+				return ((float)substr($param, 0, -1)) / 100;
+			}
+
+			return (float)$param;
+		}, $params);
+	}
+
+	/**
+	 * @param string $func
+	 * @param list<string> $params
+	 * @return list<float>
+	 */
+	private function normalizeFunctionParams( string $func, array $params ): array {
 		foreach( $params as $index => $param ) {
 			$isPercentage = substr($param, -1) === '%';
 			$value        = (float)($isPercentage ? substr($param, 0, -1) : $param);
@@ -313,11 +329,11 @@ class CssColorExtractor {
 
 	/**
 	 * @param string $func
-	 * @param array  $params
+	 * @param list<float> $params
 	 * @return \donatj\AlikeColorFinder\ColorEntry
 	 * @throws \LogicException
 	 */
-	private function getFuncColor( $func, array $params ) {
+	private function getFuncColor( string $func, array $params ): ColorEntry {
 		switch( $func ) {
 			case 'rgba':
 				if( count($params) !== 4 ) {

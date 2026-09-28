@@ -82,7 +82,7 @@ class XyzColorEntry implements ColorEntry {
 	}
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Return stored XYZ D65 scaled ×100

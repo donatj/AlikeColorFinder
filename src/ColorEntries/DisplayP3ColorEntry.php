@@ -76,7 +76,7 @@ class DisplayP3ColorEntry implements ColorEntry {
 
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Convert Display P3 to XYZ D65 (scaled ×100)

@@ -76,7 +76,7 @@ class LchColorEntry implements ColorEntry {
 
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Convert LCH to Lab

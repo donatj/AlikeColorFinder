@@ -53,7 +53,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	}
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		$rLin = self::srgbToLinear($this->r);

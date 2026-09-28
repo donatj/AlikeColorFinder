@@ -81,7 +81,7 @@ class SrgbColorEntry implements ColorEntry {
 	}
 
 	/**
-	 * @return array
+	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
 		// Normalize RGB values to 1
