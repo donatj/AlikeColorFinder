@@ -213,13 +213,18 @@ class CssColorExtractor {
 					$colorSpace   = strtolower($result['color_space']);
 					$paramMatches = trim($result['color_params']);
 
-					$params = $this->normalizeColorSpaceParams($this->splitFunctionParams($paramMatches));
+					$params = $this->splitFunctionParams($paramMatches);
+					if( count($params) !== 3 && count($params) !== 4 ) {
+						throw new \LogicException('Invalid color() param count');
+					}
+
+					$params = $this->normalizeColorSpaceParams($params);
 
 					$color = $this->factory->makeFromColorSpace(
 						$colorSpace,
-						$params[0] ?? 0,
-						$params[1] ?? 0,
-						$params[2] ?? 0,
+						$params[0],
+						$params[1],
+						$params[2],
 						$params[3] ?? 1.0
 					);
 				} else {

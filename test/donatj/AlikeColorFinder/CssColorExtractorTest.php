@@ -30,6 +30,14 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
+	public function testColorFunctionRejectsWrongComponentCount() {
+		$colors = (new CssColorExtractor('a { color: color(srgb 100); }'))->extractColors($errors);
+
+		$this->assertCount(0, $colors);
+		$this->assertCount(1, $errors);
+		$this->assertInstanceOf(\LogicException::class, $errors[0]['exception']);
+	}
+
 	public function testExtendedTransferFunctionsPreserveSign() {
 		foreach( [ 'display-p3', 'prophoto-rgb', 'rec2020' ] as $colorSpace ) {
 			$positive = $this->extractSingleColor("color({$colorSpace} 0.5 0 0)");
