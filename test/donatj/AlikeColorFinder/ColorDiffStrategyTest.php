@@ -33,7 +33,7 @@ class ColorDiffStrategyTest extends TestCase {
 		return reset($colors);
 	}
 
-	public function colorDiffProvider() {
+	public static function colorDiffProvider() {
 		$rows = [];
 		$file = fopen(__DIR__ . '/color-diffs.csv', 'r');
 

@@ -55,7 +55,7 @@ class CssColorExtractorTest extends TestCase {
 		return reset($colors);
 	}
 
-	public function colorProvider() {
+	public static function colorProvider() {
 		$colors = [];
 		$file   = fopen(__DIR__ . '/colors.csv', 'r');
 

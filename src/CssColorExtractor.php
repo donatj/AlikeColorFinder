@@ -165,7 +165,7 @@ class CssColorExtractor {
 		'yellowgreen'          => '9acd32',
 	];
 
-	public function __construct( $subject = "", ColorEntryFactory $colorEntryFactory = null ) {
+	public function __construct( $subject = "", ?ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
 
 		if( $colorEntryFactory !== null ) {
