@@ -184,10 +184,17 @@ class CssColorExtractor {
 			return preg_quote($color, '/');
 		}, array_keys($this->colors)));
 
+		// CSS <number> allows an optional sign and scientific notation.
+		// @see https://www.w3.org/TR/css-syntax-3/#consume-a-number
+		$number       = '[+-]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][+-]?\d+)?';
+		$component    = $number . '%?';
+		$modernParams = $component . '(?:\s+' . $component . '){2}(?:\s*\/\s*' . $component . ')?';
+		$legacyParams = $component . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-(?:(?P<func>rgb|hsl|lab|lch|oklab|oklch|hwb)\s*\((?P<params>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){3}(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
-(?:(?P<func2>rgba|hsla)\s*\((?P<params2>(?:\s*-?(?:\d*\.)?\d+%?\s*,?){4})\))|
-(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>-?(?:\d*\.)?\d+%?(?:\s+-?(?:\d*\.)?\d+%?)*(?:\s*\/\s*-?(?:\d*\.)?\d+%?)?)\))|
+(?:(?P<func>rgb|rgba|hsl|hsla)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyParams . '))\s*\))|
+(?:(?P<func2>lab|lch|oklab|oklch|hwb)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
+(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>' . $modernParams . ')\s*\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -385,11 +392,6 @@ class CssColorExtractor {
 	private function getFuncColor( string $func, array $params ): ColorEntry {
 		switch( $func ) {
 			case 'rgba':
-				if( count($params) !== 4 ) {
-					throw new \LogicException('Invalid param count');
-				}
-
-				return $this->factory->makeFromRgba($params[0], $params[1], $params[2], $params[3]);
 			case 'rgb':
 				if( count($params) === 3 ) {
 					return $this->factory->makeFromRgb($params[0], $params[1], $params[2]);
@@ -401,11 +403,6 @@ class CssColorExtractor {
 
 				throw new \LogicException('Invalid param count');
 			case 'hsla':
-				if( count($params) !== 4 ) {
-					throw new \LogicException('Invalid param count');
-				}
-
-				return $this->factory->makeFromHsla($params[0], $params[1], $params[2], $params[3]);
 			case 'hsl':
 				if( count($params) === 3 ) {
 					return $this->factory->makeFromHsl($params[0], $params[1], $params[2]);

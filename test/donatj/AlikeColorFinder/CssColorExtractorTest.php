@@ -30,8 +30,13 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
-	public function testColorFunctionRejectsWrongComponentCount() {
+	public function testInvalidFunctionSyntaxIsIgnored() {
 		foreach( [
+			'lab(500)',
+			'rgb(1, 2 3)',
+			'rgb(1 2 3 4)',
+			'rgb(1, 2, 3 / 0.5)',
+			'color(srgb 1, 2, 3)',
 			'color(srgb 100)',
 			'color(srgb 1 2)',
 			'color(srgb 1 2 3 4)',
@@ -40,8 +45,20 @@ class CssColorExtractorTest extends TestCase {
 			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
 			$this->assertCount(0, $colors, $css);
-			$this->assertCount(1, $errors, $css);
-			$this->assertInstanceOf(\LogicException::class, $errors[0]['exception'], $css);
+			$this->assertCount(0, $errors, $css);
+		}
+	}
+
+	public function testModernSyntaxSupportsCssNumberGrammar() {
+		foreach( [
+			'rgb(+1e2 0 0)' => '#640000',
+			'rgba(0 0 0 / +.5)' => 'rgba(0,0,0,0.5)',
+			'rgba(0 0 0)' => '#000',
+			'hsla(0 0% 0%)' => '#000',
+			'lab(+50 0 0)' => '#777',
+			'color(srgb 1e0 0 0)' => '#f00',
+		] as $css => $expected ) {
+			$this->assertSame($expected, $this->extractSingleColor($css)->getSimplestCssString(), $css);
 		}
 	}
 
