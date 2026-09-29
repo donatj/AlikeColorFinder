@@ -133,7 +133,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testFunctionsAreNotExtractedFromIdentifiers() {
-		$colors = (new CssColorExtractor('collab(50 0 0) mycolor(srgb 1 0 0)'))->extractColors($errors);
+		$colors = (new CssColorExtractor('collab(50 0 0) mycolor(srgb 1 0 0) élab(50 0 0) 🎨color(srgb 1 0 0)'))->extractColors($errors);
 
 		$this->assertCount(0, $colors);
 		$this->assertCount(0, $errors);

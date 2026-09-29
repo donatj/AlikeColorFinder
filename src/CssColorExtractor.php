@@ -208,7 +208,8 @@ class CssColorExtractor {
 		$modernHueFirstParams = $hue . '\s+' . $component . '\s+' . $component . '(?:\s*\/\s*' . $component . ')?';
 		$legacyHueFirstParams = $hue . '\s*,\s*' . $percentage . '\s*,\s*' . $percentage . '(?:\s*,\s*' . $component . ')?';
 		$modernHueLastParams  = $component . '\s+' . $component . '\s+' . $hue . '(?:\s*\/\s*' . $component . ')?';
-		$functionStart        = '(?<![\w-])';
+		// A CSS identifier may contain any non-ASCII code point.
+		$functionStart        = '(?<![\w\x{80}-\x{10FFFF}\\\\-])';
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?(?![\w-]))|
 (?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyRgbParams . '))\s*\))|
@@ -217,7 +218,7 @@ class CssColorExtractor {
 (?:' . $functionStart . '(?P<hue_func2>lch|oklch)\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
 (?:' . $functionStart . '(?P<hue_func3>hwb)\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
 (?:' . $functionStart . '(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>' . $modernParams . ')\s*\))|
-				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
+				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xiu', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
 			throw new \LogicException('Regex Error: ' . preg_last_error());
