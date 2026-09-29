@@ -34,5 +34,9 @@ jobs:
       - name: Run linter
         run: ./vendor/bin/parallel-lint src composer/bin/alike
 
+      - name: Check coding style
+        if: matrix.php-versions == '7.4'
+        run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
+
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyse --configuration=phpstan.neon.dist
