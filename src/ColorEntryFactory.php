@@ -106,7 +106,10 @@ class ColorEntryFactory {
 
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
-			$gray = $w / ($w + $b) * 255;
+			$maximum = max($w, $b);
+			$white   = $w / $maximum;
+			$black   = $b / $maximum;
+			$gray    = $white / ($white + $black) * 255;
 			return new SrgbColorEntry($gray, $gray, $gray, $a, false);
 		}
 

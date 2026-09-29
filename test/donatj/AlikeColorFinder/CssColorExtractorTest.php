@@ -59,6 +59,7 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertSame('#3c3', $this->extractSingleColor('hwb(120 20 20)')->getSimplestCssString());
 		$this->assertSame('#3c3', $this->extractSingleColor('hwb(120 20% 20%)')->getSimplestCssString());
 		$this->assertSame('#aaa', $this->extractSingleColor('hwb(0 200% 100%)')->getSimplestCssString());
+		$this->assertSame('#808080', $this->extractSingleColor('hwb(0 1e308 1e308)')->getSimplestCssString());
 	}
 
 	public function testHueIsNormalizedBeforeNativeSerialization() {
