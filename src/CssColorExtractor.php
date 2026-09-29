@@ -202,15 +202,11 @@ class CssColorExtractor {
 		$modernHueFirstParams = $hue . '\s+' . $component . '\s+' . $component . '(?:\s*\/\s*' . $component . ')?';
 		$legacyHueFirstParams = $hue . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
 		$modernHueLastParams  = $component . '\s+' . $component . '\s+' . $hue . '(?:\s*\/\s*' . $component . ')?';
-		$legacyFourParams     = $component . '(?:\s+' . $component . '){3}';
-		$legacyFourHueParams  = $hue . '\s+' . $component . '\s+' . $component . '\s+' . $component;
 		$functionStart        = '(?<![\w-])';
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
 (?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyParams . '))\s*\))|
 (?:' . $functionStart . '(?P<hue_func>hsl|hsla)\s*\(\s*(?P<hue_params>(?:' . $modernHueFirstParams . '|' . $legacyHueFirstParams . '))\s*\))|
-(?:' . $functionStart . '(?P<legacy_rgba_func>rgba)\s*\(\s*(?P<legacy_rgba_params>' . $legacyFourParams . ')\s*\))|
-(?:' . $functionStart . '(?P<legacy_hsla_func>hsla)\s*\(\s*(?P<legacy_hsla_params>' . $legacyFourHueParams . ')\s*\))|
 (?:' . $functionStart . '(?P<func2>lab|oklab)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
 (?:' . $functionStart . '(?P<hue_func2>lch|oklch)\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
 (?:' . $functionStart . '(?P<hue_func3>hwb)\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
@@ -262,16 +258,12 @@ class CssColorExtractor {
 						?: ($result['func2'] ?? '')
 						?: ($result['hue_func2'] ?? '')
 						?: ($result['hue_func3'] ?? '')
-						?: ($result['legacy_rgba_func'] ?? '')
-						?: ($result['legacy_hsla_func'] ?? '')
 					);
 					$paramMatches = ($result['params'] ?? '')
 						?: ($result['hue_params'] ?? '')
 						?: ($result['params2'] ?? '')
 						?: ($result['hue_params2'] ?? '')
-						?: ($result['hue_params3'] ?? '')
-						?: ($result['legacy_rgba_params'] ?? '')
-						?: ($result['legacy_hsla_params'] ?? '');
+						?: ($result['hue_params3'] ?? '');
 
 					$params = $this->splitFunctionParams($paramMatches);
 					$params = $this->normalizeFunctionParams($funcMatch, $params);

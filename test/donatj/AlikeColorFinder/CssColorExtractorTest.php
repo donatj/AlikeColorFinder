@@ -30,14 +30,11 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
-	public function testLegacyFourComponentRgbaAndHslaSyntaxIsPreserved() {
-		foreach( [
-			'rgba(0 0 0 0)' => 'rgba(0,0,0,0)',
-			'rgba(12 34 56 0.2)' => 'rgba(12,34,56,0.2)',
-			'hsla(191.33 18% 35.29% 22%)' => 'rgba(74,100,106,0.22)',
-		] as $css => $expected ) {
-			$this->assertSame($expected, $this->extractSingleColor($css)->getSimplestCssString(), $css);
-		}
+	public function testFourComponentSpaceSyntaxWithoutAnAlphaSeparatorIsIgnored() {
+		$colors = (new CssColorExtractor('rgba(0 0 0 0) hsla(191.33 18% 35.29% 22%)'))->extractColors($errors);
+
+		$this->assertCount(0, $errors);
+		$this->assertCount(0, $colors);
 	}
 
 	public function testLegacyColorsKeepTheirCliSerialization() {
