@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class LabColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -18,10 +17,10 @@ class LabColorEntry implements ColorEntry {
 	protected float $a;
 
 	/**
-	 * @param float $l Lab lightness (0–100)
+	 * @param float $l    Lab lightness (0–100)
 	 * @param float $aVal Lab a component
 	 * @param float $bVal Lab b component
-	 * @param float $a alpha 0–1
+	 * @param float $a    alpha 0–1
 	 */
 	public function __construct(
 		float $l,
@@ -41,32 +40,29 @@ class LabColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR(): float {
+	public function getR() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG(): float {
+	public function getG() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB(): float {
+	public function getB() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getA(): float {
+	public function getA() : float {
 		return $this->a;
 	}
 
-	public function getNativeCssString(): string {
+	public function getNativeCssString() : string {
 		if( $this->a == 1 ) {
 			return sprintf('lab(%.6g %.6g %.6g)', $this->l, $this->aVal, $this->bVal);
 		}
@@ -74,11 +70,10 @@ class LabColorEntry implements ColorEntry {
 		return sprintf('lab(%.6g %.6g %.6g / %.6g)', $this->l, $this->aVal, $this->bVal, $this->a);
 	}
 
-
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray(): array {
+	public function getXyzaArray() : array {
 		// Lab D50 to XYZ D50
 		$kappa   = 24389 / 27;
 		$epsilon = 216 / 24389;
@@ -119,7 +114,7 @@ class LabColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb(): array {
+	private function getLinearSrgb() : array {
 		$xyz = $this->getXyzaArray();
 		$x   = $xyz['x'] / 100;
 		$y   = $xyz['y'] / 100;

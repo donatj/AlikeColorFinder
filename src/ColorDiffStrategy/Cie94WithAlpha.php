@@ -6,7 +6,7 @@ use donatj\AlikeColorFinder\ColorEntry;
 
 class Cie94WithAlpha implements ColorDiffStrategyInterface {
 
-	public function __invoke( ColorEntry $color1, ColorEntry $color2 ): float {
+	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) : float {
 		$Kl = 1.0;
 		$K1 = .045;
 		$K2 = 0.015;

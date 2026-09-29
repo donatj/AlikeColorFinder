@@ -6,6 +6,6 @@ use donatj\AlikeColorFinder\ColorEntry;
 
 interface ColorDiffStrategyInterface {
 
-	public function __invoke( ColorEntry $color1, ColorEntry $color2 ): float;
+	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) : float;
 
 }

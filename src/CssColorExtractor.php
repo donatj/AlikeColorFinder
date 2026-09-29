@@ -4,14 +4,8 @@ namespace donatj\AlikeColorFinder;
 
 class CssColorExtractor {
 
-	/**
-	 * @var string
-	 */
 	protected string $subject;
 
-	/**
-	 * @var \donatj\AlikeColorFinder\ColorEntryFactory
-	 */
 	protected ColorEntryFactory $factory;
 
 	/** @var array<string, string> */
@@ -184,12 +178,12 @@ class CssColorExtractor {
 	}
 
 	/**
-	 * @param list<array{exception: \Exception, result: array<string|int, string>}> $errors by reference
+	 * @param list<array{exception: \Exception, result: array<int|string, string>}> $errors by reference
 	 * @return array<string, \donatj\AlikeColorFinder\ColorEntry>
 	 */
-	public function extractColors( array &$errors ): array {
-		$asciiCaseInsensitive = function( string $identifier ): string {
-			return implode('', array_map(function( string $character ): string {
+	public function extractColors( array &$errors ) : array {
+		$asciiCaseInsensitive = function( string $identifier ) : string {
+			return implode('', array_map(function( string $character ) : string {
 				if( $character >= 'a' && $character <= 'z' ) {
 					return '[' . $character . strtoupper($character) . ']';
 				}
@@ -198,7 +192,7 @@ class CssColorExtractor {
 			}, str_split($identifier)));
 		};
 
-		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
+		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ) : string {
 			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 
@@ -221,7 +215,7 @@ class CssColorExtractor {
 		$legacyHueFirstParams = $hue . '\s*,\s*' . $percentage . '\s*,\s*' . $percentage . '(?:\s*,\s*' . $component . ')?';
 		$modernHueLastParams  = $component . '\s+' . $component . '\s+' . $hue . '(?:\s*\/\s*' . $component . ')?';
 		// A CSS identifier may contain any non-ASCII code point.
-		$functionStart        = '(?<![\w\x{80}-\x{10FFFF}\\\\-])';
+		$functionStart        = '(?<![\w\x{80}-\x{10FFFF}\\\-])';
 
 		$rgbFunctions = $asciiCaseInsensitive('rgb') . '|' . $asciiCaseInsensitive('rgba');
 		$hslFunctions = $asciiCaseInsensitive('hsl') . '|' . $asciiCaseInsensitive('hsla');
@@ -239,7 +233,7 @@ class CssColorExtractor {
 (?:' . $functionStart . '(?P<hue_func2>' . $lchFunctions . ')\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
 (?:' . $functionStart . '(?P<hue_func3>' . $asciiCaseInsensitive('hwb') . ')\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
 (?:' . $functionStart . '(?P<color_func>' . $asciiCaseInsensitive('color') . ')\s*\(\s*(?P<color_space>' . $colorSpaces . ')\s+(?P<color_params>' . $modernParams . ')\s*\))|
-				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xu', $this->subject, $results, PREG_SET_ORDER);
+				(?:(?<=[\/\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xu', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
 			throw new \LogicException('Regex Error: ' . preg_last_error());
@@ -334,7 +328,7 @@ class CssColorExtractor {
 	 *
 	 * @return list<string>
 	 */
-	private function splitFunctionParams( string $paramMatches ): array {
+	private function splitFunctionParams( string $paramMatches ) : array {
 		$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
 		if( $params === false ) {
 			throw new \LogicException('Unable to split color parameters');
@@ -347,8 +341,8 @@ class CssColorExtractor {
 	 * @param list<string> $params
 	 * @return list<float>
 	 */
-	private function normalizeColorSpaceParams( array $params ): array {
-		$params = array_map(function( string $param ): float {
+	private function normalizeColorSpaceParams( array $params ) : array {
+		$params = array_map(function( string $param ) : float {
 			if( substr($param, -1) === '%' ) {
 				$value = ((float)substr($param, 0, -1)) / 100;
 			} else {
@@ -370,14 +364,14 @@ class CssColorExtractor {
 	}
 
 	/**
-	 * @param string $func
 	 * @param list<string> $params
 	 * @return list<float>
 	 */
-	private function normalizeFunctionParams( string $func, array $params ): array {
+	private function normalizeFunctionParams( string $func, array $params ) : array {
 		foreach( $params as $index => $param ) {
 			if( $this->isHueComponent($func, $index) ) {
 				$params[$index] = $this->normalizeHue($param);
+
 				continue;
 			}
 
@@ -392,11 +386,13 @@ class CssColorExtractor {
 				$params[$index] = $index !== 3 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true)
 					? $value / 100
 					: $value;
+
 				continue;
 			}
 
 			if( $index === 3 ) {
 				$params[$index] = $value / 100;
+
 				continue;
 			}
 
@@ -461,12 +457,12 @@ class CssColorExtractor {
 		return array_values($params);
 	}
 
-	private function isHueComponent( string $func, int $index ): bool {
+	private function isHueComponent( string $func, int $index ) : bool {
 		return ($index === 0 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true))
 			|| ($index === 2 && in_array($func, [ 'lch', 'oklch' ], true));
 	}
 
-	private function normalizeHue( string $hue ): float {
+	private function normalizeHue( string $hue ) : float {
 		$hue = strtolower($hue);
 
 		if( substr($hue, -4) === 'turn' ) {
@@ -488,17 +484,15 @@ class CssColorExtractor {
 		return $this->factory->normalizeHue($value);
 	}
 
-	private function clamp( float $value, float $minimum, float $maximum ): float {
+	private function clamp( float $value, float $minimum, float $maximum ) : float {
 		return max($minimum, min($maximum, $value));
 	}
 
 	/**
-	 * @param string $func
 	 * @param list<float> $params
-	 * @return \donatj\AlikeColorFinder\ColorEntry
 	 * @throws \LogicException
 	 */
-	private function getFuncColor( string $func, array $params ): ColorEntry {
+	private function getFuncColor( string $func, array $params ) : ColorEntry {
 		switch( $func ) {
 			case 'rgba':
 			case 'rgb':

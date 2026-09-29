@@ -51,7 +51,7 @@ class ColorDiffStrategyTest extends TestCase {
 
 		fgetcsv($file, 0, ',', '"', '\\'); // skip header line
 
-		for( ; ; ) {
+		for(;;) {
 			$data = fgetcsv($file, 0, ',', '"', '\\');
 			if( $data === false ) {
 				break;

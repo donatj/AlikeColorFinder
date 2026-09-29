@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class OklabColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -18,10 +17,10 @@ class OklabColorEntry implements ColorEntry {
 	protected float $a;
 
 	/**
-	 * @param float $l OKLab lightness (0–1)
+	 * @param float $l    OKLab lightness (0–1)
 	 * @param float $aVal OKLab a component
 	 * @param float $bVal OKLab b component
-	 * @param float $a alpha 0–1
+	 * @param float $a    alpha 0–1
 	 */
 	public function __construct(
 		float $l,
@@ -41,32 +40,29 @@ class OklabColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR(): float {
+	public function getR() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG(): float {
+	public function getG() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB(): float {
+	public function getB() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getA(): float {
+	public function getA() : float {
 		return $this->a;
 	}
 
-	public function getNativeCssString(): string {
+	public function getNativeCssString() : string {
 		if( $this->a == 1 ) {
 			return sprintf('oklab(%.6g %.6g %.6g)', $this->l, $this->aVal, $this->bVal);
 		}
@@ -74,11 +70,10 @@ class OklabColorEntry implements ColorEntry {
 		return sprintf('oklab(%.6g %.6g %.6g / %.6g)', $this->l, $this->aVal, $this->bVal, $this->a);
 	}
 
-
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray(): array {
+	public function getXyzaArray() : array {
 		// OKLab to linear sRGB via LMS
 		$lPrime = $this->l + 0.3963377774 * $this->aVal + 0.2158037573 * $this->bVal;
 		$mPrime = $this->l - 0.1055613458 * $this->aVal - 0.0638541728 * $this->bVal;
@@ -93,7 +88,7 @@ class OklabColorEntry implements ColorEntry {
 		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
 		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
 
-		list($x, $y, $z) = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
+		[$x, $y, $z] = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,
@@ -108,7 +103,7 @@ class OklabColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb(): array {
+	private function getLinearSrgb() : array {
 		// OKLab to LMS (via cube-root-compressed LMS)
 		$lPrime = $this->l + 0.3963377774 * $this->aVal + 0.2158037573 * $this->bVal;
 		$mPrime = $this->l - 0.1055613458 * $this->aVal - 0.0638541728 * $this->bVal;

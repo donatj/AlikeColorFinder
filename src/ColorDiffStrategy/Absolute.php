@@ -6,7 +6,7 @@ use donatj\AlikeColorFinder\ColorEntry;
 
 class Absolute implements ColorDiffStrategyInterface {
 
-	public function __invoke( ColorEntry $color1, ColorEntry $color2 ): float {
+	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) : float {
 		$rgba1 = $color1->getUnclampedRgbaArray();
 		$rgba2 = $color2->getUnclampedRgbaArray();
 

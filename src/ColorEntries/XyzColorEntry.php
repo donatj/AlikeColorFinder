@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class XyzColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -42,35 +41,32 @@ class XyzColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR(): float {
+	public function getR() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG(): float {
+	public function getG() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB(): float {
+	public function getB() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getA(): float {
+	public function getA() : float {
 		return $this->a;
 	}
 
 	/**
 	 * Returns XYZ D65 color() format
 	 */
-	public function getNativeCssString(): string {
+	public function getNativeCssString() : string {
 		$x = $this->xyzX;
 		$y = $this->xyzY;
 		$z = $this->xyzZ;
@@ -84,7 +80,7 @@ class XyzColorEntry implements ColorEntry {
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray(): array {
+	public function getXyzaArray() : array {
 		// Return stored XYZ D65 scaled ×100
 		return [
 			'x' => $this->xyzX * 100,
@@ -99,7 +95,7 @@ class XyzColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb(): array {
+	private function getLinearSrgb() : array {
 		return $this->xyzD65ToLinearSrgb($this->xyzX, $this->xyzY, $this->xyzZ);
 	}
 

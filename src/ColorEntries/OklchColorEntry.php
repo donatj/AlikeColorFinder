@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class OklchColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -41,32 +40,29 @@ class OklchColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR(): float {
+	public function getR() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG(): float {
+	public function getG() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB(): float {
+	public function getB() : float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
-	public function getA(): float {
+	public function getA() : float {
 		return $this->a;
 	}
 
-	public function getNativeCssString(): string {
+	public function getNativeCssString() : string {
 		if( $this->a == 1 ) {
 			return sprintf('oklch(%.6g %.6g %.6g)', $this->l, $this->c, $this->h);
 		}
@@ -74,11 +70,10 @@ class OklchColorEntry implements ColorEntry {
 		return sprintf('oklch(%.6g %.6g %.6g / %.6g)', $this->l, $this->c, $this->h, $this->a);
 	}
 
-
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray(): array {
+	public function getXyzaArray() : array {
 		// Convert OKLch to OKLab
 		$hRad = $this->h * M_PI / 180;
 		$aVal = $this->c * cos($hRad);
@@ -98,7 +93,7 @@ class OklchColorEntry implements ColorEntry {
 		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
 		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
 
-		list($x, $y, $z) = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
+		[$x, $y, $z] = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,
@@ -113,7 +108,7 @@ class OklchColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb(): array {
+	private function getLinearSrgb() : array {
 		// Convert OKLch to OKLab
 		$hRad = $this->h * M_PI / 180;
 		$aVal = $this->c * cos($hRad);
