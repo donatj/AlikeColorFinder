@@ -30,6 +30,42 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
+	public function testEquivalentColorsInDifferentSpacesAreDeduplicated() {
+		$colors = (new CssColorExtractor('#fff color(display-p3 1 1 1)'))->extractColors($errors);
+
+		$this->assertCount(0, $errors);
+		$this->assertCount(1, $colors);
+		$this->assertSame(2, reset($colors)->getInstanceTotal());
+	}
+
+	public function testHwbNumbersUseThePercentageReferenceRange() {
+		$this->assertSame('#3c3', $this->extractSingleColor('hwb(120 20 20)')->getSimplestCssString());
+		$this->assertSame('#3c3', $this->extractSingleColor('hwb(120 20% 20%)')->getSimplestCssString());
+		$this->assertSame('#aaa', $this->extractSingleColor('hwb(0 200% 100%)')->getSimplestCssString());
+	}
+
+	public function testHueIsNormalizedBeforeNativeSerialization() {
+		foreach( [
+			'oklch(.7 .4 3600001)' => 'oklch(.7 .4 1)',
+			'lch(50 150 3600001)'  => 'lch(50 150 1)',
+		] as $css => $normalized ) {
+			$this->assertSame(
+				$this->extractSingleColor($normalized)->getSimplestCssString(),
+				$this->extractSingleColor($css)->getSimplestCssString(),
+				$css
+			);
+		}
+	}
+
+	public function testUncomparableNumericValuesAreReportedAsExtractionErrors() {
+		$colors = (new CssColorExtractor('#fff color(srgb 1e309 0 0) color(srgb 1e100 0 0)'))->extractColors($errors);
+
+		$this->assertCount(1, $colors);
+		$this->assertCount(2, $errors);
+		$this->assertSame('Color component must be finite', $errors[0]['exception']->getMessage());
+		$this->assertSame('Color conversion exceeds the supported comparison range', $errors[1]['exception']->getMessage());
+	}
+
 	public function testInvalidFunctionSyntaxIsIgnored() {
 		foreach( [
 			'lab(500)',

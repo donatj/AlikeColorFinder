@@ -165,6 +165,12 @@ class CssColorExtractor {
 		'yellowgreen'          => '9acd32',
 	];
 
+	/**
+	 * CIEDE2000 raises chroma to the seventh power, so values above this
+	 * coordinate magnitude cannot be compared reliably with PHP floats.
+	 */
+	private const MAX_COMPARABLE_XYZ_COMPONENT = 1.0e30;
+
 	public function __construct( $subject = "", ?ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
 
@@ -264,6 +270,16 @@ class CssColorExtractor {
 
 					$color = $this->getFuncColor($funcMatch, $params);
 				}
+				$xyz = $color->getXyzaArray();
+				foreach( $xyz as $component ) {
+					if( !is_finite($component) ) {
+						throw new \RangeException('Color conversion produced a non-finite coordinate');
+					}
+
+					if( abs($component) > self::MAX_COMPARABLE_XYZ_COMPONENT ) {
+						throw new \RangeException('Color conversion exceeds the supported comparison range');
+					}
+				}
 			} catch( \Exception $e ) {
 				$errors[] = [
 					'exception' => $e,
@@ -273,9 +289,7 @@ class CssColorExtractor {
 				continue;
 			}
 
-			// Use XYZ coordinates for deduplication to preserve HDR/wide-gamut distinctions
-			// Colors that clamp to the same sRGB may have different XYZ values
-			$xyz = $color->getXyzaArray();
+			// Use XYZ coordinates for deduplication to preserve HDR/wide-gamut distinctions.
 			$key = md5(sprintf('%.8f,%.8f,%.8f,%.8f', $xyz['x'], $xyz['y'], $xyz['z'], $xyz['a']));
 			if( !isset($colors[$key]) ) {
 				$colors[$key] = $color;
@@ -308,10 +322,16 @@ class CssColorExtractor {
 	private function normalizeColorSpaceParams( array $params ): array {
 		$params = array_map(static function( string $param ): float {
 			if( substr($param, -1) === '%' ) {
-				return ((float)substr($param, 0, -1)) / 100;
+				$value = ((float)substr($param, 0, -1)) / 100;
+			} else {
+				$value = (float)$param;
 			}
 
-			return (float)$param;
+			if( !is_finite($value) ) {
+				throw new \RangeException('Color component must be finite');
+			}
+
+			return $value;
 		}, $params);
 
 		if( isset($params[3]) ) {
@@ -336,8 +356,14 @@ class CssColorExtractor {
 			$isPercentage = substr($param, -1) === '%';
 			$value        = (float)($isPercentage ? substr($param, 0, -1) : $param);
 
+			if( !is_finite($value) ) {
+				throw new \RangeException('Color component must be finite');
+			}
+
 			if( !$isPercentage ) {
-				$params[$index] = $value;
+				$params[$index] = $index !== 3 && $func === 'hwb'
+					? $value / 100
+					: $value;
 				continue;
 			}
 
@@ -381,9 +407,12 @@ class CssColorExtractor {
 				break;
 			case 'hsl':
 			case 'hsla':
-			case 'hwb':
 				$params[1] = self::clamp($params[1], 0.0, 1.0);
 				$params[2] = self::clamp($params[2], 0.0, 1.0);
+				break;
+			case 'hwb':
+				$params[1] = max(0.0, $params[1]);
+				$params[2] = max(0.0, $params[2]);
 				break;
 			case 'lab':
 				$params[0] = self::clamp($params[0], 0.0, 100.0);
@@ -413,22 +442,22 @@ class CssColorExtractor {
 		$hue = strtolower($hue);
 
 		if( substr($hue, -4) === 'turn' ) {
-			return (float)substr($hue, 0, -4) * 360.0;
+			$value = (float)substr($hue, 0, -4) * 360.0;
+		} elseif( substr($hue, -4) === 'grad' ) {
+			$value = (float)substr($hue, 0, -4) * 0.9;
+		} elseif( substr($hue, -3) === 'deg' ) {
+			$value = (float)substr($hue, 0, -3);
+		} elseif( substr($hue, -3) === 'rad' ) {
+			$value = (float)substr($hue, 0, -3) * 180.0 / M_PI;
+		} else {
+			$value = (float)$hue;
 		}
 
-		if( substr($hue, -4) === 'grad' ) {
-			return (float)substr($hue, 0, -4) * 0.9;
+		if( !is_finite($value) ) {
+			throw new \RangeException('Hue must be finite');
 		}
 
-		if( substr($hue, -3) === 'deg' ) {
-			return (float)substr($hue, 0, -3);
-		}
-
-		if( substr($hue, -3) === 'rad' ) {
-			return (float)substr($hue, 0, -3) * 180.0 / M_PI;
-		}
-
-		return (float)$hue;
+		return ColorSpaceConversion::normalizeHue($value);
 	}
 
 	private static function clamp( float $value, float $minimum, float $maximum ): float {
