@@ -186,15 +186,25 @@ class CssColorExtractor {
 
 		// CSS <number> allows an optional sign and scientific notation.
 		// @see https://www.w3.org/TR/css-syntax-3/#consume-a-number
-		$number       = '[+-]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][+-]?\d+)?';
-		$component    = $number . '%?';
-		$modernParams = $component . '(?:\s+' . $component . '){2}(?:\s*\/\s*' . $component . ')?';
-		$legacyParams = $component . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+		$number                = '[+-]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][+-]?\d+)?';
+		$component             = $number . '%?';
+		// CSS <hue> is a number in degrees or an angle dimension.
+		// @see https://www.w3.org/TR/css-color-4/#hue-syntax
+		$hue                   = $number . '(?:deg|grad|rad|turn)?';
+		$modernParams          = $component . '(?:\s+' . $component . '){2}(?:\s*\/\s*' . $component . ')?';
+		$legacyParams          = $component . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+		$modernHueFirstParams = $hue . '\s+' . $component . '\s+' . $component . '(?:\s*\/\s*' . $component . ')?';
+		$legacyHueFirstParams = $hue . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+		$modernHueLastParams  = $component . '\s+' . $component . '\s+' . $hue . '(?:\s*\/\s*' . $component . ')?';
+		$functionStart        = '(?<![\w-])';
 
 		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-(?:(?P<func>rgb|rgba|hsl|hsla)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyParams . '))\s*\))|
-(?:(?P<func2>lab|lch|oklab|oklch|hwb)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
-(?:(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>' . $modernParams . ')\s*\))|
+(?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyParams . '))\s*\))|
+(?:' . $functionStart . '(?P<hue_func>hsl|hsla)\s*\(\s*(?P<hue_params>(?:' . $modernHueFirstParams . '|' . $legacyHueFirstParams . '))\s*\))|
+(?:' . $functionStart . '(?P<func2>lab|oklab)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
+(?:' . $functionStart . '(?P<hue_func2>lch|oklch)\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
+(?:' . $functionStart . '(?P<hue_func3>hwb)\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
+(?:' . $functionStart . '(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>' . $modernParams . ')\s*\))|
 				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xi', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
@@ -236,8 +246,18 @@ class CssColorExtractor {
 						$params[3] ?? 1.0
 					);
 				} else {
-					$funcMatch    = strtolower($result['func'] ?: $result['func2']);
-					$paramMatches = $result['params'] ?: $result['params2'];
+					$funcMatch = strtolower(
+						$result['func']
+						?: $result['hue_func']
+						?: $result['func2']
+						?: $result['hue_func2']
+						?: $result['hue_func3']
+					);
+					$paramMatches = $result['params']
+						?: $result['hue_params']
+						?: $result['params2']
+						?: $result['hue_params2']
+						?: $result['hue_params3'];
 
 					$params = $this->splitFunctionParams($paramMatches);
 					$params = $this->normalizeFunctionParams($funcMatch, $params);
@@ -308,6 +328,11 @@ class CssColorExtractor {
 	 */
 	private function normalizeFunctionParams( string $func, array $params ): array {
 		foreach( $params as $index => $param ) {
+			if( self::isHueComponent($func, $index) ) {
+				$params[$index] = self::normalizeHue($param);
+				continue;
+			}
+
 			$isPercentage = substr($param, -1) === '%';
 			$value        = (float)($isPercentage ? substr($param, 0, -1) : $param);
 
@@ -377,6 +402,33 @@ class CssColorExtractor {
 		}
 
 		return array_values($params);
+	}
+
+	private static function isHueComponent( string $func, int $index ): bool {
+		return ($index === 0 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true))
+			|| ($index === 2 && in_array($func, [ 'lch', 'oklch' ], true));
+	}
+
+	private static function normalizeHue( string $hue ): float {
+		$hue = strtolower($hue);
+
+		if( substr($hue, -4) === 'turn' ) {
+			return (float)substr($hue, 0, -4) * 360.0;
+		}
+
+		if( substr($hue, -4) === 'grad' ) {
+			return (float)substr($hue, 0, -4) * 0.9;
+		}
+
+		if( substr($hue, -3) === 'deg' ) {
+			return (float)substr($hue, 0, -3);
+		}
+
+		if( substr($hue, -3) === 'rad' ) {
+			return (float)substr($hue, 0, -3) * 180.0 / M_PI;
+		}
+
+		return (float)$hue;
 	}
 
 	private static function clamp( float $value, float $minimum, float $maximum ): float {

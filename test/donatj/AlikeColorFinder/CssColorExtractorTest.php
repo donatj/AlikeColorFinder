@@ -36,6 +36,10 @@ class CssColorExtractorTest extends TestCase {
 			'rgb(1, 2 3)',
 			'rgb(1 2 3 4)',
 			'rgb(1, 2, 3 / 0.5)',
+			'hsl(50% 100% 50%)',
+			'hwb(50% 0% 0%)',
+			'lch(50 20 50%)',
+			'oklch(.5 .2 50%)',
 			'color(srgb 1, 2, 3)',
 			'color(srgb 100)',
 			'color(srgb 1 2)',
@@ -47,6 +51,28 @@ class CssColorExtractorTest extends TestCase {
 			$this->assertCount(0, $colors, $css);
 			$this->assertCount(0, $errors, $css);
 		}
+	}
+
+	public function testHueAnglesNormalizeToDegrees() {
+		foreach( [
+			'hsl(180deg 100% 50%)' => 'hsl(180 100% 50%)',
+			'hwb(.5turn 0% 0%)' => 'hwb(180 0% 0%)',
+			'lch(50 20 200grad)' => 'lch(50 20 180)',
+			'oklch(.5 .05 3.141592653589793rad)' => 'oklch(.5 .05 180)',
+		] as $angle => $degrees ) {
+			$this->assertSame(
+				$this->extractSingleColor($degrees)->getSimplestCssString(),
+				$this->extractSingleColor($angle)->getSimplestCssString(),
+				$angle
+			);
+		}
+	}
+
+	public function testFunctionsAreNotExtractedFromIdentifiers() {
+		$colors = (new CssColorExtractor('collab(50 0 0) mycolor(srgb 1 0 0)'))->extractColors($errors);
+
+		$this->assertCount(0, $colors);
+		$this->assertCount(0, $errors);
 	}
 
 	public function testModernSyntaxSupportsCssNumberGrammar() {
