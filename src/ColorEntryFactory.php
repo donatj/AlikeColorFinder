@@ -20,15 +20,15 @@ class ColorEntryFactory {
 		return $hue < 0 ? $hue + 360.0 : $hue;
 	}
 
-	public function makeFromRgba( $r, $g, $b, $a ) {
+	public function makeFromRgba( float $r, float $g, float $b, float $a ): ColorEntry {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromRgb( $r, $g, $b ) {
+	public function makeFromRgb( float $r, float $g, float $b ): ColorEntry {
 		return $this->makeFromRgba($r, $g, $b, 1);
 	}
 
-	public function makeFromHexString( $hex ) {
+	public function makeFromHexString( string $hex ): ColorEntry {
 		$hex = str_replace('#', '', $hex);
 		$a   = 1;
 
@@ -57,7 +57,7 @@ class ColorEntryFactory {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromHsla( $h, $s, $l, $a ) {
+	public function makeFromHsla( float $h, float $s, float $l, float $a ): ColorEntry {
 		$h = $this->normalizeHue($h);
 
 		$c = (1 - abs(2 * $l - 1)) * $s;
@@ -97,7 +97,7 @@ class ColorEntryFactory {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromHsl( $h, $s, $l ) {
+	public function makeFromHsl( float $h, float $s, float $l ): ColorEntry {
 		return $this->makeFromHsla($h, $s, $l, 1);
 	}
 
