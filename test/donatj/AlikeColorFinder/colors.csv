@@ -20,6 +20,7 @@ INPUT,BECOMES
 red,#ff0000
 RED,#ff0000
 ReD,#ff0000
+transparent,"rgba(0,0,0,0)"
 MediumSlateBlue,#7b68ee
 gray,#808080
 grey,#808080
