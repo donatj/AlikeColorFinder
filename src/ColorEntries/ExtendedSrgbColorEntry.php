@@ -3,7 +3,6 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
-use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -18,7 +17,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	protected float $b;
 	protected float $a;
 
-	public function __construct( float $r, float $g, float $b, float $a = 1.0, ?ColorSpaceConversion $colorSpaceConversion = null ) {
+	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
@@ -27,7 +26,6 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
-		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	public function getR(): float {
@@ -62,7 +60,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		$gLin = $this->srgbToLinear($this->g);
 		$bLin = $this->srgbToLinear($this->b);
 
-		list($x, $y, $z) = $this->colorSpaceConversion->linearSrgbToXyzD65($rLin, $gLin, $bLin);
+		list($x, $y, $z) = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,

@@ -3,7 +3,6 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
-use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -28,8 +27,7 @@ class Rec2020ColorEntry implements ColorEntry {
 		float $r,
 		float $g,
 		float $b,
-		float $a = 1.0,
-		?ColorSpaceConversion $colorSpaceConversion = null
+		float $a = 1.0
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -38,7 +36,6 @@ class Rec2020ColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
-		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**

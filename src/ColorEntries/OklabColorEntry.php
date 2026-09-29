@@ -3,7 +3,6 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
-use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -28,8 +27,7 @@ class OklabColorEntry implements ColorEntry {
 		float $l,
 		float $aVal,
 		float $bVal,
-		float $a = 1.0,
-		?ColorSpaceConversion $colorSpaceConversion = null
+		float $a = 1.0
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -38,7 +36,6 @@ class OklabColorEntry implements ColorEntry {
 		$this->aVal = $aVal;
 		$this->bVal = $bVal;
 		$this->a    = $a;
-		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
@@ -96,7 +93,7 @@ class OklabColorEntry implements ColorEntry {
 		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
 		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
 
-		list($x, $y, $z) = $this->colorSpaceConversion->linearSrgbToXyzD65($rLin, $gLin, $bLin);
+		list($x, $y, $z) = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,

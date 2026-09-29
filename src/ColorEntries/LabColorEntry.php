@@ -3,7 +3,6 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
-use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -28,8 +27,7 @@ class LabColorEntry implements ColorEntry {
 		float $l,
 		float $aVal,
 		float $bVal,
-		float $a = 1.0,
-		?ColorSpaceConversion $colorSpaceConversion = null
+		float $a = 1.0
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -38,7 +36,6 @@ class LabColorEntry implements ColorEntry {
 		$this->aVal = $aVal;
 		$this->bVal = $bVal;
 		$this->a    = $a;
-		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
@@ -129,7 +126,7 @@ class LabColorEntry implements ColorEntry {
 		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
-		return $this->colorSpaceConversion->xyzD65ToLinearSrgb($x, $y, $z);
+		return $this->xyzD65ToLinearSrgb($x, $y, $z);
 	}
 
 }

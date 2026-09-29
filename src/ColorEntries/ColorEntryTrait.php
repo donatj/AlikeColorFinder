@@ -2,15 +2,7 @@
 
 namespace donatj\AlikeColorFinder\ColorEntries;
 
-use donatj\AlikeColorFinder\ColorSpaceConversion;
-
 trait ColorEntryTrait {
-
-	protected ColorSpaceConversion $colorSpaceConversion;
-
-	protected function setColorSpaceConversion( ?ColorSpaceConversion $colorSpaceConversion ): void {
-		$this->colorSpaceConversion = $colorSpaceConversion ?? new ColorSpaceConversion();
-	}
 
 	public function getRgbaString(): string {
 		$r = round($this->getR());
@@ -130,7 +122,7 @@ trait ColorEntryTrait {
 		$y   = $xyz['y'] / 100;
 		$z   = $xyz['z'] / 100;
 
-		$linear = $this->colorSpaceConversion->xyzD65ToLinearSrgb($x, $y, $z);
+		$linear = $this->xyzD65ToLinearSrgb($x, $y, $z);
 
 		// Check if all components are within [0, 1] with epsilon tolerance
 		return $linear[0] >= -$epsilon && $linear[0] <= 1 + $epsilon
@@ -145,6 +137,30 @@ trait ColorEntryTrait {
 		$gamma = $c <= 0.0031308 ? 12.92 * $c : 1.055 * ($c ** (1 / 2.4)) - 0.055;
 
 		return max(0.0, min(255.0, $gamma * 255));
+	}
+
+	/**
+	 * @return array{float, float, float}
+	 * @see https://www.w3.org/TR/css-color-4/#color-conversion-code
+	 */
+	protected function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
+		return [
+			0.41239079926595934 * $r + 0.35758433938387796 * $g + 0.1804807884018343 * $b,
+			0.21263900587151027 * $r + 0.7151686787677559 * $g + 0.07219231536073371 * $b,
+			0.01933081871559182 * $r + 0.11919477979462598 * $g + 0.9505321522496607 * $b,
+		];
+	}
+
+	/**
+	 * @return array{float, float, float}
+	 * @see https://www.w3.org/TR/css-color-4/#color-conversion-code
+	 */
+	protected function xyzD65ToLinearSrgb( float $x, float $y, float $z ): array {
+		return [
+			+3.2409699419045226 * $x - 1.537383177570094 * $y - 0.4986107602930034 * $z,
+			-0.9692436362808796 * $x + 1.8759675015077202 * $y + 0.04155505740717559 * $z,
+			+0.05563007969699366 * $x - 0.20397695888897652 * $y + 1.0569715142428786 * $z,
+		];
 	}
 
 }

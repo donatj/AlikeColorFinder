@@ -14,18 +14,14 @@ use donatj\AlikeColorFinder\ColorEntries\XyzColorEntry;
 
 class ColorEntryFactory {
 
-	protected ColorSpaceConversion $colorSpaceConversion;
-
-	public function __construct( ?ColorSpaceConversion $colorSpaceConversion = null ) {
-		$this->colorSpaceConversion = $colorSpaceConversion ?? new ColorSpaceConversion();
-	}
-
 	public function normalizeHue( float $hue ): float {
-		return $this->colorSpaceConversion->normalizeHue($hue);
+		$hue = fmod($hue, 360.0);
+
+		return $hue < 0 ? $hue + 360.0 : $hue;
 	}
 
 	public function makeFromRgba( $r, $g, $b, $a ) {
-		return new SrgbColorEntry($r, $g, $b, $a, $this->colorSpaceConversion);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromRgb( $r, $g, $b ) {
@@ -58,11 +54,11 @@ class ColorEntryFactory {
 			throw new \InvalidArgumentException('Invalid Hex "' . $hex . '"');
 		}
 
-		return new SrgbColorEntry($r, $g, $b, $a, $this->colorSpaceConversion);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsla( $h, $s, $l, $a ) {
-		$h = $this->colorSpaceConversion->normalizeHue($h);
+		$h = $this->normalizeHue($h);
 
 		$c = (1 - abs(2 * $l - 1)) * $s;
 		$x = $c * (1 - abs(fmod($h / 60, 2) - 1));
@@ -98,7 +94,7 @@ class ColorEntryFactory {
 		$g = ($g + $m) * 255;
 		$b = ($b + $m) * 255;
 
-		return new SrgbColorEntry($r, $g, $b, $a, $this->colorSpaceConversion);
+		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
 	public function makeFromHsl( $h, $s, $l ) {
@@ -106,12 +102,12 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHwb( float $h, float $w, float $b, float $a = 1.0 ): ColorEntry {
-		$h = $this->colorSpaceConversion->normalizeHue($h);
+		$h = $this->normalizeHue($h);
 
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
 			$gray = $w / ($w + $b) * 255;
-			return new SrgbColorEntry($gray, $gray, $gray, $a, $this->colorSpaceConversion);
+			return new SrgbColorEntry($gray, $gray, $gray, $a);
 		}
 
 		// Compute pure hue RGB (0-1 range) by sector
@@ -134,44 +130,43 @@ class ColorEntryFactory {
 			($pr * $scale + $w) * 255,
 			($pg * $scale + $w) * 255,
 			($pb * $scale + $w) * 255,
-			$a,
-			$this->colorSpaceConversion
+			$a
 		);
 	}
 
 	public function makeFromLab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
-		return new LabColorEntry($l, $aVal, $bVal, $a, $this->colorSpaceConversion);
+		return new LabColorEntry($l, $aVal, $bVal, $a);
 	}
 
 	public function makeFromLch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
-		return new LchColorEntry($l, $c, $this->colorSpaceConversion->normalizeHue($h), $a, $this->colorSpaceConversion);
+		return new LchColorEntry($l, $c, $this->normalizeHue($h), $a);
 	}
 
 	public function makeFromOklab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
-		return new OklabColorEntry($l, $aVal, $bVal, $a, $this->colorSpaceConversion);
+		return new OklabColorEntry($l, $aVal, $bVal, $a);
 	}
 
 	public function makeFromOklch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
-		return new OklchColorEntry($l, $c, $this->colorSpaceConversion->normalizeHue($h), $a, $this->colorSpaceConversion);
+		return new OklchColorEntry($l, $c, $this->normalizeHue($h), $a);
 	}
 
 	public function makeFromColorSpace( string $colorSpace, float $c1, float $c2, float $c3, float $a = 1.0 ): ColorEntry {
 		switch( $colorSpace ) {
 			case 'srgb':
-				return new ExtendedSrgbColorEntry($c1, $c2, $c3, $a, $this->colorSpaceConversion);
+				return new ExtendedSrgbColorEntry($c1, $c2, $c3, $a);
 
 			case 'srgb-linear':
 				list($x, $y, $z) = $this->linearSrgbToXyzD65($c1, $c2, $c3);
 
-				return new XyzColorEntry($x, $y, $z, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'display-p3':
-				return new DisplayP3ColorEntry($c1, $c2, $c3, $a, $this->colorSpaceConversion);
+				return new DisplayP3ColorEntry($c1, $c2, $c3, $a);
 
 			case 'display-p3-linear':
 				list($x, $y, $z) = $this->displayP3LinearToXyzD65($c1, $c2, $c3);
 
-				return new XyzColorEntry($x, $y, $z, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'a98-rgb':
 				// A98-RGB uses gamma 563/256 ≈ 2.19921875
@@ -180,7 +175,7 @@ class ColorEntryFactory {
 				$bLin = ($c3 >= 0 ? 1 : -1) * (abs($c3) ** (563 / 256));
 				list($x, $y, $z) = $this->a98RgbLinearToXyzD65($rLin, $gLin, $bLin);
 
-				return new XyzColorEntry($x, $y, $z, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'prophoto-rgb':
 				// ProPhoto RGB uses gamma 1.8 with a linear toe
@@ -190,19 +185,19 @@ class ColorEntryFactory {
 				list($x50, $y50, $z50) = $this->prophotorgbLinearToXyzD50($rLin, $gLin, $bLin);
 				list($x, $y, $z) = $this->xyzD50ToXyzD65($x50, $y50, $z50);
 
-				return new XyzColorEntry($x, $y, $z, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($x, $y, $z, $a);
 
 			case 'rec2020':
-				return new Rec2020ColorEntry($c1, $c2, $c3, $a, $this->colorSpaceConversion);
+				return new Rec2020ColorEntry($c1, $c2, $c3, $a);
 
 			case 'xyz':
 			case 'xyz-d65':
-				return new XyzColorEntry($c1, $c2, $c3, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($c1, $c2, $c3, $a);
 
 			case 'xyz-d50':
 				list($x, $y, $z) = $this->xyzD50ToXyzD65($c1, $c2, $c3);
 
-				return new XyzColorEntry($x, $y, $z, $a, $this->colorSpaceConversion);
+				return new XyzColorEntry($x, $y, $z, $a);
 		}
 
 		throw new \LogicException("Color space '{$colorSpace}' not implemented");
@@ -225,7 +220,13 @@ class ColorEntryFactory {
 
 	/** @return array{float, float, float} */
 	private function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
-		return $this->colorSpaceConversion->linearSrgbToXyzD65($r, $g, $b);
+		// CSS Color 4 linear sRGB to XYZ D65 matrix.
+		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
+		return [
+			0.41239079926595934 * $r + 0.35758433938387796 * $g + 0.1804807884018343 * $b,
+			0.21263900587151027 * $r + 0.7151686787677559 * $g + 0.07219231536073371 * $b,
+			0.01933081871559182 * $r + 0.11919477979462598 * $g + 0.9505321522496607 * $b,
+		];
 	}
 
 	/** @return array{float, float, float} */
