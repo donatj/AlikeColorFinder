@@ -187,8 +187,18 @@ class CssColorExtractor {
 	 * @return \donatj\AlikeColorFinder\ColorEntry[]
 	 */
 	public function extractColors( &$errors = null ) {
-		$preDefined = implode('|', array_map(function( $color ) {
-			return preg_quote($color, '/');
+		$asciiCaseInsensitive = function( string $identifier ): string {
+			return implode('', array_map(function( string $character ): string {
+				if( $character >= 'a' && $character <= 'z' ) {
+					return '[' . $character . strtoupper($character) . ']';
+				}
+
+				return $character;
+			}, str_split($identifier)));
+		};
+
+		$preDefined = implode('|', array_map(function( $color ) use ( $asciiCaseInsensitive ) {
+			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 
 		// CSS <number> allows an optional sign and scientific notation.
@@ -211,14 +221,23 @@ class CssColorExtractor {
 		// A CSS identifier may contain any non-ASCII code point.
 		$functionStart        = '(?<![\w\x{80}-\x{10FFFF}\\\\-])';
 
-		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?(?![\w-]))|
-(?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyRgbParams . '))\s*\))|
-(?:' . $functionStart . '(?P<hue_func>hsl|hsla)\s*\(\s*(?P<hue_params>(?:' . $modernHueFirstParams . '|' . $legacyHueFirstParams . '))\s*\))|
-(?:' . $functionStart . '(?P<func2>lab|oklab)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
-(?:' . $functionStart . '(?P<hue_func2>lch|oklch)\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
-(?:' . $functionStart . '(?P<hue_func3>hwb)\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
-(?:' . $functionStart . '(?P<color_func>color)\s*\(\s*(?P<color_space>srgb-linear|srgb|display-p3-linear|display-p3|a98-rgb|prophoto-rgb|rec2020|xyz-d50|xyz-d65|xyz)\s+(?P<color_params>' . $modernParams . ')\s*\))|
-				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xiu', $this->subject, $results, PREG_SET_ORDER);
+		$rgbFunctions = $asciiCaseInsensitive('rgb') . '|' . $asciiCaseInsensitive('rgba');
+		$hslFunctions = $asciiCaseInsensitive('hsl') . '|' . $asciiCaseInsensitive('hsla');
+		$labFunctions = $asciiCaseInsensitive('lab') . '|' . $asciiCaseInsensitive('oklab');
+		$lchFunctions = $asciiCaseInsensitive('lch') . '|' . $asciiCaseInsensitive('oklch');
+		$colorSpaces  = implode('|', array_map($asciiCaseInsensitive, [
+			'srgb-linear', 'srgb', 'display-p3-linear', 'display-p3', 'a98-rgb',
+			'prophoto-rgb', 'rec2020', 'xyz-d50', 'xyz-d65', 'xyz',
+		]));
+
+		preg_match_all('/(?P<hex>\#[0-9a-fA-F]{3}(?:[0-9a-fA-F](?:[0-9a-fA-F]{2}(?:[0-9a-fA-F]{2})?)?)?(?![\w-]))|
+(?:' . $functionStart . '(?P<func>' . $rgbFunctions . ')\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyRgbParams . '))\s*\))|
+(?:' . $functionStart . '(?P<hue_func>' . $hslFunctions . ')\s*\(\s*(?P<hue_params>(?:' . $modernHueFirstParams . '|' . $legacyHueFirstParams . '))\s*\))|
+(?:' . $functionStart . '(?P<func2>' . $labFunctions . ')\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
+(?:' . $functionStart . '(?P<hue_func2>' . $lchFunctions . ')\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|
+(?:' . $functionStart . '(?P<hue_func3>' . $asciiCaseInsensitive('hwb') . ')\s*\(\s*(?P<hue_params3>' . $modernHueFirstParams . ')\s*\))|
+(?:' . $functionStart . '(?P<color_func>' . $asciiCaseInsensitive('color') . ')\s*\(\s*(?P<color_space>' . $colorSpaces . ')\s+(?P<color_params>' . $modernParams . ')\s*\))|
+				(?:(?<=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t])(?P<named>' . $preDefined . ')(?=[\/\\\\()"\':,.;<>~!@#$%^&*|+=[\]{}`?\s\t]))/xu', $this->subject, $results, PREG_SET_ORDER);
 
 		if( preg_last_error() !== PREG_NO_ERROR ) {
 			throw new \LogicException('Regex Error: ' . preg_last_error());
