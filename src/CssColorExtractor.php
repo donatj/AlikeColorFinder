@@ -208,7 +208,8 @@ class CssColorExtractor {
 		$component             = $number . '%?';
 		// CSS <hue> is a number in degrees or an angle dimension.
 		// @see https://www.w3.org/TR/css-color-4/#hue-syntax
-		$hue                   = $number . '(?:deg|grad|rad|turn)?';
+		$angleUnits            = implode('|', array_map($asciiCaseInsensitive, [ 'deg', 'grad', 'rad', 'turn' ]));
+		$hue                   = $number . '(?:' . $angleUnits . ')?';
 		$modernParams          = $component . '(?:\s+' . $component . '){2}(?:\s*\/\s*' . $component . ')?';
 		$legacyRgbParams       = '(?:' .
 			$number . '\s*,\s*' . $number . '\s*,\s*' . $number .

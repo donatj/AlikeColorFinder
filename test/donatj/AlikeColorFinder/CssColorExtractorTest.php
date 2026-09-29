@@ -121,9 +121,13 @@ class CssColorExtractorTest extends TestCase {
 	public function testHueAnglesNormalizeToDegrees() {
 		foreach( [
 			'hsl(180deg 100% 50%)' => 'hsl(180 100% 50%)',
+			'hsl(180DEG 100% 50%)' => 'hsl(180 100% 50%)',
 			'hwb(.5turn 0% 0%)' => 'hwb(180 0% 0%)',
+			'hwb(.5TURN 0% 0%)' => 'hwb(180 0% 0%)',
 			'lch(50 20 200grad)' => 'lch(50 20 180)',
+			'lch(50 20 200GRAD)' => 'lch(50 20 180)',
 			'oklch(.5 .05 3.141592653589793rad)' => 'oklch(.5 .05 180)',
+			'oklch(.5 .05 3.141592653589793RAD)' => 'oklch(.5 .05 180)',
 		] as $angle => $degrees ) {
 			$this->assertSame(
 				$this->extractSingleColor($degrees)->getSimplestCssString(),
