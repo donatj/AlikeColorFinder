@@ -107,7 +107,7 @@ class ColorEntryFactory {
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
 			$gray = $w / ($w + $b) * 255;
-			return new SrgbColorEntry($gray, $gray, $gray, $a);
+			return new SrgbColorEntry($gray, $gray, $gray, $a, false);
 		}
 
 		// Compute pure hue RGB (0-1 range) by sector
@@ -130,7 +130,8 @@ class ColorEntryFactory {
 			($pr * $scale + $w) * 255,
 			($pg * $scale + $w) * 255,
 			($pb * $scale + $w) * 255,
-			$a
+			$a,
+			false
 		);
 	}
 

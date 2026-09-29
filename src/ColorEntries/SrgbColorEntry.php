@@ -8,13 +8,17 @@ use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 class SrgbColorEntry implements ColorEntry {
 
-	use ColorEntryTrait;
+	use ColorEntryTrait {
+		getRgbHexString as private getCompactRgbHexString;
+		getSimplestCssString as private getCompactSimplestCssString;
+	}
 	use ColorInstanceTrait;
 
 	protected float $r;
 	protected float $g;
 	protected float $b;
 	protected float $a;
+	protected bool $usesLegacySerialization;
 
 	/**
 	 * @param float $r sRGB red   0–255
@@ -22,7 +26,7 @@ class SrgbColorEntry implements ColorEntry {
 	 * @param float $b sRGB blue  0–255
 	 * @param float $a alpha      0–1
 	 */
-	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
+	public function __construct( float $r, float $g, float $b, float $a = 1.0, bool $usesLegacySerialization = true ) {
 		if( $r > 255 || $r < 0 ) {
 			throw new \RangeException('Red must be between 0 and 255');
 		}
@@ -39,6 +43,7 @@ class SrgbColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
+		$this->usesLegacySerialization = $usesLegacySerialization;
 	}
 
 	/**
@@ -78,6 +83,48 @@ class SrgbColorEntry implements ColorEntry {
 		}
 
 		return $this->getRgbaString();
+	}
+
+	/**
+	 * Preserve the legacy CLI's full, RGB-only hexadecimal format.
+	 */
+	public function getRgbHexString(): string {
+		if( !$this->usesLegacySerialization ) {
+			return $this->getCompactRgbHexString();
+		}
+
+		$hex = str_pad(dechex((int)$this->r), 2, '0', STR_PAD_LEFT);
+		$hex .= str_pad(dechex((int)$this->g), 2, '0', STR_PAD_LEFT);
+		$hex .= str_pad(dechex((int)$this->b), 2, '0', STR_PAD_LEFT);
+
+		return '#' . $hex;
+	}
+
+	/**
+	 * Preserve the legacy CLI's rgba() serialization for transparent colors.
+	 */
+	public function getSimplestCssString( float $epsilon = 0.001 ): string {
+		if( !$this->usesLegacySerialization ) {
+			return $this->getCompactSimplestCssString($epsilon);
+		}
+
+		if( $this->a == 1 ) {
+			return $this->getRgbHexString();
+		}
+
+		return $this->getRgbaString();
+	}
+
+	/**
+	 * @return array{r: float, g: float, b: float, a: float}
+	 */
+	public function getUnclampedRgbaArray(): array {
+		return [
+			'r' => $this->r,
+			'g' => $this->g,
+			'b' => $this->b,
+			'a' => $this->a,
+		];
 	}
 
 	/**

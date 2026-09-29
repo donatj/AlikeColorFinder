@@ -30,6 +30,26 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
+	public function testLegacyFourComponentRgbaAndHslaSyntaxIsPreserved() {
+		foreach( [
+			'rgba(0 0 0 0)' => 'rgba(0,0,0,0)',
+			'rgba(12 34 56 0.2)' => 'rgba(12,34,56,0.2)',
+			'hsla(191.33 18% 35.29% 22%)' => 'rgba(74,100,106,0.22)',
+		] as $css => $expected ) {
+			$this->assertSame($expected, $this->extractSingleColor($css)->getSimplestCssString(), $css);
+		}
+	}
+
+	public function testLegacyColorsKeepTheirCliSerialization() {
+		foreach( [
+			'#abc' => '#aabbcc',
+			'rgba(0,0,0,0)' => 'rgba(0,0,0,0)',
+			'hsl(191.33 100% 35.29%)' => '#0091b3',
+		] as $css => $expected ) {
+			$this->assertSame($expected, $this->extractSingleColor($css)->getSimplestCssString(), $css);
+		}
+	}
+
 	public function testEquivalentColorsInDifferentSpacesAreDeduplicated() {
 		$colors = (new CssColorExtractor('#fff color(display-p3 1 1 1)'))->extractColors($errors);
 
@@ -115,8 +135,8 @@ class CssColorExtractorTest extends TestCase {
 		foreach( [
 			'rgb(+1e2 0 0)' => '#640000',
 			'rgba(0 0 0 / +.5)' => 'rgba(0,0,0,0.5)',
-			'rgba(0 0 0)' => '#000',
-			'hsla(0 0% 0%)' => '#000',
+			'rgba(0 0 0)' => '#000000',
+			'hsla(0 0% 0%)' => '#000000',
 			'lab(+50 0 0)' => '#777',
 			'color(srgb 1e0 0 0)' => '#f00',
 		] as $css => $expected ) {
