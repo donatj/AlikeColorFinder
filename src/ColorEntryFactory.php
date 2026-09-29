@@ -261,9 +261,11 @@ class ColorEntryFactory {
 
 	/** @return array{float, float, float} */
 	private function prophotorgbLinearToXyzD50( float $r, float $g, float $b ): array {
+		// CSS Color 4 ProPhoto RGB to XYZ D50 matrix.
+		// @see https://drafts.csswg.org/css-color-4/#color-conversion-code
 		return [
-			0.7977604896723027 * $r + 0.13518583717574031 * $g + 0.03135495205777543 * $b,
-			0.2880711282292934 * $r + 0.7118432178101014 * $g + 0.00008565396060525902 * $b,
+			0.7977666449006423 * $r + 0.13518129740053308 * $g + 0.0313477341283922 * $b,
+			0.2880748288194013 * $r + 0.711835234241873 * $g + 0.00008993693872564 * $b,
 			0.0 * $r + 0.0 * $g + 0.8251046025104601 * $b,
 		];
 	}
