@@ -367,7 +367,7 @@ class CssColorExtractor {
 			}
 
 			if( !$isPercentage ) {
-				$params[$index] = $index !== 3 && $func === 'hwb'
+				$params[$index] = $index !== 3 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true)
 					? $value / 100
 					: $value;
 				continue;

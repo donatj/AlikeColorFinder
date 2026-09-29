@@ -152,6 +152,19 @@ class CssColorExtractorTest extends TestCase {
 		}
 	}
 
+	public function testModernHslNumbersUseThePercentageReferenceRange() {
+		foreach( [
+			'hsl(0 50 50)' => 'hsl(0 50% 50%)',
+			'hsl(12.34 .15 .23 / .5)' => 'hsl(12.34 .15% .23% / .5)',
+		] as $numbers => $percentages ) {
+			$this->assertSame(
+				$this->extractSingleColor($percentages)->getSimplestCssString(),
+				$this->extractSingleColor($numbers)->getSimplestCssString(),
+				$numbers
+			);
+		}
+	}
+
 	public function testExtendedTransferFunctionsPreserveSign() {
 		foreach( [ 'display-p3', 'prophoto-rgb', 'rec2020' ] as $colorSpace ) {
 			$positive = $this->extractSingleColor("color({$colorSpace} 0.5 0 0)");
