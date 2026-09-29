@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -131,11 +132,7 @@ class LchColorEntry implements ColorEntry {
 		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
-		return [
-			+3.2404542 * $x - 1.5371385 * $y - 0.4985314 * $z,
-			-0.9692660 * $x + 1.8760108 * $y + 0.0415560 * $z,
-			+0.0556434 * $x - 0.2040259 * $y + 1.0572252 * $z,
-		];
+		return ColorSpaceConversion::xyzD65ToLinearSrgb($x, $y, $z);
 	}
 
 }

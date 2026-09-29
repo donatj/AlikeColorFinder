@@ -52,11 +52,7 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHsla( $h, $s, $l, $a ) {
-		// Normalize hue to [0, 360) range
-		$h = fmod($h, 360);
-		if( $h < 0 ) {
-			$h += 360;
-		}
+		$h = ColorSpaceConversion::normalizeHue($h);
 
 		$c = (1 - abs(2 * $l - 1)) * $s;
 		$x = $c * (1 - abs(fmod($h / 60, 2) - 1));
@@ -100,11 +96,7 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromHwb( float $h, float $w, float $b, float $a = 1.0 ): ColorEntry {
-		// Normalize hue to [0, 360) range
-		$h = fmod($h, 360);
-		if( $h < 0 ) {
-			$h += 360;
-		}
+		$h = ColorSpaceConversion::normalizeHue($h);
 
 		// Normalize whiteness and blackness
 		if( $w + $b >= 1.0 ) {
@@ -141,7 +133,7 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromLch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
-		return new LchColorEntry($l, $c, $h, $a);
+		return new LchColorEntry($l, $c, ColorSpaceConversion::normalizeHue($h), $a);
 	}
 
 	public function makeFromOklab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
@@ -149,7 +141,7 @@ class ColorEntryFactory {
 	}
 
 	public function makeFromOklch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
-		return new OklchColorEntry($l, $c, $h, $a);
+		return new OklchColorEntry($l, $c, ColorSpaceConversion::normalizeHue($h), $a);
 	}
 
 	public function makeFromColorSpace( string $colorSpace, float $c1, float $c2, float $c3, float $a = 1.0 ): ColorEntry {
@@ -222,12 +214,7 @@ class ColorEntryFactory {
 
 	/** @return array{float, float, float} */
 	private static function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
-		// Observer 2°, Illuminant D65
-		return [
-			0.4124 * $r + 0.3576 * $g + 0.1805 * $b,
-			0.2126 * $r + 0.7152 * $g + 0.0722 * $b,
-			0.0193 * $r + 0.1192 * $g + 0.9505 * $b,
-		];
+		return ColorSpaceConversion::linearSrgbToXyzD65($r, $g, $b);
 	}
 
 	/** @return array{float, float, float} */

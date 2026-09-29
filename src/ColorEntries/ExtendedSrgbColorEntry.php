@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -60,10 +61,12 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		$gLin = self::srgbToLinear($this->g);
 		$bLin = self::srgbToLinear($this->b);
 
+		list($x, $y, $z) = ColorSpaceConversion::linearSrgbToXyzD65($rLin, $gLin, $bLin);
+
 		return [
-			'x' => ($rLin * 0.4124 + $gLin * 0.3576 + $bLin * 0.1805) * 100,
-			'y' => ($rLin * 0.2126 + $gLin * 0.7152 + $bLin * 0.0722) * 100,
-			'z' => ($rLin * 0.0193 + $gLin * 0.1192 + $bLin * 0.9505) * 100,
+			'x' => $x * 100,
+			'y' => $y * 100,
+			'z' => $z * 100,
 			'a' => $this->a,
 		];
 	}

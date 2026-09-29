@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -100,11 +101,7 @@ class XyzColorEntry implements ColorEntry {
 	 * @return float[]  [r, g, b] linear
 	 */
 	private function getLinearSrgb(): array {
-		return [
-			+3.2404542 * $this->xyzX - 1.5371385 * $this->xyzY - 0.4985314 * $this->xyzZ,
-			-0.9692660 * $this->xyzX + 1.8760108 * $this->xyzY + 0.0415560 * $this->xyzZ,
-			+0.0556434 * $this->xyzX - 0.2040259 * $this->xyzY + 1.0572252 * $this->xyzZ,
-		];
+		return ColorSpaceConversion::xyzD65ToLinearSrgb($this->xyzX, $this->xyzY, $this->xyzZ);
 	}
 
 }

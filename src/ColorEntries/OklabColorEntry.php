@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -93,10 +94,7 @@ class OklabColorEntry implements ColorEntry {
 		$gLin = -1.2684380046 * $lm + 2.6097574011 * $mm - 0.3413193965 * $sm;
 		$bLin = -0.0041960863 * $lm - 0.7034186147 * $mm + 1.7076147010 * $sm;
 
-		// Linear sRGB to XYZ D65
-		$x = 0.4124 * $rLin + 0.3576 * $gLin + 0.1805 * $bLin;
-		$y = 0.2126 * $rLin + 0.7152 * $gLin + 0.0722 * $bLin;
-		$z = 0.0193 * $rLin + 0.1192 * $gLin + 0.9505 * $bLin;
+		list($x, $y, $z) = ColorSpaceConversion::linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,
