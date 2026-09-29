@@ -22,7 +22,7 @@ class AlikeColorFinder {
 	 */
 	protected $colorDiffer;
 
-	public function __construct( array $colors, ColorEntryFactory $colorEntryFactory = null, ColorDiffStrategyInterface $colorDiffer = null ) {
+	public function __construct( array $colors, ?ColorEntryFactory $colorEntryFactory = null, ?ColorDiffStrategyInterface $colorDiffer = null ) {
 		$this->colors = $colors;
 
 		if( $colorEntryFactory !== null ) {
