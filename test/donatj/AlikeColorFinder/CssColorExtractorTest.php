@@ -10,6 +10,7 @@ class CssColorExtractorTest extends TestCase {
 	 * @dataProvider colorProvider
 	 */
 	public function testExtract( $actual, $expected ) {
+		$errors = [];
 		$colors = (new CssColorExtractor("a { color: {$actual}; }"))->extractColors($errors);
 
 		foreach( $errors as $error ) {
@@ -21,6 +22,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testExtendedSrgbValuesAreNotCollapsed() {
+		$errors = [];
 		$colors = (new CssColorExtractor('a { color: #f00; background: color(srgb 1.1 0 0); }'))->extractColors($errors);
 
 		foreach( $errors as $error ) {
@@ -31,6 +33,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testFourComponentSpaceSyntaxWithoutAnAlphaSeparatorIsIgnored() {
+		$errors = [];
 		$colors = (new CssColorExtractor('rgba(0 0 0 0) hsla(191.33 18% 35.29% 22%)'))->extractColors($errors);
 
 		$this->assertCount(0, $errors);
@@ -48,6 +51,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testEquivalentColorsInDifferentSpacesAreDeduplicated() {
+		$errors = [];
 		$colors = (new CssColorExtractor('#fff color(display-p3 1 1 1)'))->extractColors($errors);
 
 		$this->assertCount(0, $errors);
@@ -76,6 +80,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testUncomparableNumericValuesAreReportedAsExtractionErrors() {
+		$errors = [];
 		$colors = (new CssColorExtractor('#fff color(srgb 1e309 0 0) color(srgb 1e100 0 0)'))->extractColors($errors);
 
 		$this->assertCount(1, $colors);
@@ -102,6 +107,7 @@ class CssColorExtractorTest extends TestCase {
 			'color(srgb 1 2 3 4)',
 			'color(srgb 1 2 / 0.5)',
 		] as $css ) {
+			$errors = [];
 			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
 			$this->assertCount(0, $colors, $css);
@@ -111,6 +117,7 @@ class CssColorExtractorTest extends TestCase {
 
 	public function testInvalidHexSyntaxIsIgnored() {
 		foreach( [ '#12345', '#1234567', '#123456789' ] as $css ) {
+			$errors = [];
 			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
 			$this->assertCount(0, $colors, $css);
@@ -138,6 +145,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	public function testFunctionsAreNotExtractedFromIdentifiers() {
+		$errors = [];
 		$colors = (new CssColorExtractor('collab(50 0 0) mycolor(srgb 1 0 0) élab(50 0 0) 🎨color(srgb 1 0 0) ſrgb(0 0 0) color(ſrgb 1 0 0)'))->extractColors($errors);
 
 		$this->assertCount(0, $colors);
@@ -184,6 +192,7 @@ class CssColorExtractorTest extends TestCase {
 	}
 
 	private function extractSingleColor( $css ) {
+		$errors = [];
 		$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
 		foreach( $errors as $error ) {

@@ -26,6 +26,10 @@ foreach( $files as $file ) {
 $stdout = fopen('php://output', 'w');
 $stderr = fopen('php://stderr', 'w');
 
+if( !is_resource($stdout) || !is_resource($stderr) ) {
+	throw new \RuntimeException('Unable to open standard streams');
+}
+
 $flags = new \donatj\Flags();
 
 $optionStrategy  =& $flags->string('strategy', 'ciede2000', 'Color diff strategy.
@@ -80,25 +84,37 @@ try {
 			throw new CliException("Unknown diff strategy: {$optionStrategy}");
 	}
 } catch( \Exception $e ) {
-	fwrite($stderr, ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$argv[0]} [<files>] [<dirs>]\n" . $flags->getDefaults() . PHP_EOL);
+	$program = $_SERVER['argv'][0] ?? 'alike';
+	fwrite($stderr, ltrim($e->getMessage() . PHP_EOL . PHP_EOL) . "usage: {$program} [<files>] [<dirs>]\n" . $flags->getDefaults() . PHP_EOL);
 	die($optionExitCode);
 }
 
 /**
- * @var $colorFiles \SplFileInfo[]
+ * @var list<\SplFileInfo> $colorFiles
  */
 $colorFiles = iterator_to_array($fileIterator, false);
 if( $colorFiles ) {
 	$subject = '';
 	foreach( $colorFiles as $arg ) {
-		$subject .= file_get_contents($arg->getRealPath());
+		$contents = file_get_contents($arg->getRealPath());
+		if( $contents === false ) {
+			fwrite($stderr, "error: Cannot read file: {$arg}\n");
+			exit($optionExitCode);
+		}
+
+		$subject .= $contents;
 	}
 } else {
 	fwrite($stderr, "No files specified, reading from stdin...\n");
 	$subject = file_get_contents('php://stdin');
+	if( $subject === false ) {
+		fwrite($stderr, "error: Cannot read stdin\n");
+		exit($optionExitCode);
+	}
 }
 
 $cce    = new CssColorExtractor($subject);
+$errors = [];
 $colors = $cce->extractColors($errors);
 
 $af   = new AlikeColorFinder($colors, null, $diffStrategy);
@@ -124,13 +140,13 @@ if( $data || $errors ) {
 	exit($optionExitCode);
 }
 
-function displayDiff( $data, $stream ) {
+/**
+ * @param list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}> $data
+ * @param resource $stream
+ */
+function displayDiff( array $data, $stream ): void {
 
 	foreach( $data as $colorSet ) {
-		/**
-		 * @var $colorOne \donatj\AlikeColorFinder\ColorEntry
-		 * @var $colorTwo \donatj\AlikeColorFinder\ColorEntry
-		 */
 		$colorOne = $colorSet['master'];
 		foreach( $colorSet['children'] as $childEntry ) {
 			$colorTwo = $childEntry['color'];
@@ -164,8 +180,12 @@ function displayDiff( $data, $stream ) {
 }
 
 
-function getDiffStats( $data ) {
-	$sum   = 0;
+/**
+ * @param list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}> $data
+ * @return array{float, int}
+ */
+function getDiffStats( array $data ): array {
+	$sum   = 0.0;
 	$count = 0;
 	foreach( $data as $items ) {
 		foreach( $items['children'] as $child ) {
