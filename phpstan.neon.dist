@@ -1,9 +1,5 @@
-includes:
-	- phpstan-baseline.neon
-
 parameters:
 	level: 8
-	reportUnmatchedIgnoredErrors: false
 	paths:
 		- src
 		- composer/bin/alike
