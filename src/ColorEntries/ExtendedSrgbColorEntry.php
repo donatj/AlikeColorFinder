@@ -18,7 +18,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	protected float $b;
 	protected float $a;
 
-	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
+	public function __construct( float $r, float $g, float $b, float $a = 1.0, ?ColorSpaceConversion $colorSpaceConversion = null ) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
@@ -27,18 +27,19 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
+		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	public function getR(): float {
-		return self::clampToSrgb255($this->r);
+		return $this->clampToSrgb255($this->r);
 	}
 
 	public function getG(): float {
-		return self::clampToSrgb255($this->g);
+		return $this->clampToSrgb255($this->g);
 	}
 
 	public function getB(): float {
-		return self::clampToSrgb255($this->b);
+		return $this->clampToSrgb255($this->b);
 	}
 
 	public function getA(): float {
@@ -57,11 +58,11 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
-		$rLin = self::srgbToLinear($this->r);
-		$gLin = self::srgbToLinear($this->g);
-		$bLin = self::srgbToLinear($this->b);
+		$rLin = $this->srgbToLinear($this->r);
+		$gLin = $this->srgbToLinear($this->g);
+		$bLin = $this->srgbToLinear($this->b);
 
-		list($x, $y, $z) = ColorSpaceConversion::linearSrgbToXyzD65($rLin, $gLin, $bLin);
+		list($x, $y, $z) = $this->colorSpaceConversion->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
 		return [
 			'x' => $x * 100,
@@ -71,11 +72,11 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		];
 	}
 
-	private static function clampToSrgb255( float $component ): float {
+	private function clampToSrgb255( float $component ): float {
 		return max(0.0, min(255.0, $component * 255));
 	}
 
-	private static function srgbToLinear( float $component ): float {
+	private function srgbToLinear( float $component ): float {
 		$sign = $component < 0 ? -1 : 1;
 		$abs  = abs($component);
 

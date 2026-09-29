@@ -28,7 +28,8 @@ class LabColorEntry implements ColorEntry {
 		float $l,
 		float $aVal,
 		float $bVal,
-		float $a = 1.0
+		float $a = 1.0,
+		?ColorSpaceConversion $colorSpaceConversion = null
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -37,27 +38,28 @@ class LabColorEntry implements ColorEntry {
 		$this->aVal = $aVal;
 		$this->bVal = $bVal;
 		$this->a    = $a;
+		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
 	 * @return float  sRGB red 0–255
 	 */
 	public function getR(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[0]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
 	public function getG(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[1]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
 	public function getB(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[2]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
 	/**
@@ -127,7 +129,7 @@ class LabColorEntry implements ColorEntry {
 		$z   = $xyz['z'] / 100;
 
 		// XYZ D65 to linear sRGB
-		return ColorSpaceConversion::xyzD65ToLinearSrgb($x, $y, $z);
+		return $this->colorSpaceConversion->xyzD65ToLinearSrgb($x, $y, $z);
 	}
 
 }

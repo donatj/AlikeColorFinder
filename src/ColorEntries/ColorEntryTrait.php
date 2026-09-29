@@ -2,7 +2,15 @@
 
 namespace donatj\AlikeColorFinder\ColorEntries;
 
+use donatj\AlikeColorFinder\ColorSpaceConversion;
+
 trait ColorEntryTrait {
+
+	protected ColorSpaceConversion $colorSpaceConversion;
+
+	protected function setColorSpaceConversion( ?ColorSpaceConversion $colorSpaceConversion ): void {
+		$this->colorSpaceConversion = $colorSpaceConversion ?? new ColorSpaceConversion();
+	}
 
 	public function getRgbaString(): string {
 		$r = round($this->getR());
@@ -122,7 +130,7 @@ trait ColorEntryTrait {
 		$y   = $xyz['y'] / 100;
 		$z   = $xyz['z'] / 100;
 
-		$linear = \donatj\AlikeColorFinder\ColorSpaceConversion::xyzD65ToLinearSrgb($x, $y, $z);
+		$linear = $this->colorSpaceConversion->xyzD65ToLinearSrgb($x, $y, $z);
 
 		// Check if all components are within [0, 1] with epsilon tolerance
 		return $linear[0] >= -$epsilon && $linear[0] <= 1 + $epsilon
@@ -133,7 +141,7 @@ trait ColorEntryTrait {
 	/**
 	 * Apply sRGB gamma and clamp to [0, 255].
 	 */
-	protected static function linearToSrgb255( float $c ): float {
+	protected function linearToSrgb255( float $c ): float {
 		$gamma = $c <= 0.0031308 ? 12.92 * $c : 1.055 * ($c ** (1 / 2.4)) - 0.055;
 
 		return max(0.0, min(255.0, $gamma * 255));

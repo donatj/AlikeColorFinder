@@ -169,7 +169,7 @@ class CssColorExtractor {
 	 * CIEDE2000 raises chroma to the seventh power, so values above this
 	 * coordinate magnitude cannot be compared reliably with PHP floats.
 	 */
-	private const MAX_COMPARABLE_XYZ_COMPONENT = 1.0e30;
+	protected float $maxComparableXyzComponent = 1.0e30;
 
 	public function __construct( $subject = "", ?ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
@@ -276,7 +276,7 @@ class CssColorExtractor {
 						throw new \RangeException('Color conversion produced a non-finite coordinate');
 					}
 
-					if( abs($component) > self::MAX_COMPARABLE_XYZ_COMPONENT ) {
+					if( abs($component) > $this->maxComparableXyzComponent ) {
 						throw new \RangeException('Color conversion exceeds the supported comparison range');
 					}
 				}
@@ -320,7 +320,7 @@ class CssColorExtractor {
 	 * @return list<float>
 	 */
 	private function normalizeColorSpaceParams( array $params ): array {
-		$params = array_map(static function( string $param ): float {
+		$params = array_map(function( string $param ): float {
 			if( substr($param, -1) === '%' ) {
 				$value = ((float)substr($param, 0, -1)) / 100;
 			} else {
@@ -335,7 +335,7 @@ class CssColorExtractor {
 		}, $params);
 
 		if( isset($params[3]) ) {
-			$params[3] = self::clamp($params[3], 0.0, 1.0);
+			$params[3] = $this->clamp($params[3], 0.0, 1.0);
 		}
 
 		return $params;
@@ -348,8 +348,8 @@ class CssColorExtractor {
 	 */
 	private function normalizeFunctionParams( string $func, array $params ): array {
 		foreach( $params as $index => $param ) {
-			if( self::isHueComponent($func, $index) ) {
-				$params[$index] = self::normalizeHue($param);
+			if( $this->isHueComponent($func, $index) ) {
+				$params[$index] = $this->normalizeHue($param);
 				continue;
 			}
 
@@ -395,37 +395,37 @@ class CssColorExtractor {
 		}
 
 		if( isset($params[3]) ) {
-			$params[3] = self::clamp($params[3], 0.0, 1.0);
+			$params[3] = $this->clamp($params[3], 0.0, 1.0);
 		}
 
 		switch( $func ) {
 			case 'rgb':
 			case 'rgba':
-				$params[0] = self::clamp($params[0], 0.0, 255.0);
-				$params[1] = self::clamp($params[1], 0.0, 255.0);
-				$params[2] = self::clamp($params[2], 0.0, 255.0);
+				$params[0] = $this->clamp($params[0], 0.0, 255.0);
+				$params[1] = $this->clamp($params[1], 0.0, 255.0);
+				$params[2] = $this->clamp($params[2], 0.0, 255.0);
 				break;
 			case 'hsl':
 			case 'hsla':
-				$params[1] = self::clamp($params[1], 0.0, 1.0);
-				$params[2] = self::clamp($params[2], 0.0, 1.0);
+				$params[1] = $this->clamp($params[1], 0.0, 1.0);
+				$params[2] = $this->clamp($params[2], 0.0, 1.0);
 				break;
 			case 'hwb':
 				$params[1] = max(0.0, $params[1]);
 				$params[2] = max(0.0, $params[2]);
 				break;
 			case 'lab':
-				$params[0] = self::clamp($params[0], 0.0, 100.0);
+				$params[0] = $this->clamp($params[0], 0.0, 100.0);
 				break;
 			case 'lch':
-				$params[0] = self::clamp($params[0], 0.0, 100.0);
+				$params[0] = $this->clamp($params[0], 0.0, 100.0);
 				$params[1] = max(0.0, $params[1]);
 				break;
 			case 'oklab':
-				$params[0] = self::clamp($params[0], 0.0, 1.0);
+				$params[0] = $this->clamp($params[0], 0.0, 1.0);
 				break;
 			case 'oklch':
-				$params[0] = self::clamp($params[0], 0.0, 1.0);
+				$params[0] = $this->clamp($params[0], 0.0, 1.0);
 				$params[1] = max(0.0, $params[1]);
 				break;
 		}
@@ -433,12 +433,12 @@ class CssColorExtractor {
 		return array_values($params);
 	}
 
-	private static function isHueComponent( string $func, int $index ): bool {
+	private function isHueComponent( string $func, int $index ): bool {
 		return ($index === 0 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true))
 			|| ($index === 2 && in_array($func, [ 'lch', 'oklch' ], true));
 	}
 
-	private static function normalizeHue( string $hue ): float {
+	private function normalizeHue( string $hue ): float {
 		$hue = strtolower($hue);
 
 		if( substr($hue, -4) === 'turn' ) {
@@ -457,10 +457,10 @@ class CssColorExtractor {
 			throw new \RangeException('Hue must be finite');
 		}
 
-		return ColorSpaceConversion::normalizeHue($value);
+		return $this->factory->normalizeHue($value);
 	}
 
-	private static function clamp( float $value, float $minimum, float $maximum ): float {
+	private function clamp( float $value, float $minimum, float $maximum ): float {
 		return max($minimum, min($maximum, $value));
 	}
 

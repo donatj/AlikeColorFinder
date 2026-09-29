@@ -23,7 +23,7 @@ class SrgbColorEntry implements ColorEntry {
 	 * @param float $b sRGB blue  0–255
 	 * @param float $a alpha      0–1
 	 */
-	public function __construct( float $r, float $g, float $b, float $a = 1.0 ) {
+	public function __construct( float $r, float $g, float $b, float $a = 1.0, ?ColorSpaceConversion $colorSpaceConversion = null ) {
 		if( $r > 255 || $r < 0 ) {
 			throw new \RangeException('Red must be between 0 and 255');
 		}
@@ -40,6 +40,7 @@ class SrgbColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
+		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
@@ -95,7 +96,7 @@ class SrgbColorEntry implements ColorEntry {
 		$linearG = $g > 0.04045 ? pow((($g + 0.055) / 1.055), 2.4) : $g / 12.92;
 		$linearB = $b > 0.04045 ? pow((($b + 0.055) / 1.055), 2.4) : $b / 12.92;
 
-		list($x, $y, $z) = ColorSpaceConversion::linearSrgbToXyzD65($linearR, $linearG, $linearB);
+		list($x, $y, $z) = $this->colorSpaceConversion->linearSrgbToXyzD65($linearR, $linearG, $linearB);
 
 		return [
 			'x' => $x * 100,

@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -27,7 +28,8 @@ class DisplayP3ColorEntry implements ColorEntry {
 		float $r,
 		float $g,
 		float $b,
-		float $a = 1.0
+		float $a = 1.0,
+		?ColorSpaceConversion $colorSpaceConversion = null
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -36,27 +38,28 @@ class DisplayP3ColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
+		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
 	 * @return float  sRGB red 0–255
 	 */
 	public function getR(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[0]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
 	public function getG(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[1]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
 	public function getB(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[2]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
 	/**
@@ -80,9 +83,9 @@ class DisplayP3ColorEntry implements ColorEntry {
 	 */
 	public function getXyzaArray(): array {
 		// Convert Display P3 to XYZ D65 (scaled ×100)
-		$rLin = self::srgbToLinear($this->r);
-		$gLin = self::srgbToLinear($this->g);
-		$bLin = self::srgbToLinear($this->b);
+		$rLin = $this->srgbToLinear($this->r);
+		$gLin = $this->srgbToLinear($this->g);
+		$bLin = $this->srgbToLinear($this->b);
 
 		// Display P3 linear to XYZ D65 matrix
 		$x = 0.4865709486482162 * $rLin + 0.26566769316909306 * $gLin + 0.1982172852343625 * $bLin;
@@ -104,9 +107,9 @@ class DisplayP3ColorEntry implements ColorEntry {
 	 */
 	private function getLinearSrgb(): array {
 		// First convert Display P3 to linear
-		$rLin = self::srgbToLinear($this->r);
-		$gLin = self::srgbToLinear($this->g);
-		$bLin = self::srgbToLinear($this->b);
+		$rLin = $this->srgbToLinear($this->r);
+		$gLin = $this->srgbToLinear($this->g);
+		$bLin = $this->srgbToLinear($this->b);
 
 		// Direct linear Display P3 to linear sRGB conversion composed from the
 		// CSS Color 4 matrices. Difference form preserves shared D65 neutrals.
@@ -118,7 +121,7 @@ class DisplayP3ColorEntry implements ColorEntry {
 		];
 	}
 
-	private static function srgbToLinear( float $c ): float {
+	private function srgbToLinear( float $c ): float {
 		$sign = $c < 0 ? -1 : 1;
 		$abs  = abs($c);
 

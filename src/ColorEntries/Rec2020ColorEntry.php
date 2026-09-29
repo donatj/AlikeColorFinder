@@ -3,6 +3,7 @@
 namespace donatj\AlikeColorFinder\ColorEntries;
 
 use donatj\AlikeColorFinder\ColorEntry;
+use donatj\AlikeColorFinder\ColorSpaceConversion;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
 
@@ -27,7 +28,8 @@ class Rec2020ColorEntry implements ColorEntry {
 		float $r,
 		float $g,
 		float $b,
-		float $a = 1.0
+		float $a = 1.0,
+		?ColorSpaceConversion $colorSpaceConversion = null
 	) {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
@@ -36,27 +38,28 @@ class Rec2020ColorEntry implements ColorEntry {
 		$this->g = $g;
 		$this->b = $b;
 		$this->a = $a;
+		$this->setColorSpaceConversion($colorSpaceConversion);
 	}
 
 	/**
 	 * @return float  sRGB red 0–255
 	 */
 	public function getR(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[0]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
 	public function getG(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[1]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
 	public function getB(): float {
-		return self::linearToSrgb255($this->getLinearSrgb()[2]);
+		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
 	/**
@@ -80,9 +83,9 @@ class Rec2020ColorEntry implements ColorEntry {
 	 */
 	public function getXyzaArray(): array {
 		// Convert Rec.2020 to linear
-		$rLin = self::rec2020ToLinear($this->r);
-		$gLin = self::rec2020ToLinear($this->g);
-		$bLin = self::rec2020ToLinear($this->b);
+		$rLin = $this->rec2020ToLinear($this->r);
+		$gLin = $this->rec2020ToLinear($this->g);
+		$bLin = $this->rec2020ToLinear($this->b);
 
 		// Rec.2020 linear to XYZ D65 matrix
 		$x = 0.6369580483012914 * $rLin + 0.14461690358620832 * $gLin + 0.1688809751641721 * $bLin;
@@ -104,9 +107,9 @@ class Rec2020ColorEntry implements ColorEntry {
 	 */
 	private function getLinearSrgb(): array {
 		// First convert Rec.2020 to linear
-		$rLin = self::rec2020ToLinear($this->r);
-		$gLin = self::rec2020ToLinear($this->g);
-		$bLin = self::rec2020ToLinear($this->b);
+		$rLin = $this->rec2020ToLinear($this->r);
+		$gLin = $this->rec2020ToLinear($this->g);
+		$bLin = $this->rec2020ToLinear($this->b);
 
 		// Direct Rec.2020 to linear sRGB matrix, composed from the CSS Color 4
 		// Rec.2020-to-XYZ and XYZ-to-sRGB matrices at their specified precision.
@@ -117,7 +120,7 @@ class Rec2020ColorEntry implements ColorEntry {
 		];
 	}
 
-	private static function rec2020ToLinear( float $c ): float {
+	private function rec2020ToLinear( float $c ): float {
 		return ($c < 0 ? -1 : 1) * (abs($c) ** 2.4);
 	}
 
