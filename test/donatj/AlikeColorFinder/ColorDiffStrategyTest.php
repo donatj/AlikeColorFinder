@@ -33,6 +33,7 @@ class ColorDiffStrategyTest extends TestCase {
 	}
 
 	private function extractSingleColor( $color ) {
+		$errors = [];
 		$colors = (new CssColorExtractor("a { color: {$color}; }"))->extractColors($errors);
 
 		foreach( $errors as $error ) {

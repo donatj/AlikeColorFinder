@@ -8,20 +8,21 @@ use donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface;
 class AlikeColorFinder {
 
 	/**
-	 * @var ColorEntry[]
+	 * @var array<ColorEntry>
 	 */
-	protected $colors;
+	protected array $colors;
 
 	/**
 	 * @var \donatj\AlikeColorFinder\ColorEntryFactory
 	 */
-	protected $factory;
+	protected ColorEntryFactory $factory;
 
 	/**
 	 * @var \donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface
 	 */
-	protected $colorDiffer;
+	protected ColorDiffStrategyInterface $colorDiffer;
 
+	/** @param array<ColorEntry> $colors */
 	public function __construct( array $colors, ?ColorEntryFactory $colorEntryFactory = null, ?ColorDiffStrategyInterface $colorDiffer = null ) {
 		$this->colors = $colors;
 
@@ -39,10 +40,9 @@ class AlikeColorFinder {
 	}
 
 	/**
-	 * @param int $tolerance
-	 * @return array
+	 * @return list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}>
 	 */
-	public function getAlikeColorsWithinTolerance( $tolerance ) {
+	public function getAlikeColorsWithinTolerance( float $tolerance ): array {
 		$output = [ ];
 
 		$colorStack = $this->colors;
@@ -52,25 +52,20 @@ class AlikeColorFinder {
 			 * @var \donatj\AlikeColorFinder\ColorEntry $colorTwo
 			 */
 			$colorOne = array_pop($colorStack);
-			$row      = [ ];
+			$children = [];
 
 			foreach( $colorStack as $colorTwo ) {
 				$diff = $this->colorDiffer->__invoke($colorOne, $colorTwo);
 
 				if( $diff <= $tolerance ) {
-					if( !$row ) {
-						$row['master']   = $colorOne;
-						$row['children'] = [ ];
-					}
-					$row['children'][] = [
+					$children[] = [
 						'diff'  => $diff,
 						'color' => $colorTwo,
 					];
 				}
 			}
-			if( $row ) {
-
-				usort($row['children'], function ( $a, $b ) {
+			if( $children ) {
+				usort($children, function ( $a, $b ) {
 					if( $a['diff'] == $b['diff'] ) {
 						return 0;
 					}
@@ -78,7 +73,10 @@ class AlikeColorFinder {
 					return ($a['diff'] < $b['diff']) ? -1 : 1;
 				});
 
-				$output[] = $row;
+				$output[] = [
+					'master'   => $colorOne,
+					'children' => $children,
+				];
 			}
 		}
 

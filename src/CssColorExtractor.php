@@ -7,14 +7,15 @@ class CssColorExtractor {
 	/**
 	 * @var string
 	 */
-	protected $subject;
+	protected string $subject;
 
 	/**
 	 * @var \donatj\AlikeColorFinder\ColorEntryFactory
 	 */
-	protected $factory;
+	protected ColorEntryFactory $factory;
 
-	protected $colors = [
+	/** @var array<string, string> */
+	protected array $colors = [
 		'aliceblue'            => 'f0f8ff',
 		'antiquewhite'         => 'faebd7',
 		'aqua'                 => '00ffff',
@@ -172,7 +173,7 @@ class CssColorExtractor {
 	 */
 	protected float $maxComparableXyzComponent = 1.0e30;
 
-	public function __construct( $subject = "", ?ColorEntryFactory $colorEntryFactory = null ) {
+	public function __construct( string $subject = "", ?ColorEntryFactory $colorEntryFactory = null ) {
 		$this->subject = $subject;
 
 		if( $colorEntryFactory !== null ) {
@@ -183,10 +184,10 @@ class CssColorExtractor {
 	}
 
 	/**
-	 * @param array $errors by reference
-	 * @return \donatj\AlikeColorFinder\ColorEntry[]
+	 * @param list<array{exception: \Exception, result: array<string|int, string>}> $errors by reference
+	 * @return array<string, \donatj\AlikeColorFinder\ColorEntry>
 	 */
-	public function extractColors( &$errors = null ) {
+	public function extractColors( array &$errors ): array {
 		$asciiCaseInsensitive = function( string $identifier ): string {
 			return implode('', array_map(function( string $character ): string {
 				if( $character >= 'a' && $character <= 'z' ) {
@@ -197,7 +198,7 @@ class CssColorExtractor {
 			}, str_split($identifier)));
 		};
 
-		$preDefined = implode('|', array_map(function( $color ) use ( $asciiCaseInsensitive ) {
+			$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
 			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 
