@@ -7,10 +7,13 @@ use donatj\AlikeColorFinder\ColorEntry;
 class Absolute implements ColorDiffStrategyInterface {
 
 	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) {
-		return abs($color1->getR() - $color2->getR()) +
-				abs($color1->getG() - $color2->getG()) +
-				abs($color1->getB() - $color2->getB()) +
-				(abs($color1->getA() - $color2->getA()) * 255);
+		$rgba1 = $color1->getUnclampedRgbaArray();
+		$rgba2 = $color2->getUnclampedRgbaArray();
+
+		return abs($rgba1['r'] - $rgba2['r']) +
+				abs($rgba1['g'] - $rgba2['g']) +
+				abs($rgba1['b'] - $rgba2['b']) +
+				(abs($rgba1['a'] - $rgba2['a']) * 255);
 	}
 
 }

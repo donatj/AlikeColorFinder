@@ -21,6 +21,17 @@ class ColorDiffStrategyTest extends TestCase {
 		$this->assertEqualsWithDelta($cie2000Diff, (new CieDe2000WithAlpha())($colorEntry1, $colorEntry2), 0.000001, 'CIE2000 diff mismatch');
 	}
 
+	public function testAbsoluteStrategyDoesNotClipWideGamutColors() {
+		$this->assertEqualsWithDelta(
+			25.5,
+			(new Absolute())(
+				$this->extractSingleColor('color(srgb 1.1 0 0)'),
+				$this->extractSingleColor('#f00')
+			),
+			0.000001
+		);
+	}
+
 	private function extractSingleColor( $color ) {
 		$colors = (new CssColorExtractor("a { color: {$color}; }"))->extractColors($errors);
 

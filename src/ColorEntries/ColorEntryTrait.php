@@ -46,6 +46,20 @@ trait ColorEntryTrait {
 	}
 
 	/**
+	 * @return array{r: float, g: float, b: float, a: float}
+	 */
+	public function getUnclampedRgbaArray(): array {
+		$linear = $this->getLinearSrgb();
+
+		return [
+			'r' => $this->linearToUnclampedSrgb255($linear[0]),
+			'g' => $this->linearToUnclampedSrgb255($linear[1]),
+			'b' => $this->linearToUnclampedSrgb255($linear[2]),
+			'a' => $this->a,
+		];
+	}
+
+	/**
 	 * @return array{l: float, a: float, b: float, alpha: float}
 	 */
 	public function getLabAlphaCieArray(): array {
@@ -134,9 +148,18 @@ trait ColorEntryTrait {
 	 * Apply sRGB gamma and clamp to [0, 255].
 	 */
 	protected function linearToSrgb255( float $c ): float {
-		$gamma = $c <= 0.0031308 ? 12.92 * $c : 1.055 * ($c ** (1 / 2.4)) - 0.055;
+		return max(0.0, min(255.0, $this->linearToUnclampedSrgb255($c)));
+	}
 
-		return max(0.0, min(255.0, $gamma * 255));
+	/**
+	 * Apply sRGB gamma without clipping for color comparisons.
+	 */
+	protected function linearToUnclampedSrgb255( float $c ): float {
+		$sign  = $c < 0 ? -1 : 1;
+		$abs   = abs($c);
+		$gamma = $abs <= 0.0031308 ? 12.92 * $abs : 1.055 * ($abs ** (1 / 2.4)) - 0.055;
+
+		return $sign * $gamma * 255;
 	}
 
 	/**

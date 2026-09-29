@@ -56,9 +56,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array {
-		$rLin = $this->srgbToLinear($this->r);
-		$gLin = $this->srgbToLinear($this->g);
-		$bLin = $this->srgbToLinear($this->b);
+		list($rLin, $gLin, $bLin) = $this->getLinearSrgb();
 
 		list($x, $y, $z) = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
 
@@ -67,6 +65,17 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 			'y' => $y * 100,
 			'z' => $z * 100,
 			'a' => $this->a,
+		];
+	}
+
+	/**
+	 * @return array{float, float, float}
+	 */
+	private function getLinearSrgb(): array {
+		return [
+			$this->srgbToLinear($this->r),
+			$this->srgbToLinear($this->g),
+			$this->srgbToLinear($this->b),
 		];
 	}
 

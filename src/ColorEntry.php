@@ -51,6 +51,11 @@ interface ColorEntry {
 	public function getRgbaArray(): array;
 
 	/**
+	 * @return array{r: float, g: float, b: float, a: float}
+	 */
+	public function getUnclampedRgbaArray(): array;
+
+	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
 	public function getXyzaArray(): array;
