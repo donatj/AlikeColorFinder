@@ -198,7 +198,7 @@ class CssColorExtractor {
 			}, str_split($identifier)));
 		};
 
-			$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
+		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
 			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 

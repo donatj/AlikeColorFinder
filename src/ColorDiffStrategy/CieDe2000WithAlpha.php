@@ -64,12 +64,12 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		$primeC1 = sqrt(pow($primeA1, 2) + $helperB1Sq);
 		$primeC2 = sqrt(pow($primeA2, 2) + $helperB2Sq);
 		//7
-			if( $f1['b'] === 0.0 && $primeA1 === 0.0 ) {
+		if( $f1['b'] === 0.0 && $primeA1 === 0.0 ) {
 			$primeH1 = 0;
 		} else {
 			$primeH1 = (atan2($f1['b'], $primeA1) + 2 * M_PI) * (180 / M_PI);
 		}
-			if( $f2['b'] === 0.0 && $primeA2 === 0.0 ) {
+		if( $f2['b'] === 0.0 && $primeA2 === 0.0 ) {
 			$primeH2 = 0;
 		} else {
 			$primeH2 = (atan2($f2['b'], $primeA2) + 2 * M_PI) * (180 / M_PI);
@@ -80,7 +80,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		$deltaCPrime = $primeC2 - $primeC1;
 		//10
 		$helperH = $primeH2 - $primeH1;
-			if( $primeC1 * $primeC2 === 0.0 ) {
+		if( $primeC1 * $primeC2 === 0.0 ) {
 			$deltahPrime = 0;
 		} elseif( abs($helperH) <= 180 ) {
 			$deltahPrime = $helperH;
@@ -99,7 +99,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		$barCPrime = ($primeC1 + $primeC2) / 2.0;
 		//14
 		$helperH = abs($primeH1 - $primeH2);
-			if( $primeC1 * $primeC2 === 0.0 ) {
+		if( $primeC1 * $primeC2 === 0.0 ) {
 			$barHPrime = $primeH1 + $primeH2;
 		} elseif( $helperH <= 180 ) {
 			$barHPrime = ($primeH1 + $primeH2) / 2.0;
