@@ -194,19 +194,24 @@ class CssColorExtractor {
 		// CSS <number> allows an optional sign and scientific notation.
 		// @see https://www.w3.org/TR/css-syntax-3/#consume-a-number
 		$number                = '[+-]?(?:\d+\.\d+|\d+|\.\d+)(?:[eE][+-]?\d+)?';
+		$percentage            = $number . '%';
 		$component             = $number . '%?';
 		// CSS <hue> is a number in degrees or an angle dimension.
 		// @see https://www.w3.org/TR/css-color-4/#hue-syntax
 		$hue                   = $number . '(?:deg|grad|rad|turn)?';
 		$modernParams          = $component . '(?:\s+' . $component . '){2}(?:\s*\/\s*' . $component . ')?';
-		$legacyParams          = $component . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+		$legacyRgbParams       = '(?:' .
+			$number . '\s*,\s*' . $number . '\s*,\s*' . $number .
+			'|' .
+			$percentage . '\s*,\s*' . $percentage . '\s*,\s*' . $percentage .
+			')(?:\s*,\s*' . $component . ')?';
 		$modernHueFirstParams = $hue . '\s+' . $component . '\s+' . $component . '(?:\s*\/\s*' . $component . ')?';
-		$legacyHueFirstParams = $hue . '\s*,\s*' . $component . '\s*,\s*' . $component . '(?:\s*,\s*' . $component . ')?';
+		$legacyHueFirstParams = $hue . '\s*,\s*' . $percentage . '\s*,\s*' . $percentage . '(?:\s*,\s*' . $component . ')?';
 		$modernHueLastParams  = $component . '\s+' . $component . '\s+' . $hue . '(?:\s*\/\s*' . $component . ')?';
 		$functionStart        = '(?<![\w-])';
 
-		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?)|
-(?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyParams . '))\s*\))|
+		preg_match_all('/(?P<hex>\#[0-9a-f]{3}(?:[0-9a-f](?:[0-9a-f]{2}(?:[0-9a-f]{2})?)?)?(?![\w-]))|
+(?:' . $functionStart . '(?P<func>rgb|rgba)\s*\(\s*(?P<params>(?:' . $modernParams . '|' . $legacyRgbParams . '))\s*\))|
 (?:' . $functionStart . '(?P<hue_func>hsl|hsla)\s*\(\s*(?P<hue_params>(?:' . $modernHueFirstParams . '|' . $legacyHueFirstParams . '))\s*\))|
 (?:' . $functionStart . '(?P<func2>lab|oklab)\s*\(\s*(?P<params2>' . $modernParams . ')\s*\))|
 (?:' . $functionStart . '(?P<hue_func2>lch|oklch)\s*\(\s*(?P<hue_params2>' . $modernHueLastParams . ')\s*\))|

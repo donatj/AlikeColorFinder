@@ -87,9 +87,11 @@ class CssColorExtractorTest extends TestCase {
 		foreach( [
 			'lab(500)',
 			'rgb(1, 2 3)',
+			'rgb(1, 2%, 3)',
 			'rgb(1 2 3 4)',
 			'rgb(1, 2, 3 / 0.5)',
 			'hsl(50% 100% 50%)',
+			'hsl(0, 50, 50)',
 			'hwb(50% 0% 0%)',
 			'lch(50 20 50%)',
 			'oklch(.5 .2 50%)',
@@ -99,6 +101,15 @@ class CssColorExtractorTest extends TestCase {
 			'color(srgb 1 2 3 4)',
 			'color(srgb 1 2 / 0.5)',
 		] as $css ) {
+			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
+
+			$this->assertCount(0, $colors, $css);
+			$this->assertCount(0, $errors, $css);
+		}
+	}
+
+	public function testInvalidHexSyntaxIsIgnored() {
+		foreach( [ '#12345', '#1234567', '#123456789' ] as $css ) {
 			$colors = (new CssColorExtractor("a { color: {$css}; }"))->extractColors($errors);
 
 			$this->assertCount(0, $colors, $css);
