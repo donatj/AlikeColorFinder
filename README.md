@@ -1,84 +1,86 @@
 # Alike Color Finder
 
 [![CI](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml)
-[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
-[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder) 
-[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder) 
+[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder)
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
 
-Finds similar (e.g. alike) colors in CSS and CSS-like data, within a set likeness threshold. It compares `#hex`, `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, `lab()`, `lch()`, `oklab()`, `oklch()`, and `color()` function colors including HDR and wide-gamut color spaces.
+Alike Color Finder is a command-line tool for CI that detects nearly identical colors before they become visual drift. It scans CSS and CSS-like files, directories, or standard input; reports color pairs at or below a chosen difference tolerance; and can fail a build when it finds them.
 
-Includes the [CIEDE2000](http://en.wikipedia.org/wiki/Color_difference#CIEDE2000)+Alpha (default), [CIE94](http://en.wikipedia.org/wiki/Color_difference#CIE94)+Alpha, as well as "*actual*" mathematical absolute color diff strategies, switchable with a flag.
+It understands hex and named colors; `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, `lab()`, `lch()`, `oklab()`, `oklch()`, and `color()` functions; and CSS Color Level 4 wide-gamut spaces including Display P3, Rec2020, and ProPhoto RGB.
 
-Supports modern CSS Color Level 4 formats including Display P3, Rec2020, ProPhoto RGB, and other wide-gamut color spaces.
+Choose [CIEDE2000](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000) + alpha (the default), CIE94 + alpha, or an absolute color-difference strategy with `--strategy`.
 
-A web based interface to this exists [here](https://donatstudios.com/CSS-Alike-Color-Finder).
+Prefer a browser? A [web-based interface](https://donatstudios.com/CSS-Alike-Color-Finder) is also available.
 
 ## Why
 
-***Very similar*** but *not* identical colors seem to pop up really often in CSS files of any reasonable age, and I became **sick** of them. This started as a little script to help me find them in a stylesheet, and grew into this full-fledged tool.
+Nearly identical colors tend to accumulate in long-lived stylesheets. This began as a small script for finding them, then grew into a tool that can enforce a color-consistency rule in CI.
 
-This is fully usable within CI solutions to pass/fail a project.
+It is intended to make accidental color drift visible before it ships.
 
 ## Requirements
 
-- PHP 7.4+ with CLI and SPL
+- PHP 7.4+ with CLI and SPL support
 
 ## Installation
 
-Using composer, `alike` can be installed globally via:
+Install `alike` globally:
 
 ```bash
-$ composer global require 'donatj/alike-color-finder'
+composer global require donatj/alike-color-finder
 ```
 
-Or if you are using composer for the project you wish to test, you can simply add it as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
+Or add it to a project as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
 
 ```bash
-composer require --dev 'donatj/alike-color-finder'
+composer require --dev donatj/alike-color-finder
 ```
 
 ## Usage
 
-Pass CSS-like files to scan as arguments.
+The examples below use a global installation. For a project dependency, invoke `vendor/bin/alike` instead.
+
+Scan files or directories:
 
 ```bash
-$ alike main.css shared.scss
+alike main.css shared.scss styles/
 ```
 
-Or pipe CSS into stdin.
+Or pipe CSS through standard input:
 
 ```bash
-$ alike < main.css
-$ css-generating-process | alike
+css-generating-process | alike
 ```
 
-## Continuous Integration
-
-By default, on finding any alike colors it will exit with an exit code of `2`. This is enough to flag as a failure with most CI tools. This value is also configurable with the `--exit-code` option or can be set to `0` to be disabled.
-
-## Example Output
-
-Help:
+The default `ciede2000` strategy reports colors whose difference is at most `4`. Lower `--tolerance` to require closer matches, or choose `cie94` or `actual` with `--strategy`.
 
 ```bash
-$ alike --help
-usage: ./composer/bin/alike [<files>] [<dirs>]
-      --strategy   [string] Color diff strategy.
-            Options:
-                actual
-                cie94
-                ciede2000 [default - aka. perceptual]
-     --tolerance   [float] Computed Difference Tolerance - default 4
-     --exit-code   [uint] Exit code to raise on alike. 0 for no exit code
-       --pattern   [string] Regex pattern to match files against when argument is a directory
-          --help   Displays this message
+alike --tolerance 1 styles/
 ```
 
-Single CSS File:
+## Continuous integration
+
+By default, `alike` exits with `2` when it finds a qualifying color pair or encounters an extraction error, which is suitable for most CI systems. Set `--exit-code` to another status, or to `0` to report findings without failing the build.
+
+## Options
+
+Run `alike --help` for the complete CLI reference. The core options are:
+
+| Option | Description |
+| --- | --- |
+| `--strategy` | Difference strategy: `ciede2000` (default; `perceptual` alias), `cie94`, or `actual`. |
+| `--tolerance` | Maximum computed difference considered alike; defaults to `4`. |
+| `--exit-code` | Exit status used when findings or extraction errors occur; defaults to `2`. Set to `0` to disable failure. |
+| `--pattern` | Regular expression for files discovered when scanning a directory. |
+
+## Example output
+
+Scanning a CSS file:
 
 ```bash
-$ alike main.css
+alike main.css
                     (4) #e3e3e3                    (4) #e4e4e4   Δ: 0.352
                         #e3e3e3                        #e4e4e4
 
