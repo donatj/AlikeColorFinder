@@ -181,9 +181,9 @@ class CssColorExtractor {
 	 * @param list<array{exception: \Exception, result: array<int|string, string>}> $errors by reference
 	 * @return array<string, \donatj\AlikeColorFinder\ColorEntry>
 	 */
-	public function extractColors( array &$errors ) : array {
-		$asciiCaseInsensitive = function( string $identifier ) : string {
-			return implode('', array_map(function( string $character ) : string {
+	public function extractColors( array &$errors ): array {
+		$asciiCaseInsensitive = function( string $identifier ): string {
+			return implode('', array_map(function( string $character ): string {
 				if( $character >= 'a' && $character <= 'z' ) {
 					return '[' . $character . strtoupper($character) . ']';
 				}
@@ -192,7 +192,7 @@ class CssColorExtractor {
 			}, str_split($identifier)));
 		};
 
-		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ) : string {
+		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
 			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 
@@ -328,7 +328,7 @@ class CssColorExtractor {
 	 *
 	 * @return list<string>
 	 */
-	private function splitFunctionParams( string $paramMatches ) : array {
+	private function splitFunctionParams( string $paramMatches ): array {
 		$params = preg_split('%\s*(,|\s|/)\s*%', $paramMatches, -1, PREG_SPLIT_NO_EMPTY);
 		if( $params === false ) {
 			throw new \LogicException('Unable to split color parameters');
@@ -341,8 +341,8 @@ class CssColorExtractor {
 	 * @param list<string> $params
 	 * @return list<float>
 	 */
-	private function normalizeColorSpaceParams( array $params ) : array {
-		$params = array_map(function( string $param ) : float {
+	private function normalizeColorSpaceParams( array $params ): array {
+		$params = array_map(function( string $param ): float {
 			if( substr($param, -1) === '%' ) {
 				$value = ((float)substr($param, 0, -1)) / 100;
 			} else {
@@ -367,7 +367,7 @@ class CssColorExtractor {
 	 * @param list<string> $params
 	 * @return list<float>
 	 */
-	private function normalizeFunctionParams( string $func, array $params ) : array {
+	private function normalizeFunctionParams( string $func, array $params ): array {
 		foreach( $params as $index => $param ) {
 			if( $this->isHueComponent($func, $index) ) {
 				$params[$index] = $this->normalizeHue($param);
@@ -457,12 +457,12 @@ class CssColorExtractor {
 		return array_values($params);
 	}
 
-	private function isHueComponent( string $func, int $index ) : bool {
+	private function isHueComponent( string $func, int $index ): bool {
 		return ($index === 0 && in_array($func, [ 'hsl', 'hsla', 'hwb' ], true))
 			|| ($index === 2 && in_array($func, [ 'lch', 'oklch' ], true));
 	}
 
-	private function normalizeHue( string $hue ) : float {
+	private function normalizeHue( string $hue ): float {
 		$hue = strtolower($hue);
 
 		if( substr($hue, -4) === 'turn' ) {
@@ -484,7 +484,7 @@ class CssColorExtractor {
 		return $this->factory->normalizeHue($value);
 	}
 
-	private function clamp( float $value, float $minimum, float $maximum ) : float {
+	private function clamp( float $value, float $minimum, float $maximum ): float {
 		return max($minimum, min($maximum, $value));
 	}
 
@@ -492,7 +492,7 @@ class CssColorExtractor {
 	 * @param list<float> $params
 	 * @throws \LogicException
 	 */
-	private function getFuncColor( string $func, array $params ) : ColorEntry {
+	private function getFuncColor( string $func, array $params ): ColorEntry {
 		switch( $func ) {
 			case 'rgba':
 			case 'rgb':

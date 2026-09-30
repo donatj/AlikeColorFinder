@@ -40,29 +40,29 @@ class Rec2020ColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR() : float {
+	public function getR(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG() : float {
+	public function getG(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB() : float {
+	public function getB(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	public function getA() : float {
+	public function getA(): float {
 		return $this->a;
 	}
 
-	public function getNativeCssString() : string {
+	public function getNativeCssString(): string {
 		if( $this->a == 1 ) {
 			return sprintf('color(rec2020 %.6g %.6g %.6g)', $this->r, $this->g, $this->b);
 		}
@@ -73,7 +73,7 @@ class Rec2020ColorEntry implements ColorEntry {
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray() : array {
+	public function getXyzaArray(): array {
 		// Convert Rec.2020 to linear
 		$rLin = $this->rec2020ToLinear($this->r);
 		$gLin = $this->rec2020ToLinear($this->g);
@@ -97,7 +97,7 @@ class Rec2020ColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb() : array {
+	private function getLinearSrgb(): array {
 		// First convert Rec.2020 to linear
 		$rLin = $this->rec2020ToLinear($this->r);
 		$gLin = $this->rec2020ToLinear($this->g);
@@ -112,7 +112,7 @@ class Rec2020ColorEntry implements ColorEntry {
 		];
 	}
 
-	private function rec2020ToLinear( float $c ) : float {
+	private function rec2020ToLinear( float $c ): float {
 		return ($c < 0 ? -1 : 1) * (abs($c) ** 2.4);
 	}
 

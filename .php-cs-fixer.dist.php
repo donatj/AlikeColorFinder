@@ -60,7 +60,7 @@ return (new PhpCsFixer\Config)
 			'ternary_operator_spaces' => true,
 			'no_spaces_after_function_name' => true,
 			'no_unneeded_control_parentheses' => true,
-			'return_type_declaration' => [ 'space_before' => 'one' ],
+			'return_type_declaration' => [ 'space_before' => 'none' ],
 			'single_line_after_imports' => true,
 			'blank_lines_before_namespace' => true,
 			'blank_line_after_namespace' => true,

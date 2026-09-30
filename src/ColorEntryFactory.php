@@ -14,21 +14,21 @@ use donatj\AlikeColorFinder\ColorEntries\XyzColorEntry;
 
 class ColorEntryFactory {
 
-	public function normalizeHue( float $hue ) : float {
+	public function normalizeHue( float $hue ): float {
 		$hue = fmod($hue, 360.0);
 
 		return $hue < 0 ? $hue + 360.0 : $hue;
 	}
 
-	public function makeFromRgba( float $r, float $g, float $b, float $a ) : ColorEntry {
+	public function makeFromRgba( float $r, float $g, float $b, float $a ): ColorEntry {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromRgb( float $r, float $g, float $b ) : ColorEntry {
+	public function makeFromRgb( float $r, float $g, float $b ): ColorEntry {
 		return $this->makeFromRgba($r, $g, $b, 1);
 	}
 
-	public function makeFromHexString( string $hex ) : ColorEntry {
+	public function makeFromHexString( string $hex ): ColorEntry {
 		$hex = str_replace('#', '', $hex);
 		$a   = 1;
 
@@ -57,7 +57,7 @@ class ColorEntryFactory {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromHsla( float $h, float $s, float $l, float $a ) : ColorEntry {
+	public function makeFromHsla( float $h, float $s, float $l, float $a ): ColorEntry {
 		$h = $this->normalizeHue($h);
 
 		$c = (1 - abs(2 * $l - 1)) * $s;
@@ -97,11 +97,11 @@ class ColorEntryFactory {
 		return new SrgbColorEntry($r, $g, $b, $a);
 	}
 
-	public function makeFromHsl( float $h, float $s, float $l ) : ColorEntry {
+	public function makeFromHsl( float $h, float $s, float $l ): ColorEntry {
 		return $this->makeFromHsla($h, $s, $l, 1);
 	}
 
-	public function makeFromHwb( float $h, float $w, float $b, float $a = 1.0 ) : ColorEntry {
+	public function makeFromHwb( float $h, float $w, float $b, float $a = 1.0 ): ColorEntry {
 		$h = $this->normalizeHue($h);
 
 		// Normalize whiteness and blackness
@@ -140,23 +140,23 @@ class ColorEntryFactory {
 		);
 	}
 
-	public function makeFromLab( float $l, float $aVal, float $bVal, float $a = 1.0 ) : ColorEntry {
+	public function makeFromLab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
 		return new LabColorEntry($l, $aVal, $bVal, $a);
 	}
 
-	public function makeFromLch( float $l, float $c, float $h, float $a = 1.0 ) : ColorEntry {
+	public function makeFromLch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
 		return new LchColorEntry($l, $c, $this->normalizeHue($h), $a);
 	}
 
-	public function makeFromOklab( float $l, float $aVal, float $bVal, float $a = 1.0 ) : ColorEntry {
+	public function makeFromOklab( float $l, float $aVal, float $bVal, float $a = 1.0 ): ColorEntry {
 		return new OklabColorEntry($l, $aVal, $bVal, $a);
 	}
 
-	public function makeFromOklch( float $l, float $c, float $h, float $a = 1.0 ) : ColorEntry {
+	public function makeFromOklch( float $l, float $c, float $h, float $a = 1.0 ): ColorEntry {
 		return new OklchColorEntry($l, $c, $this->normalizeHue($h), $a);
 	}
 
-	public function makeFromColorSpace( string $colorSpace, float $c1, float $c2, float $c3, float $a = 1.0 ) : ColorEntry {
+	public function makeFromColorSpace( string $colorSpace, float $c1, float $c2, float $c3, float $a = 1.0 ): ColorEntry {
 		switch( $colorSpace ) {
 			case 'srgb':
 				return new ExtendedSrgbColorEntry($c1, $c2, $c3, $a);
@@ -216,7 +216,7 @@ class ColorEntryFactory {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function xyzD50ToXyzD65( float $x, float $y, float $z ) : array {
+	private function xyzD50ToXyzD65( float $x, float $y, float $z ): array {
 		// Bradford chromatic adaptation D50 → D65
 		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 		return [
@@ -229,7 +229,7 @@ class ColorEntryFactory {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function linearSrgbToXyzD65( float $r, float $g, float $b ) : array {
+	private function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
 		// CSS Color 4 linear sRGB to XYZ D65 matrix.
 		// @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 		return [
@@ -242,7 +242,7 @@ class ColorEntryFactory {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function displayP3LinearToXyzD65( float $r, float $g, float $b ) : array {
+	private function displayP3LinearToXyzD65( float $r, float $g, float $b ): array {
 		return [
 			0.4865709486482162 * $r + 0.26566769316909306 * $g + 0.1982172852343625 * $b,
 			0.22897456406974884 * $r + 0.6917385218564081 * $g + 0.07928691407384083 * $b,
@@ -253,7 +253,7 @@ class ColorEntryFactory {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function a98RgbLinearToXyzD65( float $r, float $g, float $b ) : array {
+	private function a98RgbLinearToXyzD65( float $r, float $g, float $b ): array {
 		return [
 			0.5766690429101305 * $r + 0.1855582379065463 * $g + 0.1882286462349947 * $b,
 			0.29734497525053605 * $r + 0.6273635662554661 * $g + 0.07529145849399788 * $b,
@@ -261,7 +261,7 @@ class ColorEntryFactory {
 		];
 	}
 
-	private function prophotoToLinear( float $c ) : float {
+	private function prophotoToLinear( float $c ): float {
 		$sign = $c < 0 ? -1 : 1;
 		$abs  = abs($c);
 
@@ -275,7 +275,7 @@ class ColorEntryFactory {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function prophotorgbLinearToXyzD50( float $r, float $g, float $b ) : array {
+	private function prophotorgbLinearToXyzD50( float $r, float $g, float $b ): array {
 		// CSS Color 4 ProPhoto RGB to XYZ D50 matrix.
 		// @see https://drafts.csswg.org/css-color-4/#color-conversion-code
 		return [

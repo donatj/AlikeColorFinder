@@ -39,7 +39,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 	 *
 	 * @throws \Exception
 	 */
-	public function __invoke( ColorEntry $color1, ColorEntry $color2 ) : float {
+	public function __invoke( ColorEntry $color1, ColorEntry $color2 ): float {
 		$f1 = $color1->getLabAlphaCieArray();
 		$f2 = $color2->getLabAlphaCieArray();
 

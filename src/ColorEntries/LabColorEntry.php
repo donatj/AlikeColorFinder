@@ -40,29 +40,29 @@ class LabColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR() : float {
+	public function getR(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[0]);
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG() : float {
+	public function getG(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[1]);
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB() : float {
+	public function getB(): float {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	public function getA() : float {
+	public function getA(): float {
 		return $this->a;
 	}
 
-	public function getNativeCssString() : string {
+	public function getNativeCssString(): string {
 		if( $this->a == 1 ) {
 			return sprintf('lab(%.6g %.6g %.6g)', $this->l, $this->aVal, $this->bVal);
 		}
@@ -73,7 +73,7 @@ class LabColorEntry implements ColorEntry {
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray() : array {
+	public function getXyzaArray(): array {
 		// Lab D50 to XYZ D50
 		$kappa   = 24389 / 27;
 		$epsilon = 216 / 24389;
@@ -114,7 +114,7 @@ class LabColorEntry implements ColorEntry {
 	 *
 	 * @return float[]  [r, g, b] linear
 	 */
-	private function getLinearSrgb() : array {
+	private function getLinearSrgb(): array {
 		$xyz = $this->getXyzaArray();
 		$x   = $xyz['x'] / 100;
 		$y   = $xyz['y'] / 100;

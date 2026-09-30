@@ -48,32 +48,32 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return float  sRGB red 0–255
 	 */
-	public function getR() : float {
+	public function getR(): float {
 		return $this->r;
 	}
 
 	/**
 	 * @return float  sRGB green 0–255
 	 */
-	public function getG() : float {
+	public function getG(): float {
 		return $this->g;
 	}
 
 	/**
 	 * @return float  sRGB blue 0–255
 	 */
-	public function getB() : float {
+	public function getB(): float {
 		return $this->b;
 	}
 
-	public function getA() : float {
+	public function getA(): float {
 		return $this->a;
 	}
 
 	/**
 	 * sRGB colors are already in the native sRGB format
 	 */
-	public function getNativeCssString() : string {
+	public function getNativeCssString(): string {
 		if( $this->a == 1 ) {
 			return $this->getRgbHexString();
 		}
@@ -84,7 +84,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * Preserve the legacy CLI's full, RGB-only hexadecimal format.
 	 */
-	public function getRgbHexString() : string {
+	public function getRgbHexString(): string {
 		if( !$this->usesLegacySerialization ) {
 			return $this->getCompactRgbHexString();
 		}
@@ -99,7 +99,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * Preserve the legacy CLI's rgba() serialization for transparent colors.
 	 */
-	public function getSimplestCssString( float $epsilon = 0.001 ) : string {
+	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( !$this->usesLegacySerialization ) {
 			return $this->getCompactSimplestCssString($epsilon);
 		}
@@ -114,7 +114,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array{r: float, g: float, b: float, a: float}
 	 */
-	public function getUnclampedRgbaArray() : array {
+	public function getUnclampedRgbaArray(): array {
 		return [
 			'r' => $this->r,
 			'g' => $this->g,
@@ -126,7 +126,7 @@ class SrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray() : array {
+	public function getXyzaArray(): array {
 		// Normalize RGB values to 1
 		$r = $this->r / 255;
 		$g = $this->g / 255;

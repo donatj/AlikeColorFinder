@@ -4,7 +4,7 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 
 trait ColorEntryTrait {
 
-	public function getRgbaString() : string {
+	public function getRgbaString(): string {
 		$r = round($this->getR());
 		$g = round($this->getG());
 		$b = round($this->getB());
@@ -12,7 +12,7 @@ trait ColorEntryTrait {
 		return "rgba({$r},{$g},{$b},{$this->a})";
 	}
 
-	public function getRgbHexString() : string {
+	public function getRgbHexString(): string {
 		$hex = str_pad(dechex((int)round($this->getR())), 2, "0", STR_PAD_LEFT);
 		$hex .= str_pad(dechex((int)round($this->getG())), 2, "0", STR_PAD_LEFT);
 		$hex .= str_pad(dechex((int)round($this->getB())), 2, "0", STR_PAD_LEFT);
@@ -36,7 +36,7 @@ trait ColorEntryTrait {
 	/**
 	 * @return array{r: float, g: float, b: float, a: float}
 	 */
-	public function getRgbaArray() : array {
+	public function getRgbaArray(): array {
 		return [
 			'r' => $this->getR(),
 			'g' => $this->getG(),
@@ -48,7 +48,7 @@ trait ColorEntryTrait {
 	/**
 	 * @return array{r: float, g: float, b: float, a: float}
 	 */
-	public function getUnclampedRgbaArray() : array {
+	public function getUnclampedRgbaArray(): array {
 		$linear = $this->getLinearSrgb();
 
 		return [
@@ -62,7 +62,7 @@ trait ColorEntryTrait {
 	/**
 	 * @return array{l: float, a: float, b: float, alpha: float}
 	 */
-	public function getLabAlphaCieArray() : array {
+	public function getLabAlphaCieArray(): array {
 		$xyz = $this->getXyzaArray();
 
 		// Observer = 2°, Illuminant = D65
@@ -94,7 +94,7 @@ trait ColorEntryTrait {
 	 * Default behavior: hex/rgba if in sRGB gamut, native format otherwise.
 	 * Classes can override for custom behavior.
 	 */
-	public function getSimplestCssString( float $epsilon = 0.001 ) : string {
+	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( $this->isInSrgbGamut($epsilon) ) {
 			// In-gamut colors use an sRGB representation.
 			if( $this->isAlphaHexCompatible($epsilon) ) {
@@ -114,7 +114,7 @@ trait ColorEntryTrait {
 	 * @param float $epsilon Maximum permitted round-trip error (default 0.001)
 	 * @return bool True if alpha differs from its 8-bit representation by no more than epsilon
 	 */
-	public function isAlphaHexCompatible( float $epsilon = 0.001 ) : bool {
+	public function isAlphaHexCompatible( float $epsilon = 0.001 ): bool {
 		$hexValue  = round($this->a * 255);
 		$roundTrip = $hexValue / 255;
 
@@ -127,7 +127,7 @@ trait ColorEntryTrait {
 	 * @param float $epsilon Tolerance for gamut boundary (default 0.001)
 	 * @return bool True if the color can be represented in sRGB without clipping
 	 */
-	public function isInSrgbGamut( float $epsilon = 0.001 ) : bool {
+	public function isInSrgbGamut( float $epsilon = 0.001 ): bool {
 		// Convert to XYZ then to linear sRGB to check bounds
 		$xyz = $this->getXyzaArray();
 		$x   = $xyz['x'] / 100;
@@ -145,14 +145,14 @@ trait ColorEntryTrait {
 	/**
 	 * Apply sRGB gamma and clamp to [0, 255].
 	 */
-	protected function linearToSrgb255( float $c ) : float {
+	protected function linearToSrgb255( float $c ): float {
 		return max(0.0, min(255.0, $this->linearToUnclampedSrgb255($c)));
 	}
 
 	/**
 	 * Apply sRGB gamma without clipping for color comparisons.
 	 */
-	protected function linearToUnclampedSrgb255( float $c ) : float {
+	protected function linearToUnclampedSrgb255( float $c ): float {
 		$sign  = $c < 0 ? -1 : 1;
 		$abs   = abs($c);
 		$gamma = $abs <= 0.0031308 ? 12.92 * $abs : 1.055 * ($abs ** (1 / 2.4)) - 0.055;
@@ -164,7 +164,7 @@ trait ColorEntryTrait {
 	 * @return array{float, float, float}
 	 * @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 	 */
-	protected function linearSrgbToXyzD65( float $r, float $g, float $b ) : array {
+	protected function linearSrgbToXyzD65( float $r, float $g, float $b ): array {
 		return [
 			0.41239079926595934 * $r + 0.35758433938387796 * $g + 0.1804807884018343 * $b,
 			0.21263900587151027 * $r + 0.7151686787677559 * $g + 0.07219231536073371 * $b,
@@ -176,7 +176,7 @@ trait ColorEntryTrait {
 	 * @return array{float, float, float}
 	 * @see https://www.w3.org/TR/css-color-4/#color-conversion-code
 	 */
-	protected function xyzD65ToLinearSrgb( float $x, float $y, float $z ) : array {
+	protected function xyzD65ToLinearSrgb( float $x, float $y, float $z ): array {
 		return [
 			+3.2409699419045226 * $x - 1.537383177570094 * $y - 0.4986107602930034 * $z,
 			-0.9692436362808796 * $x + 1.8759675015077202 * $y + 0.04155505740717559 * $z,

@@ -36,7 +36,7 @@ class AlikeColorFinder {
 	/**
 	 * @return list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}>
 	 */
-	public function getAlikeColorsWithinTolerance( float $tolerance ) : array {
+	public function getAlikeColorsWithinTolerance( float $tolerance ): array {
 		$output = [ ];
 
 		$colorStack = $this->colors;

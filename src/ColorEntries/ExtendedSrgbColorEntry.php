@@ -27,23 +27,23 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		$this->a = $a;
 	}
 
-	public function getR() : float {
+	public function getR(): float {
 		return $this->clampToSrgb255($this->r);
 	}
 
-	public function getG() : float {
+	public function getG(): float {
 		return $this->clampToSrgb255($this->g);
 	}
 
-	public function getB() : float {
+	public function getB(): float {
 		return $this->clampToSrgb255($this->b);
 	}
 
-	public function getA() : float {
+	public function getA(): float {
 		return $this->a;
 	}
 
-	public function getNativeCssString() : string {
+	public function getNativeCssString(): string {
 		if( $this->a == 1 ) {
 			return sprintf('color(srgb %.6g %.6g %.6g)', $this->r, $this->g, $this->b);
 		}
@@ -54,7 +54,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
 	 */
-	public function getXyzaArray() : array {
+	public function getXyzaArray(): array {
 		[$rLin, $gLin, $bLin] = $this->getLinearSrgb();
 
 		[$x, $y, $z] = $this->linearSrgbToXyzD65($rLin, $gLin, $bLin);
@@ -70,7 +70,7 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 	/**
 	 * @return array{float, float, float}
 	 */
-	private function getLinearSrgb() : array {
+	private function getLinearSrgb(): array {
 		return [
 			$this->srgbToLinear($this->r),
 			$this->srgbToLinear($this->g),
@@ -78,11 +78,11 @@ class ExtendedSrgbColorEntry implements ColorEntry {
 		];
 	}
 
-	private function clampToSrgb255( float $component ) : float {
+	private function clampToSrgb255( float $component ): float {
 		return max(0.0, min(255.0, $component * 255));
 	}
 
-	private function srgbToLinear( float $component ) : float {
+	private function srgbToLinear( float $component ): float {
 		$sign = $component < 0 ? -1 : 1;
 		$abs  = abs($component);
 

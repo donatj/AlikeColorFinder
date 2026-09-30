@@ -148,7 +148,7 @@ if( $data || $errors ) {
  * @param list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}> $data
  * @param resource                                                                                         $stream
  */
-function displayDiff( array $data, $stream ) : void {
+function displayDiff( array $data, $stream ): void {
 
 	foreach( $data as $colorSet ) {
 		$colorOne = $colorSet['master'];
@@ -187,7 +187,7 @@ function displayDiff( array $data, $stream ) : void {
  * @param list<array{master: ColorEntry, children: non-empty-list<array{diff: float, color: ColorEntry}>}> $data
  * @return array{float, int}
  */
-function getDiffStats( array $data ) : array {
+function getDiffStats( array $data ): array {
 	$sum   = 0.0;
 	$count = 0;
 	foreach( $data as $items ) {
