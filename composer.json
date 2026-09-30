@@ -11,6 +11,7 @@
 	"homepage": "https://donatstudios.com/CSS-Alike-Color-Finder",
 	"license": "MIT",
 	"require": {
+		"composer-runtime-api": "^2.2",
 		"donatj/flags": "^1.6",
 		"php": ">=7.4"
 	},
