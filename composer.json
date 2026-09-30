@@ -38,6 +38,11 @@
 			"donatj\\AlikeColorFinder\\": "src/"
 		}
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"donatj\\AlikeColorFinder\\": "test/"
+		}
+	},
 	"bin": [
 		"composer/bin/alike"
 	],
