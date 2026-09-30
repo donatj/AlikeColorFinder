@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class Rec2020ColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -59,9 +58,6 @@ class Rec2020ColorEntry implements ColorEntry {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getA(): float {
 		return $this->a;
 	}
@@ -73,7 +69,6 @@ class Rec2020ColorEntry implements ColorEntry {
 
 		return sprintf('color(rec2020 %.6g %.6g %.6g / %.6g)', $this->r, $this->g, $this->b, $this->a);
 	}
-
 
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}

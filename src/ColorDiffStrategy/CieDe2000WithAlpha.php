@@ -38,7 +38,6 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 	 * @see http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf
 	 *
 	 * @throws \Exception
-	 * @return float
 	 */
 	public function __invoke( ColorEntry $color1, ColorEntry $color2 ): float {
 		$f1 = $color1->getLabAlphaCieArray();

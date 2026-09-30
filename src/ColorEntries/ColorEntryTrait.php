@@ -93,8 +93,6 @@ trait ColorEntryTrait {
 	 * Returns the simplest CSS representation.
 	 * Default behavior: hex/rgba if in sRGB gamut, native format otherwise.
 	 * Classes can override for custom behavior.
-	 *
-	 * @param float $epsilon
 	 */
 	public function getSimplestCssString( float $epsilon = 0.001 ): string {
 		if( $this->isInSrgbGamut($epsilon) ) {

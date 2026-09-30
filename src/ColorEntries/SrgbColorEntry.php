@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class SrgbColorEntry implements ColorEntry {
 
 	use ColorEntryTrait {
@@ -67,9 +66,6 @@ class SrgbColorEntry implements ColorEntry {
 		return $this->b;
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getA(): float {
 		return $this->a;
 	}
@@ -141,7 +137,7 @@ class SrgbColorEntry implements ColorEntry {
 		$linearG = $g > 0.04045 ? pow((($g + 0.055) / 1.055), 2.4) : $g / 12.92;
 		$linearB = $b > 0.04045 ? pow((($b + 0.055) / 1.055), 2.4) : $b / 12.92;
 
-		list($x, $y, $z) = $this->linearSrgbToXyzD65($linearR, $linearG, $linearB);
+		[$x, $y, $z] = $this->linearSrgbToXyzD65($linearR, $linearG, $linearB);
 
 		return [
 			'x' => $x * 100,

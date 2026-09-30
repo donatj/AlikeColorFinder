@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class LabColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -18,10 +17,10 @@ class LabColorEntry implements ColorEntry {
 	protected float $a;
 
 	/**
-	 * @param float $l Lab lightness (0–100)
+	 * @param float $l    Lab lightness (0–100)
 	 * @param float $aVal Lab a component
 	 * @param float $bVal Lab b component
-	 * @param float $a alpha 0–1
+	 * @param float $a    alpha 0–1
 	 */
 	public function __construct(
 		float $l,
@@ -59,9 +58,6 @@ class LabColorEntry implements ColorEntry {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getA(): float {
 		return $this->a;
 	}
@@ -73,7 +69,6 @@ class LabColorEntry implements ColorEntry {
 
 		return sprintf('lab(%.6g %.6g %.6g / %.6g)', $this->l, $this->aVal, $this->bVal, $this->a);
 	}
-
 
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}

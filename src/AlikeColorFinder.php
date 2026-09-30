@@ -7,22 +7,16 @@ use donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface;
 
 class AlikeColorFinder {
 
-	/**
-	 * @var array<ColorEntry>
-	 */
+	/** @var array<ColorEntry> */
 	protected array $colors;
 
-	/**
-	 * @var \donatj\AlikeColorFinder\ColorEntryFactory
-	 */
 	protected ColorEntryFactory $factory;
 
-	/**
-	 * @var \donatj\AlikeColorFinder\ColorDiffStrategy\ColorDiffStrategyInterface
-	 */
 	protected ColorDiffStrategyInterface $colorDiffer;
 
-	/** @param array<ColorEntry> $colors */
+	/**
+	 * @param array<ColorEntry> $colors
+	 */
 	public function __construct( array $colors, ?ColorEntryFactory $colorEntryFactory = null, ?ColorDiffStrategyInterface $colorDiffer = null ) {
 		$this->colors = $colors;
 

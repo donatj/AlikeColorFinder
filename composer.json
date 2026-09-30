@@ -9,7 +9,8 @@
 		"donatj/drop": "*",
 		"phpunit/phpunit": "^8.5 || ^9.6 || ^10.5",
 		"php-parallel-lint/php-parallel-lint": "^1.3",
-		"phpstan/phpstan": "^2.2"
+		"phpstan/phpstan": "^2.2",
+		"friendsofphp/php-cs-fixer": "^3.0"
 	},
 	"authors": [
 		{

@@ -5,7 +5,6 @@ namespace donatj\AlikeColorFinder\ColorEntries;
 use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\ColorInstanceTrait;
 
-
 class LchColorEntry implements ColorEntry {
 
 	use ColorEntryTrait;
@@ -59,9 +58,6 @@ class LchColorEntry implements ColorEntry {
 		return $this->linearToSrgb255($this->getLinearSrgb()[2]);
 	}
 
-	/**
-	 * @return float
-	 */
 	public function getA(): float {
 		return $this->a;
 	}
@@ -73,7 +69,6 @@ class LchColorEntry implements ColorEntry {
 
 		return sprintf('lch(%.6g %.6g %.6g / %.6g)', $this->l, $this->c, $this->h, $this->a);
 	}
-
 
 	/**
 	 * @return array{x: float, y: float, z: float, a: float}
