@@ -35,7 +35,6 @@ jobs:
         run: ./vendor/bin/parallel-lint src composer/bin/alike
 
       - name: Run PHPCS
-        if: matrix.php-versions == '7.4'
         run: ./vendor/bin/phpcs
 
       - name: Check coding style
