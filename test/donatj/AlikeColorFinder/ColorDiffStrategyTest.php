@@ -16,15 +16,15 @@ class ColorDiffStrategyTest extends TestCase {
 		$colorEntry1 = $this->extractSingleColor($color1);
 		$colorEntry2 = $this->extractSingleColor($color2);
 
-		$this->assertEqualsWithDelta($absoluteDiff, (new Absolute())($colorEntry1, $colorEntry2), 0.000001, 'Absolute diff mismatch');
-		$this->assertEqualsWithDelta($cie94Diff, (new Cie94WithAlpha())($colorEntry1, $colorEntry2), 0.000001, 'CIE94 diff mismatch');
-		$this->assertEqualsWithDelta($cie2000Diff, (new CieDe2000WithAlpha())($colorEntry1, $colorEntry2), 0.000001, 'CIE2000 diff mismatch');
+		$this->assertEqualsWithDelta($absoluteDiff, (new Absolute)($colorEntry1, $colorEntry2), 0.000001, 'Absolute diff mismatch');
+		$this->assertEqualsWithDelta($cie94Diff, (new Cie94WithAlpha)($colorEntry1, $colorEntry2), 0.000001, 'CIE94 diff mismatch');
+		$this->assertEqualsWithDelta($cie2000Diff, (new CieDe2000WithAlpha)($colorEntry1, $colorEntry2), 0.000001, 'CIE2000 diff mismatch');
 	}
 
 	public function testAbsoluteStrategyDoesNotClipWideGamutColors() {
 		$this->assertEqualsWithDelta(
 			25.5,
-			(new Absolute())(
+			(new Absolute)(
 				$this->extractSingleColor('color(srgb 1.1 0 0)'),
 				$this->extractSingleColor('#f00')
 			),
@@ -73,4 +73,5 @@ class ColorDiffStrategyTest extends TestCase {
 
 		return $rows;
 	}
+
 }

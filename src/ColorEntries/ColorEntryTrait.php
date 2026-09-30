@@ -73,7 +73,7 @@ trait ColorEntryTrait {
 		// Unset alpha before array_map to avoid unnecessary computation
 		unset($xyz['a']);
 
-		$xyz = array_map(function( $item ) {
+		$xyz = array_map(function ( $item ) {
 			if( $item > 0.008856 ) {
 				return pow($item, 1 / 3);
 			}

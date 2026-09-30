@@ -14,6 +14,7 @@ trait ColorInstanceTrait {
 		if( !isset($this->distinctInstances[$instance]) ) {
 			$this->distinctInstances[$instance] = 0;
 		}
+
 		$this->distinctInstances[$instance]++;
 	}
 
