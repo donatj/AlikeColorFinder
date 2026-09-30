@@ -1,5 +1,14 @@
 {
 	"name": "donatj/alike-color-finder",
+	"description": "Find similar colors in CSS and CSS-like data.",
+	"keywords": [
+		"ci",
+		"cli",
+		"color",
+		"color-difference",
+		"css"
+	],
+	"homepage": "https://donatstudios.com/CSS-Alike-Color-Finder",
 	"license": "MIT",
 	"require": {
 		"donatj/flags": "^1.6",
@@ -20,6 +29,10 @@
 			"email": "donatj@gmail.com"
 		}
 	],
+	"support": {
+		"issues": "https://github.com/donatj/AlikeColorFinder/issues",
+		"source": "https://github.com/donatj/AlikeColorFinder"
+	},
 	"autoload": {
 		"psr-4": {
 			"donatj\\AlikeColorFinder\\": "src/"
