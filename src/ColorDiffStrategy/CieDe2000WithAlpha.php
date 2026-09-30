@@ -68,11 +68,13 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		} else {
 			$primeH1 = (atan2($f1['b'], $primeA1) + 2 * M_PI) * (180 / M_PI);
 		}
+
 		if( $f2['b'] === 0.0 && $primeA2 === 0.0 ) {
 			$primeH2 = 0;
 		} else {
 			$primeH2 = (atan2($f2['b'], $primeA2) + 2 * M_PI) * (180 / M_PI);
 		}
+
 		//8
 		$deltaLPrime = $f2['l'] - $f1['l'];
 		//9
@@ -90,6 +92,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		} else {
 			throw new \Exception('Invalid delta h\'');
 		}
+
 		//11
 		$deltaHPrime = 2 * sqrt($primeC1 * $primeC2) * sin(($deltahPrime / 2.0) * (M_PI / 180));
 		//12
@@ -109,6 +112,7 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 		} else {
 			throw new \Exception('Invalid bar h\'');
 		}
+
 		//15
 		$t = 1 - .17 * cos(($barHPrime - 30) * (M_PI / 180)) + .24 * cos((2 * $barHPrime) * (M_PI / 180)) + .32 * cos((3 * $barHPrime + 6) * (M_PI / 180)) - .2 * cos((4 * $barHPrime - 63) * (M_PI / 180));
 		//16
@@ -135,4 +139,5 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 
 		return $deltaE + $alphaDiff;
 	}
+
 }

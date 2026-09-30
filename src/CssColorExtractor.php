@@ -173,7 +173,7 @@ class CssColorExtractor {
 		if( $colorEntryFactory !== null ) {
 			$this->factory = $colorEntryFactory;
 		} else {
-			$this->factory = new ColorEntryFactory();
+			$this->factory = new ColorEntryFactory;
 		}
 	}
 
@@ -182,8 +182,8 @@ class CssColorExtractor {
 	 * @return array<string, \donatj\AlikeColorFinder\ColorEntry>
 	 */
 	public function extractColors( array &$errors ): array {
-		$asciiCaseInsensitive = function( string $identifier ): string {
-			return implode('', array_map(function( string $character ): string {
+		$asciiCaseInsensitive = function ( string $identifier ): string {
+			return implode('', array_map(function ( string $character ): string {
 				if( $character >= 'a' && $character <= 'z' ) {
 					return '[' . $character . strtoupper($character) . ']';
 				}
@@ -192,7 +192,7 @@ class CssColorExtractor {
 			}, str_split($identifier)));
 		};
 
-		$preDefined = implode('|', array_map(function( string $color ) use ( $asciiCaseInsensitive ): string {
+		$preDefined = implode('|', array_map(function ( string $color ) use ( $asciiCaseInsensitive ): string {
 			return $asciiCaseInsensitive(preg_quote($color, '/'));
 		}, array_keys($this->colors)));
 
@@ -292,6 +292,7 @@ class CssColorExtractor {
 
 					$color = $this->getFuncColor($funcMatch, $params);
 				}
+
 				$xyz = $color->getXyzaArray();
 				foreach( $xyz as $component ) {
 					if( !is_finite($component) ) {
@@ -342,7 +343,7 @@ class CssColorExtractor {
 	 * @return list<float>
 	 */
 	private function normalizeColorSpaceParams( array $params ): array {
-		$params = array_map(function( string $param ): float {
+		$params = array_map(function ( string $param ): float {
 			if( substr($param, -1) === '%' ) {
 				$value = ((float)substr($param, 0, -1)) / 100;
 			} else {
@@ -570,4 +571,5 @@ class CssColorExtractor {
 
 		throw new \LogicException("Func type '{$func}' not implemented");
 	}
+
 }

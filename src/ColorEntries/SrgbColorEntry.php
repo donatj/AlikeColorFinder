@@ -11,6 +11,7 @@ class SrgbColorEntry implements ColorEntry {
 		getRgbHexString as private getCompactRgbHexString;
 		getSimplestCssString as private getCompactSimplestCssString;
 	}
+
 	use ColorInstanceTrait;
 
 	protected float $r;
@@ -29,15 +30,19 @@ class SrgbColorEntry implements ColorEntry {
 		if( $r > 255 || $r < 0 ) {
 			throw new \RangeException('Red must be between 0 and 255');
 		}
+
 		if( $g > 255 || $g < 0 ) {
 			throw new \RangeException('Green must be between 0 and 255');
 		}
+
 		if( $b > 255 || $b < 0 ) {
 			throw new \RangeException('Blue must be between 0 and 255');
 		}
+
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
+
 		$this->r = $r;
 		$this->g = $g;
 		$this->b = $b;

@@ -17,19 +17,23 @@ class AlikeColorFinder {
 	/**
 	 * @param array<ColorEntry> $colors
 	 */
-	public function __construct( array $colors, ?ColorEntryFactory $colorEntryFactory = null, ?ColorDiffStrategyInterface $colorDiffer = null ) {
+	public function __construct(
+		array $colors,
+		?ColorEntryFactory $colorEntryFactory = null,
+		?ColorDiffStrategyInterface $colorDiffer = null
+	) {
 		$this->colors = $colors;
 
 		if( $colorEntryFactory !== null ) {
 			$this->factory = $colorEntryFactory;
 		} else {
-			$this->factory = new ColorEntryFactory();
+			$this->factory = new ColorEntryFactory;
 		}
 
 		if( $colorDiffer !== null ) {
 			$this->colorDiffer = $colorDiffer;
 		} else {
-			$this->colorDiffer = new Absolute();
+			$this->colorDiffer = new Absolute;
 		}
 	}
 
@@ -58,6 +62,7 @@ class AlikeColorFinder {
 					];
 				}
 			}
+
 			if( $children ) {
 				usort($children, function ( $a, $b ) {
 					if( $a['diff'] == $b['diff'] ) {

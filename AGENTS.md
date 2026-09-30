@@ -4,7 +4,7 @@ Alike Color Finder is CI tooling first and foremost: a PHP 7.4+ command-line app
 
 The project exists to help teams find accidental color drift in real stylesheets. Its goals are correct, predictable CSS color parsing and comparison, useful command-line output, and dependable automation behavior across supported PHP versions. The `alike` executable is defined in `composer/bin/alike`; tests are PHPUnit suites and CSV fixtures under `test/`.
 
-Run `./vendor/bin/phpunit` for the test suite, `./vendor/bin/phpstan analyse` for static analysis, `./vendor/bin/parallel-lint src composer/bin/alike test` for syntax checks, and `./vendor/bin/php-cs-fixer fix --dry-run --diff` for coding style.
+Run `./vendor/bin/phpunit` for the test suite, `./vendor/bin/phpstan analyse` for static analysis, `./vendor/bin/parallel-lint src composer/bin/alike test` for syntax checks, `./vendor/bin/phpcs` for the Corpus coding standard, and `./vendor/bin/php-cs-fixer fix --dry-run --diff` for coding style.
 
 ## Code review
 

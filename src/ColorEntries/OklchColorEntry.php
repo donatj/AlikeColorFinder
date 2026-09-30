@@ -31,6 +31,7 @@ class OklchColorEntry implements ColorEntry {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
+
 		$this->l = $l;
 		$this->c = $c;
 		$this->h = $h;

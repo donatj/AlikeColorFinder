@@ -32,6 +32,7 @@ class XyzColorEntry implements ColorEntry {
 		if( $a > 1 || $a < 0 ) {
 			throw new \RangeException('Alpha must be between 0 and 1');
 		}
+
 		$this->xyzX = $x;
 		$this->xyzY = $y;
 		$this->xyzZ = $z;
