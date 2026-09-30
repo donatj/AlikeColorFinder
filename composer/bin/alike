@@ -11,17 +11,7 @@ use donatj\AlikeColorFinder\ColorEntry;
 use donatj\AlikeColorFinder\CssColorExtractor;
 use donatj\AlikeColorFinder\Exceptions\CliException;
 
-$files = [
-	__DIR__ . '/../../vendor/autoload.php',
-	__DIR__ . '/../../../../autoload.php',
-];
-
-foreach( $files as $file ) {
-	if( file_exists($file) ) {
-		require $file;
-		break;
-	}
-}
+require $_composer_autoload_path ?? __DIR__ . '/../../vendor/autoload.php';
 
 $stdout = fopen('php://output', 'w');
 $stderr = fopen('php://stderr', 'w');
