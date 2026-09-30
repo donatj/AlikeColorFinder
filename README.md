@@ -5,6 +5,7 @@
 [![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder)
 [![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder)
 [![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Coverage Status](https://coveralls.io/repos/github/donatj/AlikeColorFinder/badge.svg?branch=ci/add-coveralls-coverage)](https://coveralls.io/github/donatj/AlikeColorFinder?branch=ci/add-coveralls-coverage)
 
 Alike Color Finder is a command-line tool for CI that detects nearly identical colors before they become visual drift. It scans CSS and CSS-like files, directories, or standard input; reports color pairs at or below a chosen difference tolerance; and can fail a build when it finds them.
 
