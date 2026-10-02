@@ -7,12 +7,17 @@ $finder = PhpCsFixer\Finder::create()
 	->name('*.php')
 	->append([__DIR__ . '/composer/bin/alike']);
 
-return (new PhpCsFixer\Config)
+$config = (new PhpCsFixer\Config)
 	->setUsingCache(true)
 	->setIndent("\t")
 	->setLineEnding("\n")
-	->setRiskyAllowed(true)
-	->setUnsupportedPhpVersionAllowed(true)
+	->setRiskyAllowed(true);
+
+if( method_exists($config, 'setUnsupportedPhpVersionAllowed') ) {
+	$config->setUnsupportedPhpVersionAllowed(true);
+}
+
+return $config
 	->setRules(
 		[
 			'@PHPUnit10x0Migration:risky' => true,
