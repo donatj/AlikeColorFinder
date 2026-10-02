@@ -12,6 +12,7 @@ return (new PhpCsFixer\Config)
 	->setIndent("\t")
 	->setLineEnding("\n")
 	->setRiskyAllowed(true)
+	->setUnsupportedPhpVersionAllowed(true)
 	->setRules(
 		[
 			'@PHPUnit10x0Migration:risky' => true,
