@@ -32,6 +32,19 @@ class CssColorExtractorTest extends TestCase {
 		$this->assertCount(2, $colors);
 	}
 
+	public function testErrorsAreAnOptionalOutputArray() {
+		$colors = (new CssColorExtractor('#fff'))->extractColors();
+
+		$this->assertCount(1, $colors);
+
+		$errors = null;
+		$colors = (new CssColorExtractor('#fff color(srgb 1e309 0 0)'))->extractColors($errors);
+
+		$this->assertCount(1, $colors);
+		$this->assertCount(1, $errors);
+		$this->assertSame('Color component must be finite', $errors[0]['exception']->getMessage());
+	}
+
 	public function testFourComponentSpaceSyntaxWithoutAnAlphaSeparatorIsIgnored() {
 		$errors = [];
 		$colors = (new CssColorExtractor('rgba(0 0 0 0) hsla(191.33 18% 35.29% 22%)'))->extractColors($errors);
