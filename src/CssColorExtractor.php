@@ -178,10 +178,11 @@ class CssColorExtractor {
 	}
 
 	/**
-	 * @param list<array{exception: \Exception, result: array<int|string, string>}> $errors by reference
+	 * @param array<mixed>|null $errors
+	 * @param-out list<array{exception: \Exception, result: array<int|string, string>}> $errors
 	 * @return array<string, \donatj\AlikeColorFinder\ColorEntry>
 	 */
-	public function extractColors( array &$errors ): array {
+	public function extractColors( ?array &$errors = null ): array {
 		$asciiCaseInsensitive = function ( string $identifier ): string {
 			return implode('', array_map(function ( string $character ): string {
 				if( $character >= 'a' && $character <= 'z' ) {
