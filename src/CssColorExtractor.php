@@ -252,7 +252,7 @@ class CssColorExtractor {
 					$color = $this->factory->makeFromHexString($result['hex']);
 				} elseif( !empty($result['named']) ) {
 					$color = $this->factory->makeFromHexString(
-						$this->colors[strtolower($result['named'])]
+						$this->colors[strtolower($result['named'])],
 					);
 				} elseif( !empty($result['color_func']) ) {
 					$colorSpace   = strtolower($result['color_space']);
@@ -271,7 +271,7 @@ class CssColorExtractor {
 						$params[0],
 						$params[1],
 						$params[2],
-						$params[3] ?? 1.0
+						$params[3] ?? 1.0,
 					);
 				} else {
 					$funcMatch = strtolower(
@@ -279,7 +279,7 @@ class CssColorExtractor {
 						?: ($result['hue_func'] ?? '')
 						?: ($result['func2'] ?? '')
 						?: ($result['hue_func2'] ?? '')
-						?: ($result['hue_func3'] ?? '')
+						?: ($result['hue_func3'] ?? ''),
 					);
 					$paramMatches = ($result['params'] ?? '')
 						?: ($result['hue_params'] ?? '')

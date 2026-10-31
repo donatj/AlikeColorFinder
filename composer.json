@@ -17,7 +17,9 @@
 	},
 	"require-dev": {
 		"corpus/coding-standard": "^0.9.0",
+		"corpus/php-cs-fixer-config": "^0.1.1",
 		"donatj/drop": "^1.1",
+		"donatj/mddoc": "^0.14.1",
 		"friendsofphp/php-cs-fixer": "^3.95",
 		"php-parallel-lint/php-parallel-lint": "^1.4",
 		"phpstan/phpstan": "^2.3",

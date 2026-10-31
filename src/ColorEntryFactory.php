@@ -121,12 +121,30 @@ class ColorEntryFactory {
 		$f       = $hSector - floor($hSector);
 
 		switch( $sector ) {
-			case 0: $pr = 1; $pg = $f; $pb = 0; break;
-			case 1: $pr = 1 - $f; $pg = 1; $pb = 0; break;
-			case 2: $pr = 0; $pg = 1; $pb = $f; break;
-			case 3: $pr = 0; $pg = 1 - $f; $pb = 1; break;
-			case 4: $pr = $f; $pg = 0; $pb = 1; break;
-			default: $pr = 1; $pg = 0; $pb = 1 - $f; break;
+			case 0: $pr = 1;
+			$pg = $f;
+			$pb = 0;
+			break;
+			case 1: $pr = 1 - $f;
+			$pg = 1;
+			$pb = 0;
+			break;
+			case 2: $pr = 0;
+			$pg = 1;
+			$pb = $f;
+			break;
+			case 3: $pr = 0;
+			$pg = 1 - $f;
+			$pb = 1;
+			break;
+			case 4: $pr = $f;
+			$pg = 0;
+			$pb = 1;
+			break;
+			default: $pr = 1;
+			$pg = 0;
+			$pb = 1 - $f;
+			break;
 		}
 
 		$scale = 1 - $w - $b;
@@ -136,7 +154,7 @@ class ColorEntryFactory {
 			($pg * $scale + $w) * 255,
 			($pb * $scale + $w) * 255,
 			$a,
-			false
+			false,
 		);
 	}
 

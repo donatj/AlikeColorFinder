@@ -28,7 +28,7 @@ class ColorDiffStrategyTest extends TestCase {
 				$this->extractSingleColor('color(srgb 1.1 0 0)'),
 				$this->extractSingleColor('#f00')
 			),
-			0.000001
+			0.000001,
 		);
 	}
 
