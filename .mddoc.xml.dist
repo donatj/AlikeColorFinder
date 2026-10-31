@@ -1,15 +1,13 @@
 <mddoc>
   <docpage target="README.md">
-    <text><![CDATA[
-# Alike Color Finder
-
-[![CI](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml)
-[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Coverage Status](https://coveralls.io/repos/github/donatj/AlikeColorFinder/badge.svg?branch=ci/add-coveralls-coverage)](https://coveralls.io/github/donatj/AlikeColorFinder?branch=ci/add-coveralls-coverage)
-
+    <section title="Alike Color Finder">
+      <badge-github-action name="donatj/AlikeColorFinder" workflow-file="ci.yml" alt="CI"/>
+      <badge-poser type="version"/>
+      <badge-poser type="downloads"/>
+      <badge-poser type="unstable"/>
+      <badge-poser type="license"/>
+      <badge-coveralls name="github/donatj/AlikeColorFinder"/>
+      <text><![CDATA[
 Alike Color Finder is a command-line tool for CI that detects nearly identical colors before they become visual drift. It scans CSS and CSS-like files, directories, or standard input; reports color pairs at or below a chosen difference tolerance; and can fail a build when it finds them.
 
 It understands hex and named colors; `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb()`, `lab()`, `lch()`, `oklab()`, `oklch()`, and `color()` functions; and CSS Color Level 4 wide-gamut spaces including Display P3, Rec2020, and ProPhoto RGB.
@@ -17,33 +15,24 @@ It understands hex and named colors; `rgb()`, `rgba()`, `hsl()`, `hsla()`, `hwb(
 Choose [CIEDE2000](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000) + alpha (the default), CIE94 + alpha, or an absolute color-difference strategy with `--strategy`.
 
 Prefer a browser? A [web-based interface](https://donatstudios.com/CSS-Alike-Color-Finder) is also available.
-
-## Why
-
+]]></text>
+      <section title="Why">
+        <text><![CDATA[
 Nearly identical colors tend to accumulate in long-lived stylesheets. This began as a small script for finding them, then grew into a tool that can enforce a color-consistency rule in CI.
 
 It is intended to make accidental color drift visible before it ships.
-
-## Requirements
-
-- PHP 7.4+ with CLI and SPL support
-
-## Installation
-
-Install `alike` globally:
 ]]></text>
-    <composer-install global="true" text=""/>
-    <text><![CDATA[
-
-
-Or add it to a project as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
-]]></text>
-    <composer-install dev="true" text=""/>
-    <text><![CDATA[
-
-
-## Usage
-
+      </section>
+      <section title="Requirements">
+        <composer-requires/>
+        <text>PHP must have CLI and SPL support.</text>
+      </section>
+      <section title="Installation">
+        <composer-install global="true" text="Install `alike` globally:"/>
+        <composer-install dev="true" text="Or add it to a project as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):"/>
+      </section>
+      <section title="Usage">
+        <text><![CDATA[
 The examples below use a global installation. For a project dependency, invoke `vendor/bin/alike` instead.
 
 Scan files or directories:
@@ -63,13 +52,15 @@ The default `ciede2000` strategy reports colors whose difference is at most `4`.
 ```bash
 alike --tolerance 1 styles/
 ```
-
-## Continuous integration
-
+]]></text>
+      </section>
+      <section title="Continuous integration">
+        <text><![CDATA[
 By default, `alike` exits with `2` when it finds a qualifying color pair or encounters an extraction error, which is suitable for most CI systems. Set `--exit-code` to another status, or to `0` to report findings without failing the build.
-
-## Options
-
+]]></text>
+      </section>
+      <section title="Options">
+        <text><![CDATA[
 Run `alike --help` for the complete CLI reference. The core options are:
 
 | Option | Description |
@@ -78,9 +69,10 @@ Run `alike --help` for the complete CLI reference. The core options are:
 | `--tolerance` | Maximum computed difference considered alike; defaults to `4`. |
 | `--exit-code` | Exit status used when findings or extraction errors occur; defaults to `2`. Set to `0` to disable failure. |
 | `--pattern` | Regular expression for files discovered when scanning a directory. |
-
-## Example output
-
+]]></text>
+      </section>
+      <section title="Example output">
+        <text><![CDATA[
 Scanning a CSS file:
 
 ```bash
@@ -100,10 +92,13 @@ alike main.css
 
 Total alike colors: 4 - Average Δ: 2.167 - Total colors: 17 - Distinct colors: 5
 ```
-
-## Credits
-
+]]></text>
+      </section>
+      <section title="Credits">
+        <text><![CDATA[
 - SupplyHog, Inc - [CIEDE2000 Calculations](https://github.com/supplyhog/phpOptics/blob/e94ac9cf67fb61b89ad23bee01ae32365e587afa/OpticsColorPoint.php#L45-L157)
 ]]></text>
+      </section>
+    </section>
   </docpage>
 </mddoc>
