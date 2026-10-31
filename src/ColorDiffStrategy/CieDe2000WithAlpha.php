@@ -45,24 +45,24 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 
 		$kl   = $kc = $kh = 1.0;
 		$barL = ($f1['l'] + $f2['l']) / 2.0;
-		//(Numbers correspond to http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf eq)
-		//2
+		// (Numbers correspond to http://www.ece.rochester.edu/~gsharma/ciede2000/ciede2000noteCRNA.pdf eq)
+		// 2
 		$helperB1Sq = pow($f1['b'], 2);
 		$helperB2Sq = pow($f2['b'], 2);
 		$c1         = sqrt(pow($f1['a'], 2) + $helperB1Sq);
 		$c2         = sqrt(pow($f2['a'], 2) + $helperB2Sq);
-		//3
+		// 3
 		$barC = ($c1 + $c2) / 2.0;
-		//4
+		// 4
 		$helperPow7 = sqrt(pow($barC, 7) / (pow($barC, 7) + 6103515625));
 		$g          = 0.5 * (1 - $helperPow7);
-		//5
+		// 5
 		$primeA1 = (1 + $g) * $f1['a'];
 		$primeA2 = (1 + $g) * $f2['a'];
-		//6
+		// 6
 		$primeC1 = sqrt(pow($primeA1, 2) + $helperB1Sq);
 		$primeC2 = sqrt(pow($primeA2, 2) + $helperB2Sq);
-		//7
+		// 7
 		if( $f1['b'] === 0.0 && $primeA1 === 0.0 ) {
 			$primeH1 = 0;
 		} else {
@@ -75,11 +75,11 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 			$primeH2 = (atan2($f2['b'], $primeA2) + 2 * M_PI) * (180 / M_PI);
 		}
 
-		//8
+		// 8
 		$deltaLPrime = $f2['l'] - $f1['l'];
-		//9
+		// 9
 		$deltaCPrime = $primeC2 - $primeC1;
-		//10
+		// 10
 		$helperH = $primeH2 - $primeH1;
 		if( $primeC1 * $primeC2 === 0.0 ) {
 			$deltahPrime = 0;
@@ -93,13 +93,13 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 			throw new \Exception('Invalid delta h\'');
 		}
 
-		//11
+		// 11
 		$deltaHPrime = 2 * sqrt($primeC1 * $primeC2) * sin(($deltahPrime / 2.0) * (M_PI / 180));
-		//12
+		// 12
 		$barLPrime = ($f1['l'] + $f2['l']) / 2.0;
-		//13
+		// 13
 		$barCPrime = ($primeC1 + $primeC2) / 2.0;
-		//14
+		// 14
 		$helperH = abs($primeH1 - $primeH2);
 		if( $primeC1 * $primeC2 === 0.0 ) {
 			$barHPrime = $primeH1 + $primeH2;
@@ -113,22 +113,22 @@ class CieDe2000WithAlpha implements ColorDiffStrategyInterface {
 			throw new \Exception('Invalid bar h\'');
 		}
 
-		//15
+		// 15
 		$t = 1 - .17 * cos(($barHPrime - 30) * (M_PI / 180)) + .24 * cos((2 * $barHPrime) * (M_PI / 180)) + .32 * cos((3 * $barHPrime + 6) * (M_PI / 180)) - .2 * cos((4 * $barHPrime - 63) * (M_PI / 180));
-		//16
+		// 16
 		$deltaTheta = 30 * exp(-1 * pow((($barHPrime - 275) / 25), 2));
-		//17
+		// 17
 		$rc = 2 * $helperPow7;
-		//18
+		// 18
 		$slHelper = pow($barLPrime - 50, 2);
 		$sl       = 1 + ((0.015 * $slHelper) / sqrt(20 + $slHelper));
-		//19
+		// 19
 		$sc = 1 + 0.046 * $barCPrime;
-		//20
+		// 20
 		$sh = 1 + 0.015 * $barCPrime * $t;
-		//21
+		// 21
 		$rt = -1 * sin((2 * $deltaTheta) * (M_PI / 180)) * $rc;
-		//22
+		// 22
 		$deltaESquared = pow($deltaLPrime / ($kl * $sl), 2) +
 						 pow($deltaCPrime / ($kc * $sc), 2) +
 						 pow($deltaHPrime / ($kh * $sh), 2) +

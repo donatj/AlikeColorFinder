@@ -74,7 +74,7 @@ class CssColorExtractorTest extends TestCase {
 			$this->assertSame(
 				$this->extractSingleColor($normalized)->getSimplestCssString(),
 				$this->extractSingleColor($css)->getSimplestCssString(),
-				$css
+				$css,
 			);
 		}
 	}
@@ -139,7 +139,7 @@ class CssColorExtractorTest extends TestCase {
 			$this->assertSame(
 				$this->extractSingleColor($degrees)->getSimplestCssString(),
 				$this->extractSingleColor($angle)->getSimplestCssString(),
-				$angle
+				$angle,
 			);
 		}
 	}
@@ -173,7 +173,7 @@ class CssColorExtractorTest extends TestCase {
 			$this->assertSame(
 				$this->extractSingleColor($percentages)->getSimplestCssString(),
 				$this->extractSingleColor($numbers)->getSimplestCssString(),
-				$numbers
+				$numbers,
 			);
 		}
 	}

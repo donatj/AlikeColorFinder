@@ -29,14 +29,16 @@ It is intended to make accidental color drift visible before it ships.
 
 Install `alike` globally:
 
+
 ```bash
-composer global require donatj/alike-color-finder
+composer global require 'donatj/alike-color-finder'
 ```
 
 Or add it to a project as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
 
+
 ```bash
-composer require --dev donatj/alike-color-finder
+composer require --dev 'donatj/alike-color-finder'
 ```
 
 ## Usage

@@ -37,6 +37,9 @@ jobs:
       - name: Run PHPCS
         run: ./vendor/bin/phpcs
 
+      - name: Check generated documentation
+        run: ./vendor/bin/mddoc --dry-run
+
       - name: Run PHP-CS-Fixer
         run: ./vendor/bin/php-cs-fixer fix --dry-run --diff
 
