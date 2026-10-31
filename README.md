@@ -1,11 +1,12 @@
 # Alike Color Finder
 
 [![CI](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml/badge.svg)](https://github.com/donatj/AlikeColorFinder/actions/workflows/ci.yml)
-[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/v/stable.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![License](https://poser.pugx.org/donatj/alike-color-finder/license.png)](https://packagist.org/packages/donatj/alike-color-finder)
-[![Coverage Status](https://coveralls.io/repos/github/donatj/AlikeColorFinder/badge.svg?branch=ci/add-coveralls-coverage)](https://coveralls.io/github/donatj/AlikeColorFinder?branch=ci/add-coveralls-coverage)
+[![Latest Stable Version](https://poser.pugx.org/donatj/alike-color-finder/version)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Total Downloads](https://poser.pugx.org/donatj/alike-color-finder/downloads)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Latest Unstable Version](https://poser.pugx.org/donatj/alike-color-finder/v/unstable)](https://packagist.org/packages/donatj/alike-color-finder)
+[![License](https://poser.pugx.org/donatj/alike-color-finder/license)](https://packagist.org/packages/donatj/alike-color-finder)
+[![Coverage Status](https://coveralls.io/repos/github/donatj/AlikeColorFinder/badge.svg)](https://coveralls.io/github/donatj/AlikeColorFinder)
+
 
 Alike Color Finder is a command-line tool for CI that detects nearly identical colors before they become visual drift. It scans CSS and CSS-like files, directories, or standard input; reports color pairs at or below a chosen difference tolerance; and can fail a build when it finds them.
 
@@ -15,6 +16,7 @@ Choose [CIEDE2000](https://en.wikipedia.org/wiki/Color_difference#CIEDE2000) + a
 
 Prefer a browser? A [web-based interface](https://donatstudios.com/CSS-Alike-Color-Finder) is also available.
 
+
 ## Why
 
 Nearly identical colors tend to accumulate in long-lived stylesheets. This began as a small script for finding them, then grew into a tool that can enforce a color-consistency rule in CI.
@@ -23,19 +25,22 @@ It is intended to make accidental color drift visible before it ships.
 
 ## Requirements
 
-- PHP 7.4+ with CLI and SPL support
+- **composer-runtime-api**: ^2.2
+- **donatj/flags**: ^1.6
+- **php**: >=7.4
+
+
+PHP must have CLI and SPL support.
 
 ## Installation
 
 Install `alike` globally:
-
 
 ```bash
 composer global require 'donatj/alike-color-finder'
 ```
 
 Or add it to a project as a [vendor binary](https://getcomposer.org/doc/articles/vendor-binaries.md):
-
 
 ```bash
 composer require --dev 'donatj/alike-color-finder'
